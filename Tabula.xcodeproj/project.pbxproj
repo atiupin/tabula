@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		848D598C1951714D00773BCF /* BoardsList.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 848D598A1951714C00773BCF /* BoardsList.xcdatamodeld */; };
+		848D598F195171C800773BCF /* Board.m in Sources */ = {isa = PBXBuildFile; fileRef = 848D598E195171C800773BCF /* Board.m */; };
 		97183A7B192AB607003F429C /* GetRequestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97183A7A192AB607003F429C /* GetRequestViewController.m */; };
 		977C08BE194A72C400F8F095 /* ThreadTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 977C08BD194A72C400F8F095 /* ThreadTableView.m */; };
 		977C08C1194A90B300F8F095 /* FooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 977C08C0194A90B300F8F095 /* FooterView.m */; };
@@ -55,6 +57,9 @@
 
 /* Begin PBXFileReference section */
 		54FCB73F9571465CB792ACB9 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		848D598B1951714C00773BCF /* BoardsList.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BoardsList.xcdatamodel; sourceTree = "<group>"; };
+		848D598D195171C800773BCF /* Board.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Board.h; sourceTree = "<group>"; };
+		848D598E195171C800773BCF /* Board.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Board.m; sourceTree = "<group>"; };
 		97183A79192AB607003F429C /* GetRequestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetRequestViewController.h; sourceTree = "<group>"; };
 		97183A7A192AB607003F429C /* GetRequestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetRequestViewController.m; sourceTree = "<group>"; };
 		977C08BC194A72C400F8F095 /* ThreadTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadTableView.h; sourceTree = "<group>"; };
@@ -147,6 +152,9 @@
 				97C3D534191BDEF1008921B5 /* Thread.m */,
 				97A26CBF1941486600D632C5 /* UrlNinja.h */,
 				97A26CC01941486600D632C5 /* UrlNinja.m */,
+				848D598A1951714C00773BCF /* BoardsList.xcdatamodeld */,
+				848D598D195171C800773BCF /* Board.h */,
+				848D598E195171C800773BCF /* Board.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -424,8 +432,10 @@
 				977C08C1194A90B300F8F095 /* FooterView.m in Sources */,
 				97C3D526191BD46B008921B5 /* ThreadViewController.m in Sources */,
 				97183A7B192AB607003F429C /* GetRequestViewController.m in Sources */,
+				848D598C1951714D00773BCF /* BoardsList.xcdatamodeld in Sources */,
 				978A6045193771D2001B3F18 /* DebugController.m in Sources */,
 				97D28C0C1927FF6300C7407F /* PostTableViewCell.m in Sources */,
+				848D598F195171C800773BCF /* Board.m in Sources */,
 				977C08BE194A72C400F8F095 /* ThreadTableView.m in Sources */,
 				97C3D529191BD485008921B5 /* BoardViewController.m in Sources */,
 				97C3D535191BDEF1008921B5 /* Thread.m in Sources */,
@@ -667,6 +677,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		848D598A1951714C00773BCF /* BoardsList.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				848D598B1951714C00773BCF /* BoardsList.xcdatamodel */,
+			);
+			currentVersion = 848D598B1951714C00773BCF /* BoardsList.xcdatamodel */;
+			path = BoardsList.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 97C3D4E5191BC82A008921B5 /* Project object */;
 }

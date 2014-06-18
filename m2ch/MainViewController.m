@@ -8,6 +8,7 @@
 
 #import "MainViewController.h"
 #import "BoardViewController.h"
+#import "Board.h"
 
 @interface MainViewController ()
 
@@ -15,9 +16,32 @@
 
 @implementation MainViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    self.boardsList = [NSArray arrayWithObjects:@"de", @"c", @"b", @"mlp", @"mobi", @"media", nil];
+- (NSFetchedResultsController *) fetchedResultsController {
+    if (_fetchedResultsController == nil) {
+        _fetchedResultsController =
+        [Board MR_fetchAllSortedBy:@"name"
+                         ascending:YES withPredicate:nil groupBy:nil delegate:self];
+        
+        NSInteger count = [[[_fetchedResultsController sections]
+                            valueForKeyPath:@"@sum.numberOfObjects"] integerValue];
+        if (count == 0) {
+            [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+                NSArray *boardsList =
+                [NSArray arrayWithObjects:@"de", @"c", @"b", @"mlp", @"mobi", @"media", nil];
+                for (NSString *board in boardsList) {
+                    Board *next = [Board MR_createInContext:localContext];
+                    next.name = board;
+                }
+
+            }];
+        }
+    }
+    return _fetchedResultsController;
+}
+
+-(void) controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    // TODO: insert NSFetchedResultsControllerDelegate boilerplate 
+    [self.tableView reloadData];
 }
 
 #pragma mark - Table view data source
@@ -30,13 +54,21 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.boardsList count];
+    NSArray *sections = [[self fetchedResultsController] sections];
+    if (section < [sections count]) {
+        id<NSFetchedResultsSectionInfo> info = [sections objectAtIndex:section];
+        return info.numberOfObjects;
+    }
+    return 0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"reuseIdentifier" forIndexPath:indexPath];
-    cell.textLabel.text = [self.boardsList objectAtIndex:indexPath.row];
+    static NSString *reuseIdentifier = @"reuseIdentifier";
+    UITableViewCell *cell =
+    [tableView dequeueReusableCellWithIdentifier:reuseIdentifier forIndexPath:indexPath];
+    Board *board = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    cell.textLabel.text = board.name;
     return cell;
 }
 
@@ -82,8 +114,8 @@
 {
     if ([segue.identifier isEqualToString:@"showBoard"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        NSString *boardId = [self.boardsList objectAtIndex:indexPath.row];
-        [segue.destinationViewController setBoardId:boardId];
+        Board *board = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        [segue.destinationViewController setBoardId:board.name];
     }
 }
  

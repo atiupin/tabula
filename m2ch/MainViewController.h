@@ -8,8 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MainViewController : UITableViewController
+@interface MainViewController : UITableViewController<NSFetchedResultsControllerDelegate>
 
-@property (nonatomic, strong)NSArray *boardsList;
+@property (nonatomic, strong)NSFetchedResultsController *fetchedResultsController;
 
 @end
