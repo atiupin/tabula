@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CaptchaFixController">
+            <connections>
+                <outlet property="view" destination="iN0-l3-epB" id="DcS-2n-0PB"/>
+                <outlet property="webView" destination="EAV-ty-n1t" id="Yba-Nu-SUl"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Сделайте то, что от вас хочет сервис защиты от DDoS и нажмите на «Готово»" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="qaj-sa-F58">
+                    <rect key="frame" x="20" y="80" width="280" height="61"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="280" id="911-Zj-HQc"/>
+                        <constraint firstAttribute="height" constant="61" id="gXq-OB-qL2"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EAV-ty-n1t">
+                    <rect key="frame" x="0.0" y="155" width="320" height="413"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="320" id="vlm-nR-Ffv"/>
+                    </constraints>
+                </webView>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="EAV-ty-n1t" firstAttribute="top" secondItem="qaj-sa-F58" secondAttribute="bottom" constant="14" id="76J-3L-m0W"/>
+                <constraint firstItem="EAV-ty-n1t" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="8CG-2p-AsD"/>
+                <constraint firstItem="EAV-ty-n1t" firstAttribute="top" secondItem="qaj-sa-F58" secondAttribute="bottom" constant="14" id="9N2-5H-2eo"/>
+                <constraint firstItem="qaj-sa-F58" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" id="QNf-0g-qmG"/>
+                <constraint firstAttribute="trailing" secondItem="EAV-ty-n1t" secondAttribute="trailing" id="fMQ-A2-gxQ"/>
+                <constraint firstAttribute="bottom" secondItem="EAV-ty-n1t" secondAttribute="bottom" id="h80-Bs-zpY"/>
+                <constraint firstItem="qaj-sa-F58" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="80" id="rGI-Lm-xlU"/>
+                <constraint firstAttribute="trailing" secondItem="qaj-sa-F58" secondAttribute="trailing" constant="20" id="ybr-Km-wcF"/>
+            </constraints>
+            <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+        </view>
+    </objects>
+</document>

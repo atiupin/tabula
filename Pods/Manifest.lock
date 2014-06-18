@@ -1,0 +1,19 @@
+PODS:
+  - AsyncImageView (1.5.1)
+  - JTSImageViewController (1.1.1)
+  - TTTAttributedLabel (1.10.1)
+  - UIView+AutoLayout (2.0.0)
+
+DEPENDENCIES:
+  - AsyncImageView
+  - JTSImageViewController
+  - TTTAttributedLabel
+  - UIView+AutoLayout
+
+SPEC CHECKSUMS:
+  AsyncImageView: 388442ae8314a5c99de0d98040c2926826d31da7
+  JTSImageViewController: e8167cffe5ffdb9203a8931d41ba5a4dd5ac5f5a
+  TTTAttributedLabel: 94bb04f1e005616002dd2cee0262a0082e533627
+  UIView+AutoLayout: 8037c1a0c6aae47da8656f0465f6bd1a87f26af7
+
+COCOAPODS: 0.33.1
