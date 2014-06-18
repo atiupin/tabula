@@ -40,6 +40,7 @@
 		97C3D535191BDEF1008921B5 /* Thread.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C3D534191BDEF1008921B5 /* Thread.m */; };
 		97C3D53A191E7FB6008921B5 /* ThreadTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C3D539191E7FB6008921B5 /* ThreadTableViewCell.m */; };
 		97D28C0C1927FF6300C7407F /* PostTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 97D28C0B1927FF6300C7407F /* PostTableViewCell.m */; };
+		97E757001951378A00E76A97 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 97E756FF1951378A00E76A97 /* .gitignore */; };
 		AEB2414BBF56415F917E74E6 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9805745336464EA7A343A4A2 /* libPods.a */; };
 /* End PBXBuildFile section */
 
@@ -109,6 +110,7 @@
 		97C3D539191E7FB6008921B5 /* ThreadTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadTableViewCell.m; sourceTree = "<group>"; };
 		97D28C0A1927FF6300C7407F /* PostTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostTableViewCell.h; sourceTree = "<group>"; };
 		97D28C0B1927FF6300C7407F /* PostTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PostTableViewCell.m; sourceTree = "<group>"; };
+		97E756FF1951378A00E76A97 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		9805745336464EA7A343A4A2 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -202,6 +204,7 @@
 				97C3D50F191BC82A008921B5 /* m2chTests */,
 				97C3D4EF191BC82A008921B5 /* Frameworks */,
 				97C3D4EE191BC82A008921B5 /* Products */,
+				97E756FF1951378A00E76A97 /* .gitignore */,
 				977C08C219512CDC00F8F095 /* README.md */,
 				54FCB73F9571465CB792ACB9 /* Pods.xcconfig */,
 			);
@@ -360,6 +363,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				97E757001951378A00E76A97 /* .gitignore in Resources */,
 				97C3D520191BC85F008921B5 /* MainStoryboard.storyboard in Resources */,
 				97A26CDA1947811300D632C5 /* Test.xib in Resources */,
 				97C3D4FB191BC82A008921B5 /* InfoPlist.strings in Resources */,
