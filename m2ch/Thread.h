@@ -16,10 +16,13 @@
 @property (nonatomic, strong)NSNumber *replyCount;
 @property (nonatomic, strong)NSMutableArray *updatedIndexes;
 @property (nonatomic, strong)NSString *postDraft; //хранит текст для недописанного поста
+@property (nonatomic, strong)NSIndexPath *startingRow;
+@property (nonatomic) NSUInteger postsTopLeft;
+@property (nonatomic) NSUInteger postsBottomLeft;
 
-- (Thread *)insertMorePostsFrom:(Thread *)thread;
+- (Thread *)insertMoreTopPostsFrom:(Thread *)thread;
 
-- (id)initThreadWithThread:(Thread *)thread;
-+ (id)currentThreadWithThread:(Thread *)thread;
+- (id)initThreadWithThread:(Thread *)thread andPosition:(NSIndexPath *)index;
++ (id)currentThreadWithThread:(Thread *)thread andPosition:(NSIndexPath *)index;
 
 @end

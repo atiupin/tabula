@@ -85,7 +85,9 @@
         }
         
         //в текущий вид грузим только последние 50 постов
-        self.currentThread = [Thread currentThreadWithThread:self.thread];
+        NSUInteger indexArray[] = {0, 251};
+        NSIndexPath *index = [NSIndexPath indexPathWithIndexes:indexArray length:2];
+        self.currentThread = [Thread currentThreadWithThread:self.thread andPosition:index];
         
         dispatch_async(dispatch_get_main_queue(), ^(void){
             [self performSelectorOnMainThread:@selector(updateEnded) withObject:nil waitUntilDone:YES];
@@ -97,8 +99,8 @@
                 [self scrollToRowAnimated:index isAnimated:NO];
             } else {
                 if (self.tableView.contentSize.height > self.tableView.frame.size.height) {
-                    CGPoint offset = CGPointMake(0, self.tableView.contentSize.height - self.tableView.frame.size.height);
-                    [self.tableView setContentOffset:offset animated:NO];
+//                    CGPoint offset = CGPointMake(0, self.tableView.contentSize.height - self.tableView.frame.size.height);
+//                    [self.tableView setContentOffset:offset animated:NO];
                 }
             }
         });
@@ -127,10 +129,10 @@
 }
 
 - (void)updateHeader {
-    if (self.thread.posts.count == self.currentThread.posts.count) {
+    if (self.currentThread.postsTopLeft == 0) {
         self.tableView.tableHeaderView = nil;
     } else {
-        NSUInteger postCount = self.thread.posts.count - self.currentThread.posts.count;
+        NSUInteger postCount = self.currentThread.postsTopLeft;
         Declension *postDeclension = [Declension stringWithPostCount:postCount];
         NSString *postString = [NSString stringWithFormat:@"Еще %@", postDeclension.output];
         [self.moreButton setTitle:postString forState:UIControlStateNormal];
@@ -416,14 +418,14 @@
 //десять часов возни в попытках нормально обновлять таблицу во время скролла а-ля Вконтакте не дали результа. Без глюков все обновляется только тогда, когда стоит на месте, во всяком случае вверх
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    if (self.tableView.contentOffset.y < 3000 && self.isLoaded == YES && self.thread.posts.count != self.currentThread.posts.count) {
+    if (self.tableView.contentOffset.y < 3000 && self.isLoaded == YES && self.currentThread.postsTopLeft !=0) {
         [self loadMorePostsUp];
     }
 }
 
 - (void)loadMorePostsUp {
 
-    [self.currentThread insertMorePostsFrom:self.thread];
+    [self.currentThread insertMoreTopPostsFrom:self.thread];
     
     CGPoint newContentOffset = self.tableView.contentOffset;
     [self.tableView reloadData];
@@ -432,7 +434,7 @@
     for (NSIndexPath *indexPath in self.currentThread.updatedIndexes)
         newContentOffset.y += [self.tableView.delegate tableView:self.tableView heightForRowAtIndexPath:indexPath];
     
-    if (self.thread.posts.count == self.currentThread.posts.count) {
+    if (self.currentThread.postsTopLeft == 0) {
         newContentOffset.y -= 30;
     }
     
