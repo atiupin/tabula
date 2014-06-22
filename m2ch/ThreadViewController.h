@@ -11,6 +11,7 @@
 #import "Thread.h"
 #import "Post.h"
 #import "GetRequestViewController.h"
+#import "Declension.h"
 
 @interface ThreadViewController : UITableViewController <TTTAttributedLabelDelegate, UIActionSheetDelegate, NSURLSessionDelegate, NSURLSessionDownloadDelegate, UIGestureRecognizerDelegate, PostViewControllerDelegate>
 
@@ -24,6 +25,9 @@
 @property (nonatomic, strong) NSString *quote;
 
 @property (nonatomic, strong) UIButton *refreshButton;
+@property (nonatomic, strong) UIButton *moreButton;
+
+@property (nonatomic) BOOL isLoaded;
 
 - (void)scrollToRowAnimated: (NSIndexPath *)index isAnimated:(BOOL)animated;
 

@@ -26,12 +26,17 @@
     [self.tableView registerClass:[PostTableViewCell class] forCellReuseIdentifier:@"reuseIndenifier"];
     self.tableView.estimatedRowHeight = UITableViewAutomaticDimension;
     self.navigationItem.title = [NSString stringWithFormat:@"Тред в /%@/", self.boardId];
+    self.isLoaded = NO;
     
-    UIButton *moreButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    moreButton.frame = CGRectMake(0, 0, self.tableView.frame.size.width, 44);
-
-    [moreButton setTitle:@"Еще посты" forState:UIControlStateNormal];
-    [moreButton addTarget:self action:@selector(loadMorePostsUp) forControlEvents:UIControlEventTouchUpInside];
+    //вынести куда-нибудь отсюда потом
+    UIColor *moreButtonColor = [[UIColor alloc]initWithRed:0.9 green:0.9 blue:0.9 alpha:1];
+    self.moreButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    self.moreButton.frame = CGRectMake(0, 0, self.tableView.frame.size.width, 30);
+    self.moreButton.backgroundColor = moreButtonColor;
+    self.moreButton.titleLabel.font = [UIFont systemFontOfSize:12];
+    self.moreButton.tintColor = [UIColor grayColor];
+    
+    [self.moreButton addTarget:self action:@selector(loadMorePostsUp) forControlEvents:UIControlEventTouchUpInside];
     
     self.refreshButton = [UIButton buttonWithType:UIButtonTypeSystem];
     self.refreshButton.frame = CGRectMake(0, 0, 320, 44);
@@ -39,7 +44,7 @@
     [self.refreshButton setTitle:@"Загрузка..." forState:UIControlStateDisabled];
     [self.refreshButton addTarget:self action:@selector(loadData) forControlEvents:UIControlEventTouchUpInside];
     
-    self.tableView.tableHeaderView = moreButton;
+    self.tableView.tableHeaderView = self.moreButton;
     self.tableView.tableFooterView = self.refreshButton;
     
     self.tableView.tableHeaderView.hidden = YES;
@@ -112,12 +117,23 @@
 }
 
 - (void)updateEnded {
-    [self.tableView reloadData];
-    self.refreshButton.enabled = YES;
-    self.tableView.tableHeaderView.hidden = NO;
-    
+    if (self.tableView) {
+        [self.tableView reloadData];
+        self.refreshButton.enabled = YES;
+        self.tableView.tableHeaderView.hidden = NO;
+        self.isLoaded = YES;
+        [self updateHeader];
+    }
+}
+
+- (void)updateHeader {
     if (self.thread.posts.count == self.currentThread.posts.count) {
         self.tableView.tableHeaderView = nil;
+    } else {
+        NSUInteger postCount = self.thread.posts.count - self.currentThread.posts.count;
+        Declension *postDeclension = [Declension stringWithPostCount:postCount];
+        NSString *postString = [NSString stringWithFormat:@"Еще %@", postDeclension.output];
+        [self.moreButton setTitle:postString forState:UIControlStateNormal];
     }
 }
 
@@ -397,21 +413,30 @@
 
 #pragma mark - Loading and refreshing
 
+//десять часов возни в попытках нормально обновлять таблицу во время скролла а-ля Вконтакте не дали результа. Без глюков все обновляется только тогда, когда стоит на месте, во всяком случае вверх
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    if (self.tableView.contentOffset.y < 3000 && self.isLoaded == YES && self.thread.posts.count != self.currentThread.posts.count) {
+        [self loadMorePostsUp];
+    }
+}
+
 - (void)loadMorePostsUp {
 
     [self.currentThread insertMorePostsFrom:self.thread];
-
+    
     CGPoint newContentOffset = self.tableView.contentOffset;
     [self.tableView reloadData];
-    
+    [self updateHeader];
+
     for (NSIndexPath *indexPath in self.currentThread.updatedIndexes)
         newContentOffset.y += [self.tableView.delegate tableView:self.tableView heightForRowAtIndexPath:indexPath];
     
     if (self.thread.posts.count == self.currentThread.posts.count) {
-        self.tableView.tableHeaderView = nil;
-        newContentOffset.y -= 44;
+        newContentOffset.y -= 30;
     }
     
     [self.tableView setContentOffset:newContentOffset];
 }
+
 @end

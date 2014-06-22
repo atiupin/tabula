@@ -10,6 +10,7 @@
 		848D598C1951714D00773BCF /* BoardsList.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 848D598A1951714C00773BCF /* BoardsList.xcdatamodeld */; };
 		848D598F195171C800773BCF /* Board.m in Sources */ = {isa = PBXBuildFile; fileRef = 848D598E195171C800773BCF /* Board.m */; };
 		97183A7B192AB607003F429C /* GetRequestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97183A7A192AB607003F429C /* GetRequestViewController.m */; };
+		974B602019566FA800592B1D /* Declension.m in Sources */ = {isa = PBXBuildFile; fileRef = 974B601F19566FA800592B1D /* Declension.m */; };
 		977C08BE194A72C400F8F095 /* ThreadTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 977C08BD194A72C400F8F095 /* ThreadTableView.m */; };
 		977C08C1194A90B300F8F095 /* FooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 977C08C0194A90B300F8F095 /* FooterView.m */; };
 		977C08C319512CDC00F8F095 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 977C08C219512CDC00F8F095 /* README.md */; };
@@ -62,6 +63,8 @@
 		848D598E195171C800773BCF /* Board.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Board.m; sourceTree = "<group>"; };
 		97183A79192AB607003F429C /* GetRequestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetRequestViewController.h; sourceTree = "<group>"; };
 		97183A7A192AB607003F429C /* GetRequestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetRequestViewController.m; sourceTree = "<group>"; };
+		974B601E19566FA800592B1D /* Declension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Declension.h; sourceTree = "<group>"; };
+		974B601F19566FA800592B1D /* Declension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Declension.m; sourceTree = "<group>"; };
 		977C08BC194A72C400F8F095 /* ThreadTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadTableView.h; sourceTree = "<group>"; };
 		977C08BD194A72C400F8F095 /* ThreadTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadTableView.m; sourceTree = "<group>"; };
 		977C08BF194A90B300F8F095 /* FooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FooterView.h; sourceTree = "<group>"; };
@@ -155,6 +158,8 @@
 				848D598A1951714C00773BCF /* BoardsList.xcdatamodeld */,
 				848D598D195171C800773BCF /* Board.h */,
 				848D598E195171C800773BCF /* Board.m */,
+				974B601E19566FA800592B1D /* Declension.h */,
+				974B601F19566FA800592B1D /* Declension.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -429,6 +434,7 @@
 				97A26CD91947811300D632C5 /* Test.m in Sources */,
 				97A26CD319476CDC00D632C5 /* CaptchaFixController.m in Sources */,
 				97A26CC11941486600D632C5 /* UrlNinja.m in Sources */,
+				974B602019566FA800592B1D /* Declension.m in Sources */,
 				977C08C1194A90B300F8F095 /* FooterView.m in Sources */,
 				97C3D526191BD46B008921B5 /* ThreadViewController.m in Sources */,
 				97183A7B192AB607003F429C /* GetRequestViewController.m in Sources */,
@@ -502,7 +508,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -520,7 +526,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "D7216922-358A-4FB4-8136-2F54032B44E0";
+				PROVISIONING_PROFILE = "453EF8B5-1017-465E-B1FB-F37D7B957D76";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -541,7 +547,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -552,7 +558,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
-				PROVISIONING_PROFILE = "D7216922-358A-4FB4-8136-2F54032B44E0";
+				PROVISIONING_PROFILE = "453EF8B5-1017-465E-B1FB-F37D7B957D76";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -577,7 +583,7 @@
 				INFOPLIST_FILE = "m2ch/Tabula-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = Tabula;
-				PROVISIONING_PROFILE = "D7216922-358A-4FB4-8136-2F54032B44E0";
+				PROVISIONING_PROFILE = "453EF8B5-1017-465E-B1FB-F37D7B957D76";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -602,7 +608,7 @@
 				INFOPLIST_FILE = "m2ch/Tabula-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = Tabula;
-				PROVISIONING_PROFILE = "D7216922-358A-4FB4-8136-2F54032B44E0";
+				PROVISIONING_PROFILE = "453EF8B5-1017-465E-B1FB-F37D7B957D76";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
