@@ -15,4 +15,4 @@ xcuserdata
 DerivedData
 *.hmap
 *.ipa
-*.xcuserstate
+*.xcuserstate.DS_Store
