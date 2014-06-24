@@ -12,6 +12,7 @@ static NSInteger postsOnPage = 50;
 
 @implementation Thread
 
+//создает тред из мастер-треда
 - (id)initThreadWithThread:(Thread *)thread andPosition:(NSIndexPath *)index {
     self.posts = [NSMutableArray array];
     NSInteger i = 0;
@@ -63,6 +64,7 @@ static NSInteger postsOnPage = 50;
     return [[self alloc]initThreadWithThread:thread andPosition:index];
 };
 
+//догружает посты из мастер-треда сверху
 - (Thread *)insertMoreTopPostsFrom:(Thread *)thread {
     
     NSInteger i = 0;
@@ -84,6 +86,31 @@ static NSInteger postsOnPage = 50;
         [self.updatedIndexes addObject:index];
     }
     self.postsTopLeft -= i;
+    return self;
+};
+
+//догружает посты из мастер-треда снизу
+- (Thread *)insertMoreBottomPostsFrom:(Thread *)thread {
+    
+    NSInteger i = 0;
+    NSInteger spc = self.posts.count;
+    
+    if (self.postsBottomLeft > postsOnPage) {
+        i = postsOnPage;
+    }
+    else {
+        i = self.postsBottomLeft;
+    }
+    
+    self.updatedIndexes = [NSMutableArray array];
+    
+    for (int k = 0; k < i; k++) {
+        [self.posts insertObject:thread.posts[self.postsTopLeft+spc+k] atIndex:spc+k];
+        [self.linksReference insertObject:thread.linksReference[self.postsTopLeft+spc+k] atIndex:spc+k];
+        NSIndexPath *index = [NSIndexPath indexPathForItem:spc+k inSection:0];
+        [self.updatedIndexes addObject:index];
+    }
+    self.postsBottomLeft -= i;
     return self;
 };
 

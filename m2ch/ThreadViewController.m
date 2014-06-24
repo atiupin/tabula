@@ -19,7 +19,6 @@
 
 @implementation ThreadViewController
 
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -36,96 +35,121 @@
     self.moreButton.titleLabel.font = [UIFont systemFontOfSize:12];
     self.moreButton.tintColor = [UIColor grayColor];
     
-    [self.moreButton addTarget:self action:@selector(loadMorePostsUp) forControlEvents:UIControlEventTouchUpInside];
+    [self.moreButton addTarget:self action:@selector(loadMorePostsTop) forControlEvents:UIControlEventTouchUpInside];
     
     self.refreshButton = [UIButton buttonWithType:UIButtonTypeSystem];
     self.refreshButton.frame = CGRectMake(0, 0, 320, 44);
     [self.refreshButton setTitle:@"Обновить тред" forState:UIControlStateNormal];
     [self.refreshButton setTitle:@"Загрузка..." forState:UIControlStateDisabled];
-    [self.refreshButton addTarget:self action:@selector(loadData) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.refreshButton addTarget:self action:@selector(loadUpdatedData) forControlEvents:UIControlEventTouchUpInside];
     
     self.tableView.tableHeaderView = self.moreButton;
     self.tableView.tableFooterView = self.refreshButton;
-    
     self.tableView.tableHeaderView.hidden = YES;
+    
+    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+    self.session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
     
     [self loadData];
 }
 
 - (void)loadData {
     [self updateStarted];
-    NSString *threadStringUrl = [[[[[@"http://2ch.hk/" stringByAppendingString:@"makaba/mobile.fcgi?task=get_thread&board="]stringByAppendingString:self.boardId]stringByAppendingString:@"&thread="]stringByAppendingString:self.threadId]stringByAppendingString:@"&post=1"];
+    NSString *threadStringUrl = [NSString stringWithFormat:@"http://2ch.hk/makaba/mobile.fcgi?task=get_thread&board=%@&thread=%@&post=1", self.boardId, self.threadId];
     NSURL *threadUrl = [NSURL URLWithString:threadStringUrl];
     
-    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
-    NSURLSessionDownloadTask *task = [session downloadTaskWithURL:threadUrl];
+    NSURLSessionDownloadTask *task = [self.session downloadTaskWithURL:threadUrl completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+        [self masterThreadWithLocation:location];
+    }];
+    [task resume];
+}
+
+- (void)loadUpdatedData {
+    [self updateStarted];
+    NSString *lastNum = self.thread.linksReference[self.thread.linksReference.count-1];
+    NSString *threadStringUrl = [NSString stringWithFormat:@"http://2ch.hk/makaba/mobile.fcgi?task=get_thread&board=%@&thread=%@&num=%@", self.boardId, self.threadId, lastNum];
+    
+    NSURL *threadUrl = [NSURL URLWithString:threadStringUrl];
+    
+    NSURLSessionDownloadTask *task = [self.session downloadTaskWithURL:threadUrl completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+        [self childThreadWithLocation:location];
+    }];
     [task resume];
 }
 
 #pragma mark - URL Session Handling
 
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
-
+- (void)masterThreadWithLocation:(NSURL *)location {
     NSData *data = [NSData dataWithContentsOfURL:location];
-    
     //асинхронное задание по созданию массива
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-        NSError *dataError = nil;
-        NSArray *dataArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
         
-        self.thread = [[Thread alloc]init];
-        self.thread.posts = [NSMutableArray array];
-        self.thread.linksReference = [NSMutableArray array];
+        self.thread = [self createThreadWithData:data];
         
-        for (NSDictionary *dic in dataArray) {
-            Post *post = [Post postWithDictionary:dic andBoardId:self.boardId];
-            [self.thread.posts addObject:post];
-            [self.thread.linksReference addObject:[NSString stringWithFormat:@"%ld", (long)post.num]];
-        }
-        
-        //в текущий вид грузим только последние 50 постов
-        NSUInteger indexArray[] = {0, 251};
+        //начинаем тред с последненнего прочитанного поста, сейчас хардкод
+        NSUInteger indexArray[] = {0, 25};
         NSIndexPath *index = [NSIndexPath indexPathWithIndexes:indexArray length:2];
         self.currentThread = [Thread currentThreadWithThread:self.thread andPosition:index];
         
         dispatch_async(dispatch_get_main_queue(), ^(void){
-            [self performSelectorOnMainThread:@selector(updateEnded) withObject:nil waitUntilDone:YES];
+            [self performSelectorOnMainThread:@selector(creationEnded) withObject:nil waitUntilDone:YES];
             
             //этот код скроллинга для ячейки фачит отображение таблицы, если там мало постов
             //должно вызываться только в первый раз
-            if (self.postId) {
-                NSIndexPath *index = [NSIndexPath indexPathForRow:[self.thread.linksReference indexOfObject:self.postId] inSection:0];
-                [self scrollToRowAnimated:index isAnimated:NO];
-            } else {
-                if (self.tableView.contentSize.height > self.tableView.frame.size.height) {
+//            if (self.postId) {
+//                NSIndexPath *index = [NSIndexPath indexPathForRow:[self.thread.linksReference indexOfObject:self.postId] inSection:0];
+//                [self scrollToRowAnimated:index isAnimated:NO];
+//            } else {
+//                if (self.tableView.contentSize.height > self.tableView.frame.size.height) {
 //                    CGPoint offset = CGPointMake(0, self.tableView.contentSize.height - self.tableView.frame.size.height);
 //                    [self.tableView setContentOffset:offset animated:NO];
-                }
-            }
+//                }
+//            }
         });
-    });   
+    });
 }
 
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes {
+- (void)childThreadWithLocation:(NSURL *)location {
+    NSData *data = [NSData dataWithContentsOfURL:location];
     
-}
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+        
+        Thread *childThread = [self createThreadWithData:data];
+        
+        [childThread.posts removeObjectAtIndex:0];
+        [childThread.linksReference removeObjectAtIndex:0];
+        
+        [self.thread.posts addObjectsFromArray:childThread.posts];
+        [self.thread.linksReference addObjectsFromArray:childThread.linksReference];
+        
+        self.currentThread.postsBottomLeft += childThread.posts.count;
+        
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            [self performSelectorOnMainThread:@selector(updateEnded) withObject:nil waitUntilDone:YES];
+        });
+    });
 
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
 }
 
 - (void)updateStarted {
     self.refreshButton.enabled = NO;
+    self.isLoaded = NO;
+}
+
+- (void)creationEnded {
+    //обновление таблицы бросает исключения автолейаута, если нажать на назад пока оно выполняется, но программу это не крашит
+    [self.tableView reloadData];
+    self.refreshButton.enabled = YES;
+    self.tableView.tableHeaderView.hidden = NO;
+    self.isLoaded = YES;
+    [self updateHeader];
 }
 
 - (void)updateEnded {
-    if (self.tableView) {
-        [self.tableView reloadData];
-        self.refreshButton.enabled = YES;
-        self.tableView.tableHeaderView.hidden = NO;
-        self.isLoaded = YES;
-        [self updateHeader];
-    }
+    [self loadMorePostsBottom];
+    self.refreshButton.enabled = YES;
+    self.isLoaded = YES;
 }
 
 - (void)updateHeader {
@@ -137,6 +161,38 @@
         NSString *postString = [NSString stringWithFormat:@"Еще %@", postDeclension.output];
         [self.moreButton setTitle:postString forState:UIControlStateNormal];
     }
+}
+
+//чтобы компилятор не ругался
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location{
+    
+}
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes {
+    
+}
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
+}
+
+#pragma mark - Tread creation and update
+
+- (Thread *)createThreadWithData:(NSData *)data {
+    
+    NSError *dataError = nil;
+    NSArray *dataArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
+    
+    Thread *thread = [[Thread alloc]init];
+    thread.posts = [NSMutableArray array];
+    thread.linksReference = [NSMutableArray array];
+    
+    for (NSDictionary *dic in dataArray) {
+        Post *post = [Post postWithDictionary:dic andBoardId:self.boardId];
+        [thread.posts addObject:post];
+        [thread.linksReference addObject:[NSString stringWithFormat:@"%ld", (long)post.num]];
+    }
+    return thread;
 }
 
 #pragma mark - Table view data source
@@ -245,7 +301,7 @@
 }
 
 - (void)postPosted {
-    [self loadData];
+    [self loadUpdatedData];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -416,14 +472,22 @@
 #pragma mark - Loading and refreshing
 
 //десять часов возни в попытках нормально обновлять таблицу во время скролла а-ля Вконтакте не дали результа. Без глюков все обновляется только тогда, когда стоит на месте, во всяком случае вверх
+//не очень понятно почему это происходит, то ли из-за работы скролл контроллера, то ли из того, что вычисление высот ячеек занимает время даже с кешированием
+//в дальнейшем нужно попробовать вычислять их в бекграунде
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     if (self.tableView.contentOffset.y < 3000 && self.isLoaded == YES && self.currentThread.postsTopLeft !=0) {
-        [self loadMorePostsUp];
+        [self loadMorePostsTop];
     }
 }
 
-- (void)loadMorePostsUp {
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if ((self.tableView.contentSize.height - self.tableView.contentOffset.y) < 3000 && self.isLoaded == YES && self.currentThread.postsBottomLeft !=0) {
+        [self loadMorePostsBottom];
+    }
+}
+
+- (void)loadMorePostsTop {
 
     [self.currentThread insertMoreTopPostsFrom:self.thread];
     
@@ -439,6 +503,11 @@
     }
     
     [self.tableView setContentOffset:newContentOffset];
+}
+
+- (void)loadMorePostsBottom {
+    [self.currentThread insertMoreBottomPostsFrom:self.thread];
+    [self.tableView reloadData];
 }
 
 @end

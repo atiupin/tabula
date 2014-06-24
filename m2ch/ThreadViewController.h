@@ -15,6 +15,8 @@
 
 @interface ThreadViewController : UITableViewController <TTTAttributedLabelDelegate, UIActionSheetDelegate, NSURLSessionDelegate, NSURLSessionDownloadDelegate, UIGestureRecognizerDelegate, PostViewControllerDelegate>
 
+@property (nonatomic, strong) NSURLSession *session;
+
 @property (nonatomic, strong) NSString *boardId;
 @property (nonatomic, strong) NSString *threadId;
 @property (nonatomic, strong) NSString *postId;
