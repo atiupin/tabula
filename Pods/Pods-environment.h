@@ -30,15 +30,15 @@
 #define COCOAPODS_VERSION_MINOR_MagicalRecord_Core 2
 #define COCOAPODS_VERSION_PATCH_MagicalRecord_Core 0
 
+// PureLayout
+#define COCOAPODS_POD_AVAILABLE_PureLayout
+#define COCOAPODS_VERSION_MAJOR_PureLayout 1
+#define COCOAPODS_VERSION_MINOR_PureLayout 0
+#define COCOAPODS_VERSION_PATCH_PureLayout 1
+
 // TTTAttributedLabel
 #define COCOAPODS_POD_AVAILABLE_TTTAttributedLabel
 #define COCOAPODS_VERSION_MAJOR_TTTAttributedLabel 1
 #define COCOAPODS_VERSION_MINOR_TTTAttributedLabel 10
 #define COCOAPODS_VERSION_PATCH_TTTAttributedLabel 1
-
-// UIView+AutoLayout
-#define COCOAPODS_POD_AVAILABLE_UIView_AutoLayout
-#define COCOAPODS_VERSION_MAJOR_UIView_AutoLayout 2
-#define COCOAPODS_VERSION_MINOR_UIView_AutoLayout 0
-#define COCOAPODS_VERSION_PATCH_UIView_AutoLayout 0
 

@@ -1,5 +1,5 @@
 pod 'TTTAttributedLabel'
-pod 'UIView+AutoLayout'
+pod 'PureLayout'
 pod 'JTSImageViewController'
 pod 'AsyncImageView'
 pod 'MagicalRecord'

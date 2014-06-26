@@ -14,7 +14,7 @@
     #import <UIKit/UIKit.h>
     #import <Foundation/Foundation.h>
     #import <TTTAttributedLabel/TTTAttributedLabel.h>
-    #import <UIView+AutoLayout/UIView+AutoLayout.h>
+    #import <PureLayout.h>
     #import <AsyncImageView/AsyncImageView.h>
     #import <MagicalRecord/CoreData+MagicalRecord.h>
 #endif
