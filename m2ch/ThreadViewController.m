@@ -58,7 +58,6 @@
     [self updateStarted];
     NSString *threadStringUrl = [NSString stringWithFormat:@"http://2ch.hk/makaba/mobile.fcgi?task=get_thread&board=%@&thread=%@&post=1", self.boardId, self.threadId];
     NSURL *threadUrl = [NSURL URLWithString:threadStringUrl];
-    
     NSURLSessionDownloadTask *task = [self.session downloadTaskWithURL:threadUrl completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
         [self masterThreadWithLocation:location];
     }];
@@ -69,6 +68,8 @@
     [self updateStarted];
     NSString *lastNum = self.thread.linksReference[self.thread.linksReference.count-1];
     NSString *threadStringUrl = [NSString stringWithFormat:@"http://2ch.hk/makaba/mobile.fcgi?task=get_thread&board=%@&thread=%@&num=%@", self.boardId, self.threadId, lastNum];
+    
+    threadStringUrl = @"http://2ch.hk/makaba/mobile.fcgi?task=get_thread&board=de&thread=32239&num=99999";
     
     NSURL *threadUrl = [NSURL URLWithString:threadStringUrl];
     
@@ -87,25 +88,27 @@
         
         self.thread = [self createThreadWithData:data];
         
-        //начинаем тред с последненнего прочитанного поста, сейчас хардкод
-        NSUInteger indexArray[] = {0, 25};
-        NSIndexPath *index = [NSIndexPath indexPathWithIndexes:indexArray length:2];
-        self.currentThread = [Thread currentThreadWithThread:self.thread andPosition:index];
+        //это из базы должно подгружаться
+        self.thread.startingPost = @"33494";
+        
+        //начинаем тред с последненнего прочитанного поста
+        if (self.thread.startingPost) {
+            NSUInteger postNum = [self.thread.linksReference indexOfObject:self.thread.startingPost];
+            if (postNum == NSNotFound) {
+                postNum = 0;
+            }
+            NSUInteger indexArray[] = {0, postNum};
+            self.thread.startingRow = [NSIndexPath indexPathWithIndexes:indexArray length:2];
+            NSLog(@"%lu", postNum);
+        }
+        
+        self.currentThread = [Thread currentThreadWithThread:self.thread andPosition:self.thread.startingRow];
         
         dispatch_async(dispatch_get_main_queue(), ^(void){
             [self performSelectorOnMainThread:@selector(creationEnded) withObject:nil waitUntilDone:YES];
-            
-            //этот код скроллинга для ячейки фачит отображение таблицы, если там мало постов
-            //должно вызываться только в первый раз
-//            if (self.postId) {
-//                NSIndexPath *index = [NSIndexPath indexPathForRow:[self.thread.linksReference indexOfObject:self.postId] inSection:0];
-//                [self scrollToRowAnimated:index isAnimated:NO];
-//            } else {
-//                if (self.tableView.contentSize.height > self.tableView.frame.size.height) {
-//                    CGPoint offset = CGPointMake(0, self.tableView.contentSize.height - self.tableView.frame.size.height);
-//                    [self.tableView setContentOffset:offset animated:NO];
-//                }
-//            }
+            if ([self.currentThread.startingRow indexAtPosition:1] != 0) {
+                [self scrollToRowAnimated:self.currentThread.startingRow isAnimated:NO];
+            }
         });
     });
 }
@@ -117,13 +120,15 @@
         
         Thread *childThread = [self createThreadWithData:data];
         
-        [childThread.posts removeObjectAtIndex:0];
-        [childThread.linksReference removeObjectAtIndex:0];
-        
-        [self.thread.posts addObjectsFromArray:childThread.posts];
-        [self.thread.linksReference addObjectsFromArray:childThread.linksReference];
-        
-        self.currentThread.postsBottomLeft += childThread.posts.count;
+        if (childThread.posts.count != 0) {
+            [childThread.posts removeObjectAtIndex:0];
+            [childThread.linksReference removeObjectAtIndex:0];
+            
+            [self.thread.posts addObjectsFromArray:childThread.posts];
+            [self.thread.linksReference addObjectsFromArray:childThread.linksReference];
+            
+            self.currentThread.postsBottomLeft += childThread.posts.count;
+        }
         
         dispatch_async(dispatch_get_main_queue(), ^(void){
             [self performSelectorOnMainThread:@selector(updateEnded) withObject:nil waitUntilDone:YES];
@@ -144,12 +149,23 @@
     self.tableView.tableHeaderView.hidden = NO;
     self.isLoaded = YES;
     [self updateHeader];
+    [self updateLastPost];
 }
 
 - (void)updateEnded {
     [self loadMorePostsBottom];
     self.refreshButton.enabled = YES;
     self.isLoaded = YES;
+    [self updateLastPost];
+}
+
+- (void)updateLastPost {
+    //запись последнего поста в БД
+    NSString *lastPost = self.thread.linksReference[self.thread.linksReference.count-1];
+    NSString *boardId = self.boardId;
+    NSString *threadId = self.threadId;
+    //сохранить все это в таблицу
+    
 }
 
 - (void)updateHeader {
