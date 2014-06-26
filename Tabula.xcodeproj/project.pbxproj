@@ -343,7 +343,7 @@
 				ORGANIZATIONNAME = "Alexander Tewpin";
 				TargetAttributes = {
 					97C3D4EC191BC82A008921B5 = {
-						DevelopmentTeam = 6PVMJV8LPQ;
+						DevelopmentTeam = KH4MX79ZK7;
 					};
 					97C3D507191BC82A008921B5 = {
 						TestTargetID = 97C3D4EC191BC82A008921B5;
@@ -583,7 +583,7 @@
 				INFOPLIST_FILE = "m2ch/Tabula-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = Tabula;
-				PROVISIONING_PROFILE = "453EF8B5-1017-465E-B1FB-F37D7B957D76";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -595,7 +595,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Aleksandr Tyupin (6PVMJV8LPQ)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "m2ch/Tabula-Prefix.pch";
@@ -608,7 +608,7 @@
 				INFOPLIST_FILE = "m2ch/Tabula-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = Tabula;
-				PROVISIONING_PROFILE = "453EF8B5-1017-465E-B1FB-F37D7B957D76";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
