@@ -18,6 +18,13 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [[NSNotificationCenter defaultCenter]
+     addObserverForName:UIContentSizeCategoryDidChangeNotification
+     object:nil
+     queue:[NSOperationQueue mainQueue]
+     usingBlock:^(NSNotification *note) {
+         [self.tableView reloadData];
+     }];
     [self loadData];
 }
 
@@ -119,6 +126,7 @@
     [tableView dequeueReusableCellWithIdentifier:reuseIdentifier forIndexPath:indexPath];
     BoardData *board = [self.fetchedResultsController objectAtIndexPath:indexPath];
     cell.textLabel.text = board.name;
+    cell.textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     return cell;
 }
 

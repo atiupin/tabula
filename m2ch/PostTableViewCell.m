@@ -152,6 +152,7 @@
 {
     self.title.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     self.subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+    self.comment.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 }
 
 @end

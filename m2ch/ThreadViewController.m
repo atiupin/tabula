@@ -28,6 +28,14 @@
     self.navigationItem.title = [NSString stringWithFormat:@"Тред в /%@/", self.boardId];
     self.isLoaded = NO;
     
+    [[NSNotificationCenter defaultCenter]
+     addObserverForName:UIContentSizeCategoryDidChangeNotification
+     object:nil
+     queue:[NSOperationQueue mainQueue]
+     usingBlock:^(NSNotification *note) {
+         [self.tableView reloadData];
+     }];
+    
     //вынести куда-нибудь отсюда потом
     UIColor *moreButtonColor = [[UIColor alloc]initWithRed:0.9 green:0.9 blue:0.9 alpha:1];
     self.moreButton = [UIButton buttonWithType:UIButtonTypeSystem];
