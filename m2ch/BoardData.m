@@ -6,10 +6,10 @@
 //  Copyright (c) 2014 Alexander Tewpin. All rights reserved.
 //
 
-#import "Board.h"
+#import "BoardData.h"
 
 
-@implementation Board
+@implementation BoardData
 
 @dynamic name;
 

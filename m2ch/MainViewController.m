@@ -8,7 +8,7 @@
 
 #import "MainViewController.h"
 #import "BoardViewController.h"
-#import "Board.h"
+#import "BoardData.h"
 
 @interface MainViewController ()
 
@@ -16,10 +16,15 @@
 
 @implementation MainViewController
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self loadData];
+}
+
 - (NSFetchedResultsController *) fetchedResultsController {
     if (_fetchedResultsController == nil) {
         _fetchedResultsController =
-        [Board MR_fetchAllSortedBy:@"name"
+        [BoardData MR_fetchAllSortedBy:@"name"
                          ascending:YES withPredicate:nil groupBy:nil delegate:self];
         
         NSInteger count = [[[_fetchedResultsController sections]
@@ -27,9 +32,9 @@
         if (count == 0) {
             [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
                 NSArray *boardsList =
-                [NSArray arrayWithObjects:@"de", @"c", @"b", @"mlp", @"mobi", @"media", nil];
+                [NSArray arrayWithObjects:@"de", @"c", @"b", @"mlp", @"mobi", @"media", @"wrk", @"t", nil];
                 for (NSString *board in boardsList) {
-                    Board *next = [Board MR_createInContext:localContext];
+                    BoardData *next = [BoardData MR_createInContext:localContext];
                     next.name = board;
                 }
 
@@ -42,6 +47,51 @@
 -(void) controllerDidChangeContent:(NSFetchedResultsController *)controller {
     // TODO: insert NSFetchedResultsControllerDelegate boilerplate 
     [self.tableView reloadData];
+}
+
+- (void)loadData {
+    
+    NSURL *boardUrl = [NSURL URLWithString:@"http://2ch.hk/makaba/mobile.fcgi?task=get_boards"];
+    
+    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
+    NSURLSessionDownloadTask *task = [session downloadTaskWithURL:boardUrl];
+    [task resume];
+    
+}
+
+#pragma mark - Data loading and creating
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
+    
+    NSData *data = [NSData dataWithContentsOfURL:location];
+    
+    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+        
+        NSError *dataError = nil;
+        NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
+        self.boardsList = [NSMutableArray array];
+        
+        //вот здесь-то я и нашел проблему с разбором JSON
+        for (NSDictionary *section in dataDictionary) {
+            NSLog(@"%@", [section class]);
+        }
+        
+        NSLog(@"%@", self.boardsList);
+        
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+        });
+    });
+}
+
+#pragma mark - Session stuff
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes {
+    
+}
+
+- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
 }
 
 #pragma mark - Table view data source
@@ -67,7 +117,7 @@
     static NSString *reuseIdentifier = @"reuseIdentifier";
     UITableViewCell *cell =
     [tableView dequeueReusableCellWithIdentifier:reuseIdentifier forIndexPath:indexPath];
-    Board *board = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    BoardData *board = [self.fetchedResultsController objectAtIndexPath:indexPath];
     cell.textLabel.text = board.name;
     return cell;
 }
@@ -114,7 +164,7 @@
 {
     if ([segue.identifier isEqualToString:@"showBoard"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        Board *board = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        BoardData *board = [self.fetchedResultsController objectAtIndexPath:indexPath];
         [segue.destinationViewController setBoardId:board.name];
     }
 }

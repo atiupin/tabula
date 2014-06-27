@@ -12,6 +12,7 @@
 #import "UrlNinja.h"
 #import "JTSImageViewController.h"
 #import "JTSImageInfo.h"
+#import "ThreadData.h"
 
 @interface ThreadViewController ()
 
@@ -54,6 +55,8 @@
     [self loadData];
 }
 
+#pragma mark - Data loading and creating
+
 - (void)loadData {
     [self updateStarted];
     NSString *threadStringUrl = [NSString stringWithFormat:@"http://2ch.hk/makaba/mobile.fcgi?task=get_thread&board=%@&thread=%@&post=1", self.boardId, self.threadId];
@@ -79,17 +82,19 @@
     [task resume];
 }
 
-#pragma mark - URL Session Handling
-
 - (void)masterThreadWithLocation:(NSURL *)location {
     NSData *data = [NSData dataWithContentsOfURL:location];
     //асинхронное задание по созданию массива
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
         
         self.thread = [self createThreadWithData:data];
+        NSString *comboId = [NSString stringWithFormat:@"%@%@", self.boardId, self.threadId];
         
-        //это из базы должно подгружаться
-        self.thread.startingPost = @"33494";
+        NSArray *positionArray = [ThreadData MR_findByAttribute:@"name" withValue:comboId];
+        if (positionArray.count != 0) {
+            ThreadData *position = positionArray[positionArray.count - 1];
+            self.thread.startingPost = position.position;
+        }
         
         //начинаем тред с последненнего прочитанного поста
         if (self.thread.startingPost) {
@@ -99,7 +104,6 @@
             }
             NSUInteger indexArray[] = {0, postNum};
             self.thread.startingRow = [NSIndexPath indexPathWithIndexes:indexArray length:2];
-            NSLog(@"%lu", postNum);
         }
         
         self.currentThread = [Thread currentThreadWithThread:self.thread andPosition:self.thread.startingRow];
@@ -137,6 +141,25 @@
 
 }
 
+- (Thread *)createThreadWithData:(NSData *)data {
+    
+    NSError *dataError = nil;
+    NSArray *dataArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
+    
+    Thread *thread = [[Thread alloc]init];
+    thread.posts = [NSMutableArray array];
+    thread.linksReference = [NSMutableArray array];
+    
+    for (NSDictionary *dic in dataArray) {
+        Post *post = [Post postWithDictionary:dic andBoardId:self.boardId];
+        [thread.posts addObject:post];
+        [thread.linksReference addObject:[NSString stringWithFormat:@"%ld", (long)post.num]];
+    }
+    return thread;
+}
+
+#pragma mark - Data updating
+
 - (void)updateStarted {
     self.refreshButton.enabled = NO;
     self.isLoaded = NO;
@@ -161,11 +184,17 @@
 
 - (void)updateLastPost {
     //запись последнего поста в БД
-    NSString *lastPost = self.thread.linksReference[self.thread.linksReference.count-1];
-    NSString *boardId = self.boardId;
-    NSString *threadId = self.threadId;
-    //сохранить все это в таблицу
+    NSString *position = self.thread.linksReference[self.thread.linksReference.count-1];
+    NSString *comboId = [NSString stringWithFormat:@"%@%@", self.boardId, self.threadId];
+    NSNumber *count = [NSNumber numberWithInteger:self.thread.posts.count];
     
+    //ммммаксимум быдлокодерская реализация сохрания поста в базу, которая плодить объекты и засирает диск. Так и не понял как апдейтнуть конкретный объект или создать его, если его нет
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        ThreadData *localThreadData = [ThreadData MR_createInContext:localContext];
+        localThreadData.name = comboId;
+        localThreadData.position = position;
+        localThreadData.count = count;
+    }];
 }
 
 - (void)updateHeader {
@@ -179,6 +208,8 @@
     }
 }
 
+
+#pragma mark - Session stuff
 //чтобы компилятор не ругался
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location{
@@ -190,25 +221,6 @@
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
-}
-
-#pragma mark - Tread creation and update
-
-- (Thread *)createThreadWithData:(NSData *)data {
-    
-    NSError *dataError = nil;
-    NSArray *dataArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
-    
-    Thread *thread = [[Thread alloc]init];
-    thread.posts = [NSMutableArray array];
-    thread.linksReference = [NSMutableArray array];
-    
-    for (NSDictionary *dic in dataArray) {
-        Post *post = [Post postWithDictionary:dic andBoardId:self.boardId];
-        [thread.posts addObject:post];
-        [thread.linksReference addObject:[NSString stringWithFormat:@"%ld", (long)post.num]];
-    }
-    return thread;
 }
 
 #pragma mark - Table view data source

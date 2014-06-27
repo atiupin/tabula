@@ -26,6 +26,7 @@
 
 @property (nonatomic) NSInteger num;
 @property (nonatomic) NSInteger replyCount;
+@property (nonatomic) NSInteger newReplies;
 @property (nonatomic) NSInteger tnHeight;
 @property (nonatomic) NSInteger tnWidth;
 @property (nonatomic) NSInteger imgHeight;

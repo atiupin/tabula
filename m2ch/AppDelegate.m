@@ -12,7 +12,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"BoardsList"];
+    [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Data"];
     return YES;
 }
 

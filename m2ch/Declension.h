@@ -6,13 +6,16 @@
 //  Copyright (c) 2014 Alexander Tewpin. All rights reserved.
 //
 
-// мини-класс для обработки склонений слов
+// Класс для обработки склонений слов
 
 #import <Foundation/Foundation.h>
 
 @interface Declension : NSObject
 
 @property (nonatomic, strong) NSString* output;
+
+- (id) initWithAnswerCount:(NSInteger)number andNewPosts:(NSInteger)newnumber;
++ (id) stringWithAnswerCount:(NSInteger)number andNewPosts:(NSInteger)newnumber;
 
 - (id) initWithPostCount:(NSUInteger)number;
 + (id) stringWithPostCount:(NSUInteger)number;

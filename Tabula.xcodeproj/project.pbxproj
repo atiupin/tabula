@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		848D598C1951714D00773BCF /* BoardsList.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 848D598A1951714C00773BCF /* BoardsList.xcdatamodeld */; };
-		848D598F195171C800773BCF /* Board.m in Sources */ = {isa = PBXBuildFile; fileRef = 848D598E195171C800773BCF /* Board.m */; };
+		848D598C1951714D00773BCF /* Data.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 848D598A1951714C00773BCF /* Data.xcdatamodeld */; };
+		848D598F195171C800773BCF /* BoardData.m in Sources */ = {isa = PBXBuildFile; fileRef = 848D598E195171C800773BCF /* BoardData.m */; };
 		97183A7B192AB607003F429C /* GetRequestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97183A7A192AB607003F429C /* GetRequestViewController.m */; };
 		974B602019566FA800592B1D /* Declension.m in Sources */ = {isa = PBXBuildFile; fileRef = 974B601F19566FA800592B1D /* Declension.m */; };
+		9772D650195CDAEE00C2A545 /* ThreadData.m in Sources */ = {isa = PBXBuildFile; fileRef = 9772D64F195CDAEE00C2A545 /* ThreadData.m */; };
 		977C08BE194A72C400F8F095 /* ThreadTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 977C08BD194A72C400F8F095 /* ThreadTableView.m */; };
 		977C08C1194A90B300F8F095 /* FooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 977C08C0194A90B300F8F095 /* FooterView.m */; };
 		977C08C319512CDC00F8F095 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 977C08C219512CDC00F8F095 /* README.md */; };
@@ -58,13 +59,15 @@
 
 /* Begin PBXFileReference section */
 		54FCB73F9571465CB792ACB9 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
-		848D598B1951714C00773BCF /* BoardsList.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BoardsList.xcdatamodel; sourceTree = "<group>"; };
-		848D598D195171C800773BCF /* Board.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Board.h; sourceTree = "<group>"; };
-		848D598E195171C800773BCF /* Board.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Board.m; sourceTree = "<group>"; };
+		848D598B1951714C00773BCF /* Data.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Data.xcdatamodel; sourceTree = "<group>"; };
+		848D598D195171C800773BCF /* BoardData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardData.h; sourceTree = "<group>"; };
+		848D598E195171C800773BCF /* BoardData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardData.m; sourceTree = "<group>"; };
 		97183A79192AB607003F429C /* GetRequestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetRequestViewController.h; sourceTree = "<group>"; };
 		97183A7A192AB607003F429C /* GetRequestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetRequestViewController.m; sourceTree = "<group>"; };
 		974B601E19566FA800592B1D /* Declension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Declension.h; sourceTree = "<group>"; };
 		974B601F19566FA800592B1D /* Declension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Declension.m; sourceTree = "<group>"; };
+		9772D64E195CDAEE00C2A545 /* ThreadData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadData.h; sourceTree = "<group>"; };
+		9772D64F195CDAEE00C2A545 /* ThreadData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadData.m; sourceTree = "<group>"; };
 		977C08BC194A72C400F8F095 /* ThreadTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadTableView.h; sourceTree = "<group>"; };
 		977C08BD194A72C400F8F095 /* ThreadTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadTableView.m; sourceTree = "<group>"; };
 		977C08BF194A90B300F8F095 /* FooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FooterView.h; sourceTree = "<group>"; };
@@ -149,17 +152,19 @@
 		97A26CC31943565C00D632C5 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				97C3D530191BDE92008921B5 /* Post.h */,
-				97C3D531191BDE92008921B5 /* Post.m */,
 				97C3D533191BDEF1008921B5 /* Thread.h */,
 				97C3D534191BDEF1008921B5 /* Thread.m */,
+				97C3D530191BDE92008921B5 /* Post.h */,
+				97C3D531191BDE92008921B5 /* Post.m */,
 				97A26CBF1941486600D632C5 /* UrlNinja.h */,
 				97A26CC01941486600D632C5 /* UrlNinja.m */,
-				848D598A1951714C00773BCF /* BoardsList.xcdatamodeld */,
-				848D598D195171C800773BCF /* Board.h */,
-				848D598E195171C800773BCF /* Board.m */,
 				974B601E19566FA800592B1D /* Declension.h */,
 				974B601F19566FA800592B1D /* Declension.m */,
+				848D598D195171C800773BCF /* BoardData.h */,
+				848D598E195171C800773BCF /* BoardData.m */,
+				9772D64E195CDAEE00C2A545 /* ThreadData.h */,
+				9772D64F195CDAEE00C2A545 /* ThreadData.m */,
+				848D598A1951714C00773BCF /* Data.xcdatamodeld */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -343,7 +348,7 @@
 				ORGANIZATIONNAME = "Alexander Tewpin";
 				TargetAttributes = {
 					97C3D4EC191BC82A008921B5 = {
-						DevelopmentTeam = KH4MX79ZK7;
+						DevelopmentTeam = 6PVMJV8LPQ;
 					};
 					97C3D507191BC82A008921B5 = {
 						TestTargetID = 97C3D4EC191BC82A008921B5;
@@ -438,10 +443,11 @@
 				977C08C1194A90B300F8F095 /* FooterView.m in Sources */,
 				97C3D526191BD46B008921B5 /* ThreadViewController.m in Sources */,
 				97183A7B192AB607003F429C /* GetRequestViewController.m in Sources */,
-				848D598C1951714D00773BCF /* BoardsList.xcdatamodeld in Sources */,
+				848D598C1951714D00773BCF /* Data.xcdatamodeld in Sources */,
 				978A6045193771D2001B3F18 /* DebugController.m in Sources */,
+				9772D650195CDAEE00C2A545 /* ThreadData.m in Sources */,
 				97D28C0C1927FF6300C7407F /* PostTableViewCell.m in Sources */,
-				848D598F195171C800773BCF /* Board.m in Sources */,
+				848D598F195171C800773BCF /* BoardData.m in Sources */,
 				977C08BE194A72C400F8F095 /* ThreadTableView.m in Sources */,
 				97C3D529191BD485008921B5 /* BoardViewController.m in Sources */,
 				97C3D535191BDEF1008921B5 /* Thread.m in Sources */,
@@ -583,7 +589,7 @@
 				INFOPLIST_FILE = "m2ch/Tabula-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = Tabula;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "453EF8B5-1017-465E-B1FB-F37D7B957D76";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -608,7 +614,7 @@
 				INFOPLIST_FILE = "m2ch/Tabula-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = Tabula;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "453EF8B5-1017-465E-B1FB-F37D7B957D76";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -687,13 +693,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		848D598A1951714C00773BCF /* BoardsList.xcdatamodeld */ = {
+		848D598A1951714C00773BCF /* Data.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				848D598B1951714C00773BCF /* BoardsList.xcdatamodel */,
+				848D598B1951714C00773BCF /* Data.xcdatamodel */,
 			);
-			currentVersion = 848D598B1951714C00773BCF /* BoardsList.xcdatamodel */;
-			path = BoardsList.xcdatamodeld;
+			currentVersion = 848D598B1951714C00773BCF /* Data.xcdatamodel */;
+			path = Data.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

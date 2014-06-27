@@ -13,8 +13,9 @@
 #import "GetRequestViewController.h"
 #import "Declension.h"
 
-@interface ThreadViewController : UITableViewController <TTTAttributedLabelDelegate, UIActionSheetDelegate, NSURLSessionDelegate, NSURLSessionDownloadDelegate, UIGestureRecognizerDelegate, PostViewControllerDelegate>
+@interface ThreadViewController : UITableViewController <TTTAttributedLabelDelegate, UIActionSheetDelegate, NSURLSessionDelegate, NSURLSessionDownloadDelegate, UIGestureRecognizerDelegate, PostViewControllerDelegate, NSFetchedResultsControllerDelegate>
 
+@property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic, strong) NSURLSession *session;
 
 @property (nonatomic, strong) NSString *boardId;

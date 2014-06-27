@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
 
-@interface MainViewController : UITableViewController<NSFetchedResultsControllerDelegate>
+@interface MainViewController : UITableViewController<NSFetchedResultsControllerDelegate, NSURLSessionDataDelegate>
 
 @property (nonatomic, strong)NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic, strong) NSMutableArray *boardsList;
 
 @end

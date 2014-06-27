@@ -11,6 +11,8 @@
 #import "UrlNinja.h"
 #import "JTSImageViewController.h"
 #import "JTSImageInfo.h"
+#import "ThreadData.h"
+#import "Declension.h"
 
 @interface BoardViewController ()
 
@@ -24,11 +26,6 @@
     self.refreshControl = [[UIRefreshControl alloc]init];
     [self.tableView addSubview:self.refreshControl];
     [self.refreshControl addTarget:self action:@selector(refresh) forControlEvents:UIControlEventValueChanged];
-//    self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Pull to Refresh"];
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//        [self.refreshControl beginRefreshing];
-//        [self.refreshControl endRefreshing];
-//    });
     
     [self.tableView registerClass:[ThreadTableViewCell class] forCellReuseIdentifier:@"reuseIndenifier"];
     self.tableView.estimatedRowHeight = UITableViewAutomaticDimension;
@@ -48,33 +45,59 @@
     
 }
 
+#pragma mark - Data loading and creating
+
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
 
     NSData *data = [NSData dataWithContentsOfURL:location];
 
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
         
-        NSError *dataError = nil;
-        NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
-        self.threadsList = [NSMutableArray array];
-        
-        NSArray *threadsArray = [dataDictionary objectForKey:@"threads"];
-        
-        for (NSDictionary *i in threadsArray) {
-            Thread *thread = [[Thread alloc]init];
-            thread.posts = [NSMutableArray array];
-            NSDictionary *postDictionary = [[[i objectForKey:@"posts"] objectAtIndex:0] objectAtIndex:0];
-            Post *post = [Post postWithDictionary:postDictionary andBoardId:self.boardId];
-            post.threadReplies = [post makeThreadReplies:[[i objectForKey:@"reply_count"] intValue]];
-            [thread.posts addObject:post];
-            [self.threadsList addObject:thread];
-        }
+        [self loadThreadsListWithData:data];
 
         dispatch_async(dispatch_get_main_queue(), ^(void){
             [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
         });
     });
 }
+
+- (void)loadThreadsListWithData:(NSData *)data {
+    
+    NSError *dataError = nil;
+    NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
+    self.threadsList = [NSMutableArray array];
+    
+    NSArray *threadsArray = [dataDictionary objectForKey:@"threads"];
+    
+    for (NSDictionary *i in threadsArray) {
+        Thread *thread = [[Thread alloc]init];
+        thread.posts = [NSMutableArray array];
+        NSDictionary *postDictionary = [[[i objectForKey:@"posts"] objectAtIndex:0] objectAtIndex:0];
+        Post *post = [Post postWithDictionary:postDictionary andBoardId:self.boardId];
+        post.replyCount = [[i objectForKey:@"reply_count"] intValue];
+        post.replyCount += 1; //меняем ответы на посты
+        
+        NSString *comboId = [NSString stringWithFormat:@"%@%ld", self.boardId, (long)post.num];
+        
+        NSArray *dataArray = [ThreadData MR_findByAttribute:@"name" withValue:comboId];
+        if (dataArray.count != 0) {
+            ThreadData *thread = dataArray[dataArray.count-1];
+            post.newReplies = post.replyCount - [thread.count intValue];
+        } else {
+            //если в БД записи не найдены, то все посты считаются новыми
+            post.newReplies = post.replyCount;
+            post.replyCount = 0;
+        }
+        
+        Declension *declension = [Declension stringWithAnswerCount:post.replyCount andNewPosts:post.newReplies];
+        post.threadReplies = declension.output;
+        
+        [self.threadsList addObject:post];
+    }
+}
+
+
+#pragma mark - Session stuff
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes {
     
@@ -101,10 +124,9 @@
     
     [cell updateFonts];
     
-    Thread *thread = self.threadsList[indexPath.row];
-    Post *originalPost = [thread.posts objectAtIndex:0];
+    Post *post = self.threadsList[indexPath.row];
     
-    [cell setPost:originalPost];
+    [cell setPost:post];
     
     [cell setNeedsUpdateConstraints];
     [cell updateConstraintsIfNeeded];
@@ -122,10 +144,9 @@
     
     ThreadTableViewCell *cell = [[ThreadTableViewCell alloc]init];
     
-    Thread *thread = self.threadsList[indexPath.row];
-    Post *originalPost = [thread.posts objectAtIndex:0];
+    Post *post = self.threadsList[indexPath.row];
     
-    [cell setPost:originalPost];
+    [cell setPost:post];
     
     [cell setNeedsUpdateConstraints];
     [cell updateConstraintsIfNeeded];
@@ -148,6 +169,16 @@
 - (void)tableView:(UITableView *)tableView
 didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    ThreadTableViewCell *cell = (ThreadTableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+    Post *post = self.threadsList[indexPath.row];
+    
+    post.replyCount = post.replyCount + post.newReplies;
+    post.newReplies = 0;
+    Declension *declension = [Declension stringWithAnswerCount:post.replyCount andNewPosts:0];
+    post.threadReplies = declension.output;
+    
+    [cell setPost:post];
+    
     [self performSegueWithIdentifier:@"showThread" sender:self];
     [tableView deselectRowAtIndexPath:indexPath animated:YES]; //have no idea why
 }
@@ -157,11 +188,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     if ([segue.identifier isEqualToString:@"showThread"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         
-        Thread *thread = self.threadsList[indexPath.row];
-        Post *originalPost = [thread.posts objectAtIndex:0];
-        NSString *threadId = [NSString stringWithFormat:@"%ld", (long)originalPost.num];
-        NSString *subject = [NSString string];
+        Post *post = self.threadsList[indexPath.row];
         
+        NSString *threadId = [NSString stringWithFormat:@"%ld", (long)post.num];
+        NSString *subject = [NSString string];
         
         subject = [NSString stringWithFormat:@"Тред в %@", self.boardId];
         
