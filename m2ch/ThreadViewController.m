@@ -483,10 +483,10 @@
 #pragma mark - Loading and refreshing
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if ((self.tableView.contentSize.height - self.tableView.contentOffset.y) < 3000 && self.isLoaded == YES && self.currentThread.postsBottomLeft !=0 && self.isUpdating == NO) {
+    if ((self.tableView.contentSize.height - self.tableView.contentOffset.y) < 5000 && self.isLoaded == YES && self.currentThread.postsBottomLeft !=0 && self.isUpdating == NO) {
         [self loadMorePostsBottom];
     }
-    if (self.tableView.contentOffset.y < 3000 && self.isLoaded == YES && self.currentThread.postsTopLeft !=0 && self.isUpdating == NO) {
+    if (self.tableView.contentOffset.y < 5000 && self.isLoaded == YES && self.currentThread.postsTopLeft !=0 && self.isUpdating == NO) {
         [self loadMorePostsTop];
     }
 }
@@ -494,10 +494,24 @@
 - (void)loadMorePostsTop {
     self.isUpdating = YES;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-        [self.currentThread insertMoreTopPostsFrom:self.thread];
+        
+        NSInteger i = 0;
         CGPoint newContentOffset = CGPointMake(0, 0);
-        newContentOffset.y += [self cacheHeightsForUpdatedIndexes];
+        
+        if (self.currentThread.postsTopLeft > 50) {
+            i = 50;
+        }
+        else {
+            i = self.currentThread.postsTopLeft;
+        }
+        
+        for (int k = 0; k < i; k++) {
+            newContentOffset.y += [self heightForPost:[self.thread.posts objectAtIndex:self.currentThread.postsTopLeft+k-i]];
+        }
+        
+        [self.currentThread insertMoreTopPostsFrom:self.thread];
         newContentOffset.y += self.tableView.contentOffset.y;
+        
         dispatch_async(dispatch_get_main_queue(), ^(void){
             [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
             [self.tableView setContentOffset:newContentOffset];
@@ -508,12 +522,14 @@
 
 - (void)loadMorePostsBottom {
     self.isUpdating = YES;
+    self.refreshButton.enabled = NO;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
         [self.currentThread insertMoreBottomPostsFrom:self.thread];
         [self cacheHeightsForUpdatedIndexes];
         dispatch_async(dispatch_get_main_queue(), ^(void){
             [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
             [self updateLastPost];
+            self.refreshButton.enabled = YES;
             self.isUpdating = NO;
         });
     });
@@ -524,6 +540,38 @@
     for (NSIndexPath *indexPath in self.currentThread.updatedIndexes)
         height += [self.tableView.delegate tableView:self.tableView heightForRowAtIndexPath:indexPath];
     return height;
+}
+
+- (CGFloat)heightForPost:(Post *)post {
+    
+    if (self == self.navigationController.topViewController) {
+        
+        if (post.postHeight) {
+            return post.postHeight;
+        } else {
+            
+            PostTableViewCell *cell = [[PostTableViewCell alloc]init];
+            
+            [cell setTextPost:post];
+            
+            [cell setNeedsUpdateConstraints];
+            [cell updateConstraintsIfNeeded];
+            
+            cell.bounds = CGRectMake(0.0f, 0.0f, CGRectGetWidth(self.tableView.bounds), CGRectGetHeight(cell.bounds));
+            
+            [cell setNeedsLayout];
+            [cell layoutIfNeeded];
+            
+            CGFloat height = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
+            
+            height += 1;
+            post.postHeight = height;
+            
+            return height;
+        }
+    }
+    
+    return 0;
 }
 
 @end

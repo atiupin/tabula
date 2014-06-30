@@ -85,13 +85,16 @@ static NSInteger postsOnPage = 50;
     }
     
     self.updatedIndexes = [NSMutableArray array];
+    NSMutableArray *toInsert = [NSMutableArray array];
     
     for (int k = 0; k < i; k++) {
-        [self.posts insertObject:thread.posts[thread.posts.count-spc-self.postsBottomLeft-i+k] atIndex:k];
+        [toInsert insertObject:thread.posts[thread.posts.count-spc-self.postsBottomLeft-i+k] atIndex:k];
         [self.linksReference insertObject:thread.linksReference[thread.posts.count-spc-self.postsBottomLeft-i+k] atIndex:k];
         NSIndexPath *index = [NSIndexPath indexPathForItem:k inSection:0];
         [self.updatedIndexes addObject:index];
     }
+    [toInsert addObjectsFromArray:self.posts];
+    self.posts = toInsert;
     self.postsTopLeft -= i;
     return self;
 };
@@ -110,13 +113,16 @@ static NSInteger postsOnPage = 50;
     }
     
     self.updatedIndexes = [NSMutableArray array];
+    NSMutableArray *toInsert = [NSMutableArray array];
     
     for (int k = 0; k < i; k++) {
-        [self.posts insertObject:thread.posts[self.postsTopLeft+spc+k] atIndex:spc+k];
+        [toInsert insertObject:thread.posts[self.postsTopLeft+spc+k] atIndex:k];
         [self.linksReference insertObject:thread.linksReference[self.postsTopLeft+spc+k] atIndex:spc+k];
         NSIndexPath *index = [NSIndexPath indexPathForItem:spc+k inSection:0];
         [self.updatedIndexes addObject:index];
     }
+    
+    [self.posts addObjectsFromArray:toInsert];
     self.postsBottomLeft -= i;
     return self;
 };
