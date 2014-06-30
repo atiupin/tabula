@@ -371,7 +371,7 @@
             //проскроллить страницу
             if ([urlNinja.boardId isEqualToString:self.boardId] && [urlNinja.threadId isEqualToString:self.threadId]) {
                 NSIndexPath *index = [NSIndexPath indexPathForRow:[self.thread.linksReference indexOfObject:urlNinja.postId] inSection:0];
-                [self scrollToRowAnimated:index isAnimated:YES];
+                [self.tableView scrollToRowAtIndexPath:index atScrollPosition:UITableViewScrollPositionTop animated:YES];
                 }
                 //открыть тред и проскроллить страницу
                 else {
