@@ -33,6 +33,4 @@
 @property (nonatomic) BOOL isLoaded;
 @property (nonatomic) BOOL isUpdating;
 
-- (void)scrollToRowAnimated: (NSIndexPath *)index isAnimated:(BOOL)animated;
-
 @end
