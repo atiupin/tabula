@@ -12,7 +12,6 @@
 		97183A7B192AB607003F429C /* GetRequestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97183A7A192AB607003F429C /* GetRequestViewController.m */; };
 		974B602019566FA800592B1D /* Declension.m in Sources */ = {isa = PBXBuildFile; fileRef = 974B601F19566FA800592B1D /* Declension.m */; };
 		9772D650195CDAEE00C2A545 /* ThreadData.m in Sources */ = {isa = PBXBuildFile; fileRef = 9772D64F195CDAEE00C2A545 /* ThreadData.m */; };
-		977C08BE194A72C400F8F095 /* ThreadTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 977C08BD194A72C400F8F095 /* ThreadTableView.m */; };
 		977C08C1194A90B300F8F095 /* FooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 977C08C0194A90B300F8F095 /* FooterView.m */; };
 		977C08C319512CDC00F8F095 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 977C08C219512CDC00F8F095 /* README.md */; };
 		978A6045193771D2001B3F18 /* DebugController.m in Sources */ = {isa = PBXBuildFile; fileRef = 978A6044193771D2001B3F18 /* DebugController.m */; };
@@ -68,8 +67,6 @@
 		974B601F19566FA800592B1D /* Declension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Declension.m; sourceTree = "<group>"; };
 		9772D64E195CDAEE00C2A545 /* ThreadData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadData.h; sourceTree = "<group>"; };
 		9772D64F195CDAEE00C2A545 /* ThreadData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadData.m; sourceTree = "<group>"; };
-		977C08BC194A72C400F8F095 /* ThreadTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadTableView.h; sourceTree = "<group>"; };
-		977C08BD194A72C400F8F095 /* ThreadTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadTableView.m; sourceTree = "<group>"; };
 		977C08BF194A90B300F8F095 /* FooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FooterView.h; sourceTree = "<group>"; };
 		977C08C0194A90B300F8F095 /* FooterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FooterView.m; sourceTree = "<group>"; };
 		977C08C219512CDC00F8F095 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
@@ -190,8 +187,6 @@
 		97A26CC51943569000D632C5 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				977C08BC194A72C400F8F095 /* ThreadTableView.h */,
-				977C08BD194A72C400F8F095 /* ThreadTableView.m */,
 				97A26CC81946741600D632C5 /* TapImageView.h */,
 				97A26CC91946741600D632C5 /* TapImageView.m */,
 				97C3D538191E7FB6008921B5 /* ThreadTableViewCell.h */,
@@ -448,7 +443,6 @@
 				9772D650195CDAEE00C2A545 /* ThreadData.m in Sources */,
 				97D28C0C1927FF6300C7407F /* PostTableViewCell.m in Sources */,
 				848D598F195171C800773BCF /* BoardData.m in Sources */,
-				977C08BE194A72C400F8F095 /* ThreadTableView.m in Sources */,
 				97C3D529191BD485008921B5 /* BoardViewController.m in Sources */,
 				97C3D535191BDEF1008921B5 /* Thread.m in Sources */,
 				97C3D53A191E7FB6008921B5 /* ThreadTableViewCell.m in Sources */,

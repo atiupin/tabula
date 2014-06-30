@@ -28,9 +28,10 @@
 @property (nonatomic, strong) NSString *quote;
 
 @property (nonatomic, strong) UIButton *refreshButton;
-@property (nonatomic, strong) UIButton *moreButton;
+@property (nonatomic, strong) UIActivityIndicatorView *spinner;
 
 @property (nonatomic) BOOL isLoaded;
+@property (nonatomic) BOOL isUpdating;
 
 - (void)scrollToRowAnimated: (NSIndexPath *)index isAnimated:(BOOL)animated;
 

@@ -65,6 +65,12 @@
     return self;
 }
 
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    //возможно поможет от негрузящихся картинок
+    self.postImage.bigImageUrl = nil;
+}
+
 - (void)updateConstraints
 {
     [super updateConstraints];
@@ -140,6 +146,17 @@
     self.postImage.tnWidth = post.tnWidth;
     self.postImage.imageURL = post.thumbnailUrl;
     self.postImage.bigImageUrl = post.imageUrl;
+    return self;
+}
+
+- (id) setTextPost:(Post *)post {
+    self.title.text = [NSString stringWithFormat:@"%ld", (long)post.num];
+    self.subtitle.text = post.subtitle;
+    self.comment.text = post.body;
+    self.num = post.num;
+    
+    self.postImage.tnHeight = 44;
+    self.postImage.tnWidth = 44;
     return self;
 }
 

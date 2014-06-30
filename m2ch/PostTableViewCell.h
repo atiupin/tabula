@@ -21,6 +21,7 @@
 @property (strong, nonatomic) TapImageView *postImage;
 
 - (id) setPost:(Post *)post;
+- (id) setTextPost:(Post *)post;
 - (void)updateFonts;
 
 @end

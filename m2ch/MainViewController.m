@@ -80,11 +80,11 @@
         self.boardsList = [NSMutableArray array];
         
         //вот здесь-то я и нашел проблему с разбором JSON
-        for (NSDictionary *section in dataDictionary) {
-            NSLog(@"%@", [section class]);
-        }
-        
-        NSLog(@"%@", self.boardsList);
+//        for (NSDictionary *section in dataDictionary) {
+//            NSLog(@"%@", [section class]);
+//        }
+//        
+//        NSLog(@"%@", self.boardsList);
         
         dispatch_async(dispatch_get_main_queue(), ^(void){
             [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];

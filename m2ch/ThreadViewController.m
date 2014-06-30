@@ -36,26 +36,21 @@
          [self.tableView reloadData];
      }];
     
-    //вынести куда-нибудь отсюда потом
-    UIColor *moreButtonColor = [[UIColor alloc]initWithRed:0.9 green:0.9 blue:0.9 alpha:1];
-    self.moreButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    self.moreButton.frame = CGRectMake(0, 0, self.tableView.frame.size.width, 30);
-    self.moreButton.backgroundColor = moreButtonColor;
-    self.moreButton.titleLabel.font = [UIFont systemFontOfSize:12];
-    self.moreButton.tintColor = [UIColor grayColor];
-    
-    [self.moreButton addTarget:self action:@selector(loadMorePostsTop) forControlEvents:UIControlEventTouchUpInside];
-    
     self.refreshButton = [UIButton buttonWithType:UIButtonTypeSystem];
     self.refreshButton.frame = CGRectMake(0, 0, 320, 44);
     [self.refreshButton setTitle:@"Обновить тред" forState:UIControlStateNormal];
     [self.refreshButton setTitle:@"Загрузка..." forState:UIControlStateDisabled];
-    
     [self.refreshButton addTarget:self action:@selector(loadUpdatedData) forControlEvents:UIControlEventTouchUpInside];
+    self.refreshButton.hidden = YES;
     
-    self.tableView.tableHeaderView = self.moreButton;
+    self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    self.spinner.color = [UIColor grayColor];
+    self.spinner.center = CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height/2-64);
+    self.spinner.hidesWhenStopped = YES;
+    [self.spinner startAnimating];
+    
+    [self.view addSubview:self.spinner];
     self.tableView.tableFooterView = self.refreshButton;
-    self.tableView.tableHeaderView.hidden = YES;
     
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     self.session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
@@ -79,8 +74,6 @@
     [self updateStarted];
     NSString *lastNum = self.thread.linksReference[self.thread.linksReference.count-1];
     NSString *threadStringUrl = [NSString stringWithFormat:@"http://2ch.hk/makaba/mobile.fcgi?task=get_thread&board=%@&thread=%@&num=%@", self.boardId, self.threadId, lastNum];
-    
-    threadStringUrl = @"http://2ch.hk/makaba/mobile.fcgi?task=get_thread&board=de&thread=32239&num=99999";
     
     NSURL *threadUrl = [NSURL URLWithString:threadStringUrl];
     
@@ -109,7 +102,10 @@
             NSUInteger postNum = [self.thread.linksReference indexOfObject:self.thread.startingPost];
             if (postNum == NSNotFound) {
                 postNum = 0;
+            } else {
+                postNum += 1;
             }
+            
             NSUInteger indexArray[] = {0, postNum};
             self.thread.startingRow = [NSIndexPath indexPathWithIndexes:indexArray length:2];
         }
@@ -119,7 +115,7 @@
         dispatch_async(dispatch_get_main_queue(), ^(void){
             [self performSelectorOnMainThread:@selector(creationEnded) withObject:nil waitUntilDone:YES];
             if ([self.currentThread.startingRow indexAtPosition:1] != 0) {
-                [self scrollToRowAnimated:self.currentThread.startingRow isAnimated:NO];
+                [self.tableView scrollToRowAtIndexPath:self.currentThread.startingRow atScrollPosition:UITableViewScrollPositionTop animated:NO];
             }
         });
     });
@@ -152,7 +148,16 @@
 - (Thread *)createThreadWithData:(NSData *)data {
     
     NSError *dataError = nil;
-    NSArray *dataArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
+    NSArray *dataArray = [NSArray array];
+    
+    //может прийти nil, если двач тупит, потом нужно написать обработку
+    if (data) {
+        dataArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
+        if (dataError) {
+            NSLog(@"JSON Error: %@", dataError);
+            return nil;
+        }
+    }
     
     Thread *thread = [[Thread alloc]init];
     thread.posts = [NSMutableArray array];
@@ -177,9 +182,9 @@
     //обновление таблицы бросает исключения автолейаута, если нажать на назад пока оно выполняется, но программу это не крашит
     [self.tableView reloadData];
     self.refreshButton.enabled = YES;
-    self.tableView.tableHeaderView.hidden = NO;
+    self.refreshButton.hidden = NO;
     self.isLoaded = YES;
-    [self updateHeader];
+    [self.spinner stopAnimating];
     [self updateLastPost];
 }
 
@@ -196,7 +201,12 @@
     NSString *comboId = [NSString stringWithFormat:@"%@%@", self.boardId, self.threadId];
     NSNumber *count = [NSNumber numberWithInteger:self.thread.posts.count];
     
-    //ммммаксимум быдлокодерская реализация сохрания поста в базу, которая плодить объекты и засирает диск. Так и не понял как апдейтнуть конкретный объект или создать его, если его нет
+    //надо бы вписать этот объект как проперти, но сейчас нет времени на тестинг
+    NSArray *positionArray = [ThreadData MR_findByAttribute:@"name" withValue:comboId];
+    for (ThreadData *threadData in positionArray) {
+        [threadData MR_deleteEntity];
+    }
+    
     [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
         ThreadData *localThreadData = [ThreadData MR_createInContext:localContext];
         localThreadData.name = comboId;
@@ -204,18 +214,6 @@
         localThreadData.count = count;
     }];
 }
-
-- (void)updateHeader {
-    if (self.currentThread.postsTopLeft == 0) {
-        self.tableView.tableHeaderView = nil;
-    } else {
-        NSUInteger postCount = self.currentThread.postsTopLeft;
-        Declension *postDeclension = [Declension stringWithPostCount:postCount];
-        NSString *postString = [NSString stringWithFormat:@"Еще %@", postDeclension.output];
-        [self.moreButton setTitle:postString forState:UIControlStateNormal];
-    }
-}
-
 
 #pragma mark - Session stuff
 //чтобы компилятор не ругался
@@ -285,7 +283,7 @@
         
             PostTableViewCell *cell = [[PostTableViewCell alloc]init];
             
-            [cell setPost:post];
+            [cell setTextPost:post];
             
             [cell setNeedsUpdateConstraints];
             [cell updateConstraintsIfNeeded];
@@ -301,7 +299,7 @@
             post.postHeight = height;
             [self.currentThread.posts removeObjectAtIndex:indexPath.row];
             [self.currentThread.posts insertObject:post atIndex:indexPath.row];
-           
+            
             return height;
         }
     }
@@ -396,29 +394,6 @@
     }
 }
 
-- (void)scrollToRowAnimated: (NSIndexPath *)index isAnimated:(BOOL)animated {
-    
-    //вычисления для анимации
-    CGRect cellRect = [self.tableView rectForRowAtIndexPath:index];
-    CGRect superRect = [self.tableView convertRect:cellRect toView:[self.tableView superview]];
-    
-    [self.tableView scrollToRowAtIndexPath:index atScrollPosition:UITableViewScrollPositionTop animated:animated];
-    
-    //анимация, если пост уже на топе пользователя, 64 это магическое число обозначающее высоту скроллбара, потом надо переделать на нормальное
-    if (superRect.origin.y == 64.0) {
-        [UIView animateWithDuration:0.1 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut animations:^
-         {
-             [[self.tableView cellForRowAtIndexPath:index] setHighlighted:YES animated:YES];
-         } completion:^(BOOL finished)
-         {
-             [UIView animateWithDuration:0.1 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut animations:^
-              {
-                  [[self.tableView cellForRowAtIndexPath:index] setHighlighted:NO animated:YES];
-              } completion: NULL];
-         }];
-    }
-}
-
 #pragma mark - UIActionSheetDelegate
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -507,43 +482,48 @@
 
 #pragma mark - Loading and refreshing
 
-//десять часов возни в попытках нормально обновлять таблицу во время скролла а-ля Вконтакте не дали результа. Без глюков все обновляется только тогда, когда стоит на месте, во всяком случае вверх
-//не очень понятно почему это происходит, то ли из-за работы скролл контроллера, то ли из того, что вычисление высот ячеек занимает время даже с кешированием
-//в дальнейшем нужно попробовать вычислять их в бекграунде
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    if (self.tableView.contentOffset.y < 3000 && self.isLoaded == YES && self.currentThread.postsTopLeft !=0) {
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if ((self.tableView.contentSize.height - self.tableView.contentOffset.y) < 3000 && self.isLoaded == YES && self.currentThread.postsBottomLeft !=0 && self.isUpdating == NO) {
+        [self loadMorePostsBottom];
+    }
+    if (self.tableView.contentOffset.y < 3000 && self.isLoaded == YES && self.currentThread.postsTopLeft !=0 && self.isUpdating == NO) {
         [self loadMorePostsTop];
     }
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if ((self.tableView.contentSize.height - self.tableView.contentOffset.y) < 3000 && self.isLoaded == YES && self.currentThread.postsBottomLeft !=0) {
-        [self loadMorePostsBottom];
-    }
-}
-
 - (void)loadMorePostsTop {
-
-    [self.currentThread insertMoreTopPostsFrom:self.thread];
-    
-    CGPoint newContentOffset = self.tableView.contentOffset;
-    [self.tableView reloadData];
-    [self updateHeader];
-
-    for (NSIndexPath *indexPath in self.currentThread.updatedIndexes)
-        newContentOffset.y += [self.tableView.delegate tableView:self.tableView heightForRowAtIndexPath:indexPath];
-    
-    if (self.currentThread.postsTopLeft == 0) {
-        newContentOffset.y -= 30;
-    }
-    
-    [self.tableView setContentOffset:newContentOffset];
+    self.isUpdating = YES;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+        [self.currentThread insertMoreTopPostsFrom:self.thread];
+        CGPoint newContentOffset = CGPointMake(0, 0);
+        newContentOffset.y += [self cacheHeightsForUpdatedIndexes];
+        newContentOffset.y += self.tableView.contentOffset.y;
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+            [self.tableView setContentOffset:newContentOffset];
+            self.isUpdating = NO;
+        });
+    });
 }
 
 - (void)loadMorePostsBottom {
-    [self.currentThread insertMoreBottomPostsFrom:self.thread];
-    [self.tableView reloadData];
+    self.isUpdating = YES;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+        [self.currentThread insertMoreBottomPostsFrom:self.thread];
+        [self cacheHeightsForUpdatedIndexes];
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+            [self updateLastPost];
+            self.isUpdating = NO;
+        });
+    });
+}
+
+- (CGFloat)cacheHeightsForUpdatedIndexes {
+    CGFloat height = 0;
+    for (NSIndexPath *indexPath in self.currentThread.updatedIndexes)
+        height += [self.tableView.delegate tableView:self.tableView heightForRowAtIndexPath:indexPath];
+    return height;
 }
 
 @end

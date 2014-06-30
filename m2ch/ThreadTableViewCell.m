@@ -64,6 +64,12 @@
     return self;
 }
 
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    //возможно поможет от негрузящихся картинок
+    self.postImage.bigImageUrl = nil;
+}
+
 - (void)updateConstraints
 {
     [super updateConstraints];

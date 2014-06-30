@@ -17,5 +17,6 @@
 @property (nonatomic, strong) NSMutableArray *threadsList;
 @property (nonatomic, strong) ThreadTableViewCell *threadCell;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (nonatomic, strong) UIActivityIndicatorView *spinner;
 
 @end

@@ -29,9 +29,22 @@
      usingBlock:^(NSNotification *note) {
          [self.tableView reloadData];
      }];
+    
+    self.navigationItem.title = [NSString stringWithFormat:@"/%@/", self.boardId];
     self.refreshControl = [[UIRefreshControl alloc]init];
     [self.tableView addSubview:self.refreshControl];
     [self.refreshControl addTarget:self action:@selector(refresh) forControlEvents:UIControlEventValueChanged];
+    
+    self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    self.spinner.color = [UIColor grayColor];
+    self.spinner.center = CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height/2-64);
+    self.spinner.hidesWhenStopped = YES;
+    [self.spinner startAnimating];
+    
+    [self.view addSubview:self.spinner];
+    
+    //убирает сепараторы снизу и при загрузке
+    self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 0, 0)];
     
     [self.tableView registerClass:[ThreadTableViewCell class] forCellReuseIdentifier:@"reuseIndenifier"];
     self.tableView.estimatedRowHeight = UITableViewAutomaticDimension;
@@ -62,7 +75,7 @@
         [self loadThreadsListWithData:data];
 
         dispatch_async(dispatch_get_main_queue(), ^(void){
-            [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+            [self performSelectorOnMainThread:@selector(creationEnded) withObject:nil waitUntilDone:YES];
         });
     });
 }
@@ -102,6 +115,12 @@
     }
 }
 
+#pragma mark - Data updating
+
+- (void)creationEnded {
+    [self.tableView reloadData];
+    [self.spinner stopAnimating];
+}
 
 #pragma mark - Session stuff
 
@@ -178,8 +197,10 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     ThreadTableViewCell *cell = (ThreadTableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath];
     Post *post = self.threadsList[indexPath.row];
     
-    post.replyCount = post.replyCount + post.newReplies;
-    post.newReplies = 0;
+    if (post.replyCount == 0) {
+        post.replyCount = post.newReplies;
+    }
+    
     Declension *declension = [Declension stringWithAnswerCount:post.replyCount andNewPosts:0];
     post.threadReplies = declension.output;
     
@@ -199,7 +220,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
         NSString *threadId = [NSString stringWithFormat:@"%ld", (long)post.num];
         NSString *subject = [NSString string];
         
-        subject = [NSString stringWithFormat:@"Тред в %@", self.boardId];
+        subject = [NSString stringWithFormat:@"Тред в /%@/", self.boardId];
         
         ThreadViewController *destination = segue.destinationViewController;
         

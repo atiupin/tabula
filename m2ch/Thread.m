@@ -16,7 +16,13 @@ static NSInteger postsOnPage = 50;
 - (id)initThreadWithThread:(Thread *)thread andPosition:(NSIndexPath *)index {
     self.posts = [NSMutableArray array];
     NSInteger i = 0;
-    NSUInteger position = [index indexAtPosition:1];
+    NSUInteger position = 0;
+    
+    if ([index indexAtPosition:1] >= thread.posts.count) {
+        position = thread.posts.count - 1;
+    } else {
+        position = [index indexAtPosition:1];
+    }
     
     //пророверка больше 50 постов до конца треда или нет
     if (thread.posts.count > position + postsOnPage) {
@@ -57,6 +63,7 @@ static NSInteger postsOnPage = 50;
             [self.linksReference addObject:thread.linksReference[thread.posts.count-i+k]];
         }
     }
+    
     return self;
 };
 
