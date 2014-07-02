@@ -46,8 +46,6 @@
     
     self.currentThread = [Thread currentThreadWithThread:self.thread andReplyTo:self.replyTo andReplies:self.replies andPostId:self.postId];
     
-    NSLog(@"%lu posts", self.currentThread.posts.count);
-    
     self.topCommentRow = -1;
     self.bottomCommentRow = -1;
     self.mainPostRow = 0;
@@ -91,8 +89,6 @@
     }
 
     CGFloat footer = self.tableView.frame.size.height - contentHeight + contentOffset.y;
-    NSLog(@"%f", self.tableView.frame.size.height);
-    NSLog(@"%f", contentHeight);
     if (footer < 0) {
         footer = 0;
     }

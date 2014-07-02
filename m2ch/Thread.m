@@ -102,7 +102,7 @@ static NSInteger postsOnPage = 35;
             NSInteger index = [self.linksReference indexOfObject:replyTo];
             if (index != NSNotFound) {
                 Post *reply = self.posts[index];
-                [reply.replies addObject:[NSString stringWithFormat:@"%lu", post.num]];
+                [reply.replies addObject:[NSString stringWithFormat:@"%lu", (long)post.num]];
             }
         }
     }
