@@ -30,13 +30,12 @@
     }
     
     if (source.count > 3) {
-        NSString *threadId = source[3];
-        self.threadId = [threadId substringWithRange:NSMakeRange(0, threadId.length-5)];
+        self.threadId = source[3];
     }
     
     //проверка на валидность полей
     NSRegularExpression *boardCheck = [[NSRegularExpression alloc]initWithPattern:@"[a-z, A-Z]+" options:0 error:nil];
-    NSRegularExpression *threadCheck = [[NSRegularExpression alloc]initWithPattern:@"[0-9]+" options:0 error:nil];
+    NSRegularExpression *threadCheck = [[NSRegularExpression alloc]initWithPattern:@"[0-9]+.html" options:0 error:nil];
     NSRegularExpression *postCheck = [[NSRegularExpression alloc]initWithPattern:@"[0-9]+" options:0 error:nil];
     
     if (self.boardId) {
@@ -53,6 +52,8 @@
             self.type = externalLink;
             return self;
         }
+        //отпиливаем .html
+        self.threadId = [self.threadId substringWithRange:NSMakeRange(0, self.threadId.length-5)];
     }
     
     if (self.postId) {

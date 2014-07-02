@@ -16,6 +16,20 @@
 
 @implementation MainViewController
 
+- (NSMutableArray *)sectionList {
+    if (!_sectionList) {
+        _sectionList = [NSMutableArray array];
+    }
+    return _sectionList;
+}
+
+- (NSMutableArray *)sectionNames {
+    if (!_sectionNames) {
+        _sectionNames = [NSMutableArray array];
+    }
+    return _sectionNames;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [[NSNotificationCenter defaultCenter]
@@ -76,16 +90,33 @@
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
         
         NSError *dataError = nil;
-        NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
-        self.boardsList = [NSMutableArray array];
+        NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&dataError];
+
+        NSArray *sectionsArray = [dataDictionary allKeys];
         
-        //вот здесь-то я и нашел проблему с разбором JSON
-//        for (NSDictionary *section in dataDictionary) {
-//            NSLog(@"%@", [section class]);
-//        }
-//        
-//        NSLog(@"%@", self.boardsList);
+        for (NSString *key in sectionsArray) {
+            NSMutableArray *sectionArray = [NSMutableArray array];
+            for (NSDictionary *section in [dataDictionary objectForKey:key]) {
+                Board *board = [[Board alloc]init];
+                board.boardSection = key;
+                board.boardId = [section objectForKey:@"id"];
+                board.boardName = [section objectForKey:@"name"];
+                [sectionArray addObject:board];
+            }
+            [self.sectionList addObject:sectionArray];
+            [self.sectionNames addObject:key];
+        }
         
+        NSArray *sortingArray = @[@"Тематика", @"Творчество", @"Техника и софт", @"Игры", @"Японская культура", @"Разное", @"Взрослым", @"Пробное"];
+        
+        for (NSString *iStr in sortingArray) {
+            NSInteger i = [self.sectionNames indexOfObject:iStr];
+            [self.sectionList addObject:self.sectionList[i]];
+            [self.sectionNames addObject:self.sectionNames[i]];
+            [self.sectionList removeObjectAtIndex:i];
+            [self.sectionNames removeObjectAtIndex:i];
+        }
+
         dispatch_async(dispatch_get_main_queue(), ^(void){
             [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
         });
@@ -106,17 +137,22 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 
 {
-    return 1;
+    return self.sectionList.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSArray *sections = [[self fetchedResultsController] sections];
-    if (section < [sections count]) {
-        id<NSFetchedResultsSectionInfo> info = [sections objectAtIndex:section];
-        return info.numberOfObjects;
-    }
-    return 0;
+//    NSArray *sections = [[self fetchedResultsController] sections];
+//    if (section < [sections count]) {
+//        id<NSFetchedResultsSectionInfo> info = [sections objectAtIndex:section];
+//        return info.numberOfObjects;
+//    }
+    NSArray *sectionArray = self.sectionList[section];
+    return sectionArray.count;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    return self.sectionNames[section];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -124,9 +160,12 @@
     static NSString *reuseIdentifier = @"reuseIdentifier";
     UITableViewCell *cell =
     [tableView dequeueReusableCellWithIdentifier:reuseIdentifier forIndexPath:indexPath];
-    BoardData *board = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    cell.textLabel.text = board.name;
-    cell.textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    NSArray *sectionArray = self.sectionList[indexPath.section];
+    Board *board = sectionArray[indexPath.row];
+//    BoardData *board = [self.fetchedResultsController objectAtIndexPath:indexPath];
+    cell.textLabel.text = board.boardId;
+    cell.detailTextLabel.text = board.boardName;
+//    cell.textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     return cell;
 }
 
@@ -176,8 +215,10 @@
 {
     if ([segue.identifier isEqualToString:@"showBoard"]) {
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        BoardData *board = [self.fetchedResultsController objectAtIndexPath:indexPath];
-        [segue.destinationViewController setBoardId:board.name];
+        NSArray *sectionArray = self.sectionList[indexPath.section];
+        Board *board = sectionArray[indexPath.row];
+//        BoardData *board = [self.fetchedResultsController objectAtIndexPath:indexPath];
+        [segue.destinationViewController setBoardId:board.boardId];
     }
 }
  

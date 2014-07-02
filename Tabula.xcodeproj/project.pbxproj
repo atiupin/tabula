@@ -11,6 +11,7 @@
 		848D598F195171C800773BCF /* BoardData.m in Sources */ = {isa = PBXBuildFile; fileRef = 848D598E195171C800773BCF /* BoardData.m */; };
 		97183A7B192AB607003F429C /* GetRequestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97183A7A192AB607003F429C /* GetRequestViewController.m */; };
 		974A6105196446E800B98C5D /* CommentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 974A6104196446E800B98C5D /* CommentTableViewCell.m */; };
+		974A61081964A6AB00B98C5D /* Board.m in Sources */ = {isa = PBXBuildFile; fileRef = 974A61071964A6AB00B98C5D /* Board.m */; };
 		974B602019566FA800592B1D /* Declension.m in Sources */ = {isa = PBXBuildFile; fileRef = 974B601F19566FA800592B1D /* Declension.m */; };
 		9772D650195CDAEE00C2A545 /* ThreadData.m in Sources */ = {isa = PBXBuildFile; fileRef = 9772D64F195CDAEE00C2A545 /* ThreadData.m */; };
 		977C08C1194A90B300F8F095 /* FooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 977C08C0194A90B300F8F095 /* FooterView.m */; };
@@ -67,6 +68,8 @@
 		97183A7A192AB607003F429C /* GetRequestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetRequestViewController.m; sourceTree = "<group>"; };
 		974A6103196446E800B98C5D /* CommentTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentTableViewCell.h; sourceTree = "<group>"; };
 		974A6104196446E800B98C5D /* CommentTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentTableViewCell.m; sourceTree = "<group>"; };
+		974A61061964A6AB00B98C5D /* Board.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Board.h; sourceTree = "<group>"; };
+		974A61071964A6AB00B98C5D /* Board.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Board.m; sourceTree = "<group>"; };
 		974B601E19566FA800592B1D /* Declension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Declension.h; sourceTree = "<group>"; };
 		974B601F19566FA800592B1D /* Declension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Declension.m; sourceTree = "<group>"; };
 		9772D64E195CDAEE00C2A545 /* ThreadData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadData.h; sourceTree = "<group>"; };
@@ -155,6 +158,8 @@
 		97A26CC31943565C00D632C5 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				974A61061964A6AB00B98C5D /* Board.h */,
+				974A61071964A6AB00B98C5D /* Board.m */,
 				97C3D533191BDEF1008921B5 /* Thread.h */,
 				97C3D534191BDEF1008921B5 /* Thread.m */,
 				97C3D530191BDE92008921B5 /* Post.h */,
@@ -448,6 +453,7 @@
 				977C08C1194A90B300F8F095 /* FooterView.m in Sources */,
 				97C3D526191BD46B008921B5 /* ThreadViewController.m in Sources */,
 				97183A7B192AB607003F429C /* GetRequestViewController.m in Sources */,
+				974A61081964A6AB00B98C5D /* Board.m in Sources */,
 				848D598C1951714D00773BCF /* Data.xcdatamodeld in Sources */,
 				978A6045193771D2001B3F18 /* DebugController.m in Sources */,
 				9772D650195CDAEE00C2A545 /* ThreadData.m in Sources */,

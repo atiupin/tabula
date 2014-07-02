@@ -122,9 +122,13 @@ static NSInteger postsOnPage = 35;
         self.currentThread = [Thread currentThreadWithThread:self.thread andPosition:self.thread.startingRow];
         
         dispatch_async(dispatch_get_main_queue(), ^(void){
-            [self performSelectorOnMainThread:@selector(creationEnded) withObject:nil waitUntilDone:YES];
-            if ([self.currentThread.startingRow indexAtPosition:1] != 0) {
-                [self.tableView scrollToRowAtIndexPath:self.currentThread.startingRow atScrollPosition:UITableViewScrollPositionTop animated:NO];
+            if (self.currentThread.posts.count != 0) {
+                [self performSelectorOnMainThread:@selector(creationEnded) withObject:nil waitUntilDone:YES];
+                if ([self.currentThread.startingRow indexAtPosition:1] != 0) {
+                    [self.tableView scrollToRowAtIndexPath:self.currentThread.startingRow atScrollPosition:UITableViewScrollPositionTop animated:NO];
+                }
+            } else {
+                [self performSelectorOnMainThread:@selector(nothingHere) withObject:nil waitUntilDone:YES];
             }
         });
     });
@@ -176,6 +180,11 @@ static NSInteger postsOnPage = 35;
     self.refreshButton.enabled = YES;
     self.isLoaded = YES;
     [self updateLastPost];
+}
+
+- (void)nothingHere {
+    self.isLoaded = YES;
+    [self.spinner stopAnimating];
 }
 
 - (void)updateLastPost {

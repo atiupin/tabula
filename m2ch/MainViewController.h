@@ -8,10 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
+#import "Board.h"
 
 @interface MainViewController : UITableViewController<NSFetchedResultsControllerDelegate, NSURLSessionDataDelegate>
 
-@property (nonatomic, strong)NSFetchedResultsController *fetchedResultsController;
-@property (nonatomic, strong) NSMutableArray *boardsList;
-
+@property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic, strong) NSMutableArray *sectionList;
+@property (nonatomic, strong) NSMutableArray *sectionNames;
 @end
