@@ -9,6 +9,7 @@
 #import "ThreadViewController.h"
 #import "BoardViewController.h"
 #import "GetRequestViewController.h"
+#import "PostViewController.h"
 #import "UrlNinja.h"
 #import "JTSImageViewController.h"
 #import "JTSImageInfo.h"
@@ -19,6 +20,8 @@
 @end
 
 @implementation ThreadViewController
+
+static NSInteger postsOnPage = 35;
 
 - (void)viewDidLoad
 {
@@ -88,13 +91,19 @@
     //асинхронное задание по созданию массива
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
         
-        self.thread = [self createThreadWithData:data];
+        self.thread = [Thread threadWithData:data andBoardId:self.boardId andThreadId:self.threadId];
         NSString *comboId = [NSString stringWithFormat:@"%@%@", self.boardId, self.threadId];
         
+        //аналогично боард контроллеру ищем самую последнюю позицию
         NSArray *positionArray = [ThreadData MR_findByAttribute:@"name" withValue:comboId];
         if (positionArray.count != 0) {
-            ThreadData *position = positionArray[positionArray.count - 1];
-            self.thread.startingPost = position.position;
+            int oldCount = 0;
+            for (ThreadData *thread in positionArray) {
+                if (oldCount <= [thread.count intValue]) {
+                    oldCount = [thread.count intValue];
+                    self.thread.startingPost = thread.position;
+                }
+            }
         }
         
         //начинаем тред с последненнего прочитанного поста
@@ -126,7 +135,7 @@
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
         
-        Thread *childThread = [self createThreadWithData:data];
+        Thread *childThread = [Thread threadWithData:data andBoardId:self.boardId andThreadId:self.threadId];
         
         if (childThread.posts.count != 0) {
             [childThread.posts removeObjectAtIndex:0];
@@ -143,32 +152,6 @@
         });
     });
 
-}
-
-- (Thread *)createThreadWithData:(NSData *)data {
-    
-    NSError *dataError = nil;
-    NSArray *dataArray = [NSArray array];
-    
-    //может прийти nil, если двач тупит, потом нужно написать обработку
-    if (data) {
-        dataArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
-        if (dataError) {
-            NSLog(@"JSON Error: %@", dataError);
-            return nil;
-        }
-    }
-    
-    Thread *thread = [[Thread alloc]init];
-    thread.posts = [NSMutableArray array];
-    thread.linksReference = [NSMutableArray array];
-    
-    for (NSDictionary *dic in dataArray) {
-        Post *post = [Post postWithDictionary:dic andBoardId:self.boardId];
-        [thread.posts addObject:post];
-        [thread.linksReference addObject:[NSString stringWithFormat:@"%ld", (long)post.num]];
-    }
-    return thread;
 }
 
 #pragma mark - Data updating
@@ -213,6 +196,8 @@
         localThreadData.position = position;
         localThreadData.count = count;
     }];
+    
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
 }
 
 #pragma mark - Session stuff
@@ -272,46 +257,16 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    if (self == self.navigationController.topViewController) {
-        
-        Post *post = self.currentThread.posts[indexPath.row];
-        
-        if (post.postHeight) {
-            return post.postHeight;
-        } else {
-        
-            PostTableViewCell *cell = [[PostTableViewCell alloc]init];
-            
-            [cell setTextPost:post];
-            
-            [cell setNeedsUpdateConstraints];
-            [cell updateConstraintsIfNeeded];
-            
-            cell.bounds = CGRectMake(0.0f, 0.0f, CGRectGetWidth(tableView.bounds), CGRectGetHeight(cell.bounds));
-            
-            [cell setNeedsLayout];
-            [cell layoutIfNeeded];
-            
-            CGFloat height = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
-            
-            height += 1;
-            post.postHeight = height;
-            [self.currentThread.posts removeObjectAtIndex:indexPath.row];
-            [self.currentThread.posts insertObject:post atIndex:indexPath.row];
-            
-            return height;
-        }
-    }
-    
-    return 0;
+    Post *post = self.currentThread.posts[indexPath.row];
+    return [self heightForPost:post];
 }
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [UIView animateWithDuration:0.1 delay:0.0 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseInOut animations:^
-     {
-         [[self.tableView cellForRowAtIndexPath:indexPath] setSelected:NO animated:YES];
-     } completion: NULL];
+    Post *post = self.currentThread.posts[indexPath.row];
+    NSLog(@"reply to %@", post.replyTo);
+    NSLog(@"replies %@", post.replies);
+    [self performSegueWithIdentifier:@"showPost" sender:self];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark - Posting and draft handling
@@ -327,6 +282,18 @@
         destinationController.postView.text = self.thread.postDraft;
         destinationController.delegate = self;
     }
+    
+    if ([segue.identifier isEqualToString:@"showPost"]) {
+        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+        Post *post = self.currentThread.posts[indexPath.row];
+        PostViewController *destination = segue.destinationViewController;
+        [destination setThread:self.thread];
+        [destination setBoardId:self.boardId];
+        [destination setThreadId:self.boardId];
+        [destination setPostId:post.postId];
+        [destination setReplyTo:post.replyTo];
+        [destination setReplies:post.replies];
+    }
 }
 
 - (void)postCanceled:(NSString *)draft{
@@ -335,6 +302,7 @@
 }
 
 - (void)postPosted {
+    self.thread.postDraft = nil;
     [self loadUpdatedData];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -483,10 +451,10 @@
 #pragma mark - Loading and refreshing
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if ((self.tableView.contentSize.height - self.tableView.contentOffset.y) < 5000 && self.isLoaded == YES && self.currentThread.postsBottomLeft !=0 && self.isUpdating == NO) {
+    if ((self.tableView.contentSize.height - self.tableView.contentOffset.y) < 3000 && self.isLoaded == YES && self.currentThread.postsBottomLeft !=0 && self.isUpdating == NO) {
         [self loadMorePostsBottom];
     }
-    if (self.tableView.contentOffset.y < 5000 && self.isLoaded == YES && self.currentThread.postsTopLeft !=0 && self.isUpdating == NO) {
+    if (self.tableView.contentOffset.y < 3000 && self.isLoaded == YES && self.currentThread.postsTopLeft !=0 && self.isUpdating == NO) {
         [self loadMorePostsTop];
     }
 }
@@ -498,8 +466,8 @@
         NSInteger i = 0;
         CGPoint newContentOffset = CGPointMake(0, 0);
         
-        if (self.currentThread.postsTopLeft > 50) {
-            i = 50;
+        if (self.currentThread.postsTopLeft > postsOnPage) {
+            i = postsOnPage;
         }
         else {
             i = self.currentThread.postsTopLeft;

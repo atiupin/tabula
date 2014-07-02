@@ -10,6 +10,7 @@
 		848D598C1951714D00773BCF /* Data.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 848D598A1951714C00773BCF /* Data.xcdatamodeld */; };
 		848D598F195171C800773BCF /* BoardData.m in Sources */ = {isa = PBXBuildFile; fileRef = 848D598E195171C800773BCF /* BoardData.m */; };
 		97183A7B192AB607003F429C /* GetRequestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97183A7A192AB607003F429C /* GetRequestViewController.m */; };
+		974A6105196446E800B98C5D /* CommentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 974A6104196446E800B98C5D /* CommentTableViewCell.m */; };
 		974B602019566FA800592B1D /* Declension.m in Sources */ = {isa = PBXBuildFile; fileRef = 974B601F19566FA800592B1D /* Declension.m */; };
 		9772D650195CDAEE00C2A545 /* ThreadData.m in Sources */ = {isa = PBXBuildFile; fileRef = 9772D64F195CDAEE00C2A545 /* ThreadData.m */; };
 		977C08C1194A90B300F8F095 /* FooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 977C08C0194A90B300F8F095 /* FooterView.m */; };
@@ -41,6 +42,7 @@
 		97C3D532191BDE92008921B5 /* Post.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C3D531191BDE92008921B5 /* Post.m */; };
 		97C3D535191BDEF1008921B5 /* Thread.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C3D534191BDEF1008921B5 /* Thread.m */; };
 		97C3D53A191E7FB6008921B5 /* ThreadTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C3D539191E7FB6008921B5 /* ThreadTableViewCell.m */; };
+		97CA835219641F65009DA88A /* PostViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97CA835119641F65009DA88A /* PostViewController.m */; };
 		97D28C0C1927FF6300C7407F /* PostTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 97D28C0B1927FF6300C7407F /* PostTableViewCell.m */; };
 		97E757001951378A00E76A97 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 97E756FF1951378A00E76A97 /* .gitignore */; };
 		AEB2414BBF56415F917E74E6 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9805745336464EA7A343A4A2 /* libPods.a */; };
@@ -63,6 +65,8 @@
 		848D598E195171C800773BCF /* BoardData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardData.m; sourceTree = "<group>"; };
 		97183A79192AB607003F429C /* GetRequestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetRequestViewController.h; sourceTree = "<group>"; };
 		97183A7A192AB607003F429C /* GetRequestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetRequestViewController.m; sourceTree = "<group>"; };
+		974A6103196446E800B98C5D /* CommentTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentTableViewCell.h; sourceTree = "<group>"; };
+		974A6104196446E800B98C5D /* CommentTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentTableViewCell.m; sourceTree = "<group>"; };
 		974B601E19566FA800592B1D /* Declension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Declension.h; sourceTree = "<group>"; };
 		974B601F19566FA800592B1D /* Declension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Declension.m; sourceTree = "<group>"; };
 		9772D64E195CDAEE00C2A545 /* ThreadData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadData.h; sourceTree = "<group>"; };
@@ -114,6 +118,8 @@
 		97C3D534191BDEF1008921B5 /* Thread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Thread.m; sourceTree = "<group>"; };
 		97C3D538191E7FB6008921B5 /* ThreadTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadTableViewCell.h; sourceTree = "<group>"; };
 		97C3D539191E7FB6008921B5 /* ThreadTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadTableViewCell.m; sourceTree = "<group>"; };
+		97CA835019641F65009DA88A /* PostViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostViewController.h; sourceTree = "<group>"; };
+		97CA835119641F65009DA88A /* PostViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PostViewController.m; sourceTree = "<group>"; };
 		97D28C0A1927FF6300C7407F /* PostTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostTableViewCell.h; sourceTree = "<group>"; };
 		97D28C0B1927FF6300C7407F /* PostTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PostTableViewCell.m; sourceTree = "<group>"; };
 		97E756FF1951378A00E76A97 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
@@ -175,6 +181,8 @@
 				97C3D528191BD485008921B5 /* BoardViewController.m */,
 				97C3D524191BD46B008921B5 /* ThreadViewController.h */,
 				97C3D525191BD46B008921B5 /* ThreadViewController.m */,
+				97CA835019641F65009DA88A /* PostViewController.h */,
+				97CA835119641F65009DA88A /* PostViewController.m */,
 				97183A79192AB607003F429C /* GetRequestViewController.h */,
 				97183A7A192AB607003F429C /* GetRequestViewController.m */,
 				97A26CD119476CDB00D632C5 /* CaptchaFixController.h */,
@@ -193,6 +201,8 @@
 				97C3D539191E7FB6008921B5 /* ThreadTableViewCell.m */,
 				97D28C0A1927FF6300C7407F /* PostTableViewCell.h */,
 				97D28C0B1927FF6300C7407F /* PostTableViewCell.m */,
+				974A6103196446E800B98C5D /* CommentTableViewCell.h */,
+				974A6104196446E800B98C5D /* CommentTableViewCell.m */,
 				977C08BF194A90B300F8F095 /* FooterView.h */,
 				977C08C0194A90B300F8F095 /* FooterView.m */,
 			);
@@ -445,8 +455,10 @@
 				848D598F195171C800773BCF /* BoardData.m in Sources */,
 				97C3D529191BD485008921B5 /* BoardViewController.m in Sources */,
 				97C3D535191BDEF1008921B5 /* Thread.m in Sources */,
+				97CA835219641F65009DA88A /* PostViewController.m in Sources */,
 				97C3D53A191E7FB6008921B5 /* ThreadTableViewCell.m in Sources */,
 				97C3D501191BC82A008921B5 /* AppDelegate.m in Sources */,
+				974A6105196446E800B98C5D /* CommentTableViewCell.m in Sources */,
 				97C3D523191BCA92008921B5 /* MainViewController.m in Sources */,
 				97A26CCA1946741600D632C5 /* TapImageView.m in Sources */,
 				97C3D4FD191BC82A008921B5 /* main.m in Sources */,

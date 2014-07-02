@@ -13,7 +13,11 @@
 
 @implementation Post
 
-- (id) initWithDictionary:(NSDictionary *)source andBoardId:(NSString *)boardId {
+- (id) initWithDictionary:(NSDictionary *)source andBoardId:(NSString *)boardId andThreadId:(NSString *)threadId {
+    
+    self.boardId = boardId;
+    self.threadId = threadId;
+    
     NSString *stringUrl = [[@"http://2ch.hk/" stringByAppendingString:boardId] stringByAppendingString:@"/"];
     NSURL *boardUrl = [NSURL URLWithString:stringUrl];
     NSString *thumbnail = [source objectForKey:@"thumbnail"];
@@ -69,9 +73,11 @@
     
     if (num != (id)[NSNull null]) {
         self.num = [num intValue];
+        self.postId = [NSString stringWithFormat:@"%@", num];
     }
     else {
         self.num = 0;
+        self.postId = nil;
     }
     
     self.sage = YES;
@@ -84,13 +90,15 @@
     self.date = [source objectForKey:@"date"];
     
     self.subtitle = [NSString stringWithFormat:@"%@, %@", self.name, self.date];
+    
+    self.replyTo = [NSMutableArray array];
     self.body = [self makeBody:[source objectForKey:@"comment"]];
     
     return self;
 }
 
-+ (id) postWithDictionary:(NSDictionary *)source andBoardId:(NSString *)boardId{
-    return [[self alloc]initWithDictionary:source andBoardId:boardId];
++ (id) postWithDictionary:(NSDictionary *)source andBoardId:(NSString *)boardId andThreadId:(NSString *)threadId {
+    return [[self alloc]initWithDictionary:source andBoardId:boardId andThreadId:threadId];
 }
 
 + (id) examplePost {
@@ -209,6 +217,10 @@
         NSString *urlString = [fullLink substringWithRange:urlRange];
         NSURL *url = [[NSURL alloc]initWithString:urlString];
         if (url) {
+            UrlNinja *un = [UrlNinja unWithUrl:url];
+            if ([un.boardId isEqualToString:self.boardId] && [un.threadId isEqualToString:self.threadId]) {
+                [self.replyTo addObject:un.postId];
+            }
             [maComment addAttribute:NSLinkAttributeName value:url range:result.range];
             [maComment addAttribute:NSForegroundColorAttributeName value:linkColor range:result.range];
             [maComment addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInt:NSUnderlineStyleNone] range:result.range];

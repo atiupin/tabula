@@ -21,6 +21,7 @@
 @property (nonatomic, strong) NSString *boardId;
 @property (nonatomic, strong) NSString *threadId;
 @property (nonatomic, strong) NSString *postId;
+
 @property (nonatomic, strong) Thread *thread;
 @property (nonatomic, strong) Thread *currentThread;
 

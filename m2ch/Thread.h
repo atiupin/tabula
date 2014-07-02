@@ -11,6 +11,9 @@
 
 @interface Thread : NSObject
 
+@property (nonatomic, strong) NSString *boardId;
+@property (nonatomic, strong) NSString *threadId;
+
 @property (nonatomic, strong) NSMutableArray *posts;
 @property (nonatomic, strong) NSMutableArray *linksReference; //массив с номерами постов для ссылок
 @property (nonatomic, strong) NSNumber *replyCount;
@@ -26,7 +29,13 @@
 - (Thread *)insertMoreTopPostsFrom:(Thread *)thread;
 - (Thread *)insertMoreBottomPostsFrom:(Thread *)thread;
 
+- (id)initWithData:(NSData *)data andBoardId:(NSString *)boardId andThreadId:(NSString *)threadId;
++ (id)threadWithData:(NSData *)data andBoardId:(NSString *)boardId andThreadId:(NSString *)threadId;
+
 - (id)initThreadWithThread:(Thread *)thread andPosition:(NSIndexPath *)index;
 + (id)currentThreadWithThread:(Thread *)thread andPosition:(NSIndexPath *)index;
+
+- (id)initThreadWithThread:(Thread *)thread andReplyTo:(NSArray *)replyTo andReplies:(NSArray *)replies andPostId:(NSString *)postId;
++ (id)currentThreadWithThread:(Thread *)thread andReplyTo:(NSArray *)replyTo andReplies:(NSArray *)replies andPostId:(NSString *)postId;
 
 @end

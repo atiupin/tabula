@@ -149,11 +149,11 @@
     return self;
 }
 
+//используется для вычисления высоты
 - (id) setTextPost:(Post *)post {
-    self.title.text = [NSString stringWithFormat:@"%ld", (long)post.num];
-    self.subtitle.text = post.subtitle;
+    self.title.text = @"title";
+    self.subtitle.text = @"subtitle";
     self.comment.text = post.body;
-    self.num = post.num;
     
     self.postImage.tnHeight = 44;
     self.postImage.tnWidth = 44;

@@ -7,22 +7,30 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "UrlNinja.h"
 
 @interface Post : NSObject
 
 @property (nonatomic) CGFloat postHeight;
 
-@property (nonatomic, strong)NSString *lasthit;
-@property (nonatomic, strong)NSString *timestamp;
-@property (nonatomic, strong)NSString *parent;
-@property (nonatomic, strong)NSString *subject;
-@property (nonatomic, strong)NSString *name;
-@property (nonatomic, strong)NSString *date;
-@property (nonatomic, strong)NSString *threadReplies;
+@property (nonatomic, strong) NSString *boardId;
+@property (nonatomic, strong) NSString *threadId;
+@property (nonatomic, strong) NSString *postId;
 
-@property (nonatomic, strong)NSURL *imageUrl;
-@property (nonatomic, strong)NSURL *thumbnailUrl;
-@property (nonatomic, strong)NSURL *postUrl;
+@property (nonatomic, strong) NSString *lasthit;
+@property (nonatomic, strong) NSString *timestamp;
+@property (nonatomic, strong) NSString *parent;
+@property (nonatomic, strong) NSString *subject;
+@property (nonatomic, strong) NSString *name;
+@property (nonatomic, strong) NSString *date;
+@property (nonatomic, strong) NSString *threadReplies;
+
+@property (nonatomic, strong) NSMutableArray *replyTo;
+@property (nonatomic, strong) NSMutableArray *replies;
+
+@property (nonatomic, strong) NSURL *imageUrl;
+@property (nonatomic, strong) NSURL *thumbnailUrl;
+@property (nonatomic, strong) NSURL *postUrl;
 
 @property (nonatomic) NSInteger num;
 @property (nonatomic) NSInteger replyCount;
@@ -41,8 +49,8 @@
 - (NSString *)makeSubtile:(NSString *)name withDate:(NSDate *)date;
 - (NSString *)makeThreadReplies:(NSInteger)count;
 
-- (id) initWithDictionary:(NSDictionary *)source andBoardId:(NSString *)boardId;
-+ (id) postWithDictionary:(NSDictionary *)source andBoardId:(NSString *)boardId;
+- (id) initWithDictionary:(NSDictionary *)source andBoardId:(NSString *)boardId andThreadId:(NSString *)threadId ;
++ (id) postWithDictionary:(NSDictionary *)source andBoardId:(NSString *)boardId andThreadId:(NSString *)threadId ;
 + (id) examplePost;
 
 @end

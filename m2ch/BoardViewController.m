@@ -92,16 +92,23 @@
         Thread *thread = [[Thread alloc]init];
         thread.posts = [NSMutableArray array];
         NSDictionary *postDictionary = [[[i objectForKey:@"posts"] objectAtIndex:0] objectAtIndex:0];
-        Post *post = [Post postWithDictionary:postDictionary andBoardId:self.boardId];
+        Post *post = [Post postWithDictionary:postDictionary andBoardId:self.boardId andThreadId:nil];
         post.replyCount = [[i objectForKey:@"reply_count"] intValue];
         post.replyCount += 1; //меняем ответы на посты
         
+        post.newReplies = 0;
         NSString *comboId = [NSString stringWithFormat:@"%@%ld", self.boardId, (long)post.num];
         
+        //на всякий случай, если в результате глюков или легаси ДБ по запросу будет более одного результата, то ищем наибольший
         NSArray *dataArray = [ThreadData MR_findByAttribute:@"name" withValue:comboId];
         if (dataArray.count != 0) {
-            ThreadData *thread = dataArray[dataArray.count-1];
-            post.newReplies = post.replyCount - [thread.count intValue];
+            int oldCount = 0;
+            for (ThreadData *thread in dataArray) {
+                if (oldCount <= [thread.count intValue]) {
+                    oldCount = [thread.count intValue];
+                }
+            }
+            post.newReplies = post.replyCount - oldCount;
         } else {
             //если в БД записи не найдены, то все посты считаются новыми
             post.newReplies = post.replyCount;
@@ -207,7 +214,7 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     [cell setPost:post];
     
     [self performSegueWithIdentifier:@"showThread" sender:self];
-    [tableView deselectRowAtIndexPath:indexPath animated:YES]; //have no idea why
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
