@@ -229,7 +229,7 @@
             </objects>
             <point key="canvasLocation" x="1126" y="13"/>
         </scene>
-        <!--Thread View Controller-->
+        <!--Thread View Controller - Тред-->
         <scene sceneID="Kfk-u0-RGu">
             <objects>
                 <tableViewController storyboardIdentifier="ThreadTag" id="JqW-jP-XLf" customClass="ThreadViewController" sceneMemberID="viewController">
@@ -255,7 +255,7 @@
                             <outlet property="delegate" destination="JqW-jP-XLf" id="32U-kL-6VL"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="zqH-S0-bUU">
+                    <navigationItem key="navigationItem" title="Тред" id="zqH-S0-bUU">
                         <barButtonItem key="rightBarButtonItem" systemItem="compose" id="ky6-Hj-2cC">
                             <connections>
                                 <segue destination="4l2-4i-x1E" kind="modal" identifier="newPost" id="Vks-vo-9YQ"/>
@@ -267,10 +267,10 @@
             </objects>
             <point key="canvasLocation" x="1566" y="13"/>
         </scene>
-        <!--Post View Controller-->
+        <!--Post View Controller - Пост-->
         <scene sceneID="ePs-I7-oQD">
             <objects>
-                <tableViewController id="B6W-qQ-ESG" customClass="PostViewController" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="PostTag" id="B6W-qQ-ESG" customClass="PostViewController" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="IGu-Cp-LSl">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -290,7 +290,7 @@
                             <outlet property="delegate" destination="B6W-qQ-ESG" id="8xs-HD-six"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="8TR-nN-Uav"/>
+                    <navigationItem key="navigationItem" title="Пост" id="8TR-nN-Uav"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UQt-i2-cih" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

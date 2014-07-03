@@ -7,23 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PostTableViewCell.h"
-#import "Thread.h"
-#import "Post.h"
+#import "CommonViewController.h"
 #import "GetRequestViewController.h"
-#import "Declension.h"
 
-@interface ThreadViewController : UITableViewController <TTTAttributedLabelDelegate, UIActionSheetDelegate, NSURLSessionDelegate, NSURLSessionDownloadDelegate, UIGestureRecognizerDelegate, PostViewControllerDelegate, NSFetchedResultsControllerDelegate>
+@interface ThreadViewController : CommonViewController <NSURLSessionDelegate, NSURLSessionDownloadDelegate, UIGestureRecognizerDelegate, NSFetchedResultsControllerDelegate>
 
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic, strong) NSURLSession *session;
-
-@property (nonatomic, strong) NSString *boardId;
-@property (nonatomic, strong) NSString *threadId;
-@property (nonatomic, strong) NSString *postId;
-
-@property (nonatomic, strong) Thread *thread;
-@property (nonatomic, strong) Thread *currentThread;
 
 @property (nonatomic, strong) NSString *reply;
 @property (nonatomic, strong) NSString *quote;

@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "CaptchaFixController.h"
 
-@protocol PostViewControllerDelegate
+@protocol NewPostControllerDelegate
 
 - (void)postCanceled:(NSString *)draft;
 - (void)postPosted;
@@ -18,7 +18,7 @@
 
 @interface GetRequestViewController : UIViewController <UIWebViewDelegate, CaptchaFixViewControllerDelegate>
 
-@property (nonatomic, assign) id<PostViewControllerDelegate> delegate;
+@property (nonatomic, assign) id<NewPostControllerDelegate> delegate;
 
 @property (nonatomic, strong)NSString *boardId;
 @property (nonatomic, strong)NSString *threadId;

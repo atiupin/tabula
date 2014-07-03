@@ -12,9 +12,9 @@
 		97183A7B192AB607003F429C /* GetRequestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97183A7A192AB607003F429C /* GetRequestViewController.m */; };
 		974A6105196446E800B98C5D /* CommentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 974A6104196446E800B98C5D /* CommentTableViewCell.m */; };
 		974A61081964A6AB00B98C5D /* Board.m in Sources */ = {isa = PBXBuildFile; fileRef = 974A61071964A6AB00B98C5D /* Board.m */; };
+		974A610B196574ED00B98C5D /* CommonViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 974A610A196574ED00B98C5D /* CommonViewController.m */; };
 		974B602019566FA800592B1D /* Declension.m in Sources */ = {isa = PBXBuildFile; fileRef = 974B601F19566FA800592B1D /* Declension.m */; };
 		9772D650195CDAEE00C2A545 /* ThreadData.m in Sources */ = {isa = PBXBuildFile; fileRef = 9772D64F195CDAEE00C2A545 /* ThreadData.m */; };
-		977C08C1194A90B300F8F095 /* FooterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 977C08C0194A90B300F8F095 /* FooterView.m */; };
 		977C08C319512CDC00F8F095 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 977C08C219512CDC00F8F095 /* README.md */; };
 		978A6045193771D2001B3F18 /* DebugController.m in Sources */ = {isa = PBXBuildFile; fileRef = 978A6044193771D2001B3F18 /* DebugController.m */; };
 		978A605119394DA5001B3F18 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 978A605019394DA5001B3F18 /* CoreText.framework */; };
@@ -70,12 +70,12 @@
 		974A6104196446E800B98C5D /* CommentTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentTableViewCell.m; sourceTree = "<group>"; };
 		974A61061964A6AB00B98C5D /* Board.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Board.h; sourceTree = "<group>"; };
 		974A61071964A6AB00B98C5D /* Board.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Board.m; sourceTree = "<group>"; };
+		974A6109196574ED00B98C5D /* CommonViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonViewController.h; sourceTree = "<group>"; };
+		974A610A196574ED00B98C5D /* CommonViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommonViewController.m; sourceTree = "<group>"; };
 		974B601E19566FA800592B1D /* Declension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Declension.h; sourceTree = "<group>"; };
 		974B601F19566FA800592B1D /* Declension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Declension.m; sourceTree = "<group>"; };
 		9772D64E195CDAEE00C2A545 /* ThreadData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadData.h; sourceTree = "<group>"; };
 		9772D64F195CDAEE00C2A545 /* ThreadData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadData.m; sourceTree = "<group>"; };
-		977C08BF194A90B300F8F095 /* FooterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FooterView.h; sourceTree = "<group>"; };
-		977C08C0194A90B300F8F095 /* FooterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FooterView.m; sourceTree = "<group>"; };
 		977C08C219512CDC00F8F095 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		978A6043193771D2001B3F18 /* DebugController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugController.h; sourceTree = "<group>"; };
 		978A6044193771D2001B3F18 /* DebugController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugController.m; sourceTree = "<group>"; };
@@ -180,6 +180,8 @@
 		97A26CC41943567C00D632C5 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				974A6109196574ED00B98C5D /* CommonViewController.h */,
+				974A610A196574ED00B98C5D /* CommonViewController.m */,
 				97C3D521191BCA92008921B5 /* MainViewController.h */,
 				97C3D522191BCA92008921B5 /* MainViewController.m */,
 				97C3D527191BD485008921B5 /* BoardViewController.h */,
@@ -208,8 +210,6 @@
 				97D28C0B1927FF6300C7407F /* PostTableViewCell.m */,
 				974A6103196446E800B98C5D /* CommentTableViewCell.h */,
 				974A6104196446E800B98C5D /* CommentTableViewCell.m */,
-				977C08BF194A90B300F8F095 /* FooterView.h */,
-				977C08C0194A90B300F8F095 /* FooterView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -450,7 +450,6 @@
 				97A26CD319476CDC00D632C5 /* CaptchaFixController.m in Sources */,
 				97A26CC11941486600D632C5 /* UrlNinja.m in Sources */,
 				974B602019566FA800592B1D /* Declension.m in Sources */,
-				977C08C1194A90B300F8F095 /* FooterView.m in Sources */,
 				97C3D526191BD46B008921B5 /* ThreadViewController.m in Sources */,
 				97183A7B192AB607003F429C /* GetRequestViewController.m in Sources */,
 				974A61081964A6AB00B98C5D /* Board.m in Sources */,
@@ -463,6 +462,7 @@
 				97C3D535191BDEF1008921B5 /* Thread.m in Sources */,
 				97CA835219641F65009DA88A /* PostViewController.m in Sources */,
 				97C3D53A191E7FB6008921B5 /* ThreadTableViewCell.m in Sources */,
+				974A610B196574ED00B98C5D /* CommonViewController.m in Sources */,
 				97C3D501191BC82A008921B5 /* AppDelegate.m in Sources */,
 				974A6105196446E800B98C5D /* CommentTableViewCell.m in Sources */,
 				97C3D523191BCA92008921B5 /* MainViewController.m in Sources */,

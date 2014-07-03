@@ -7,20 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PostTableViewCell.h"
-#import "CommentTableViewCell.h"
-#import "Thread.h"
+#import "CommonViewController.h"
 
-@interface PostViewController : UITableViewController <TTTAttributedLabelDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate>
-
-@property (nonatomic, strong) NSString *boardId;
-@property (nonatomic, strong) NSString *threadId;
-@property (nonatomic, strong) NSString *postId;
+@interface PostViewController : CommonViewController
 
 @property (nonatomic, strong) NSArray *replyTo;
 @property (nonatomic, strong) NSArray *replies;
-
-@property (nonatomic, strong) Thread *thread;
-@property (nonatomic, strong) Thread *currentThread;
 
 @end

@@ -117,17 +117,21 @@ static NSInteger postsOnPage = 35;
 - (id)initThreadWithThread:(Thread *)thread andReplyTo:(NSArray *)replyTo andReplies:(NSArray *)replies andPostId:(NSString *)postId {
     
     self.posts = [NSMutableArray array];
+    self.linksReference = [NSMutableArray array];
     
     for (NSString *replyToId in replyTo) {
         [self.posts addObject:thread.posts[[thread.linksReference indexOfObject:replyToId]]];
+        [self.linksReference addObject:replyToId];
     }
     
     [self.posts addObject:thread.posts[[thread.linksReference indexOfObject:postId]]];
+    [self.linksReference addObject:postId];
     
     for (NSString *replyId in replies) {
         [self.posts addObject:thread.posts[[thread.linksReference indexOfObject:replyId]]];
+        [self.linksReference addObject:replyId];
     }
-    
+
     return self;
 }
 

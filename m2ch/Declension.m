@@ -103,14 +103,14 @@
 };
 
 //нужно привести все методы к такому виду
-- (NSString *) posts:(NSInteger)number {
++ (NSString *) posts:(NSInteger)number {
     NSString *output = @"";
     if (number == 0) {
         output = [NSString stringWithFormat:@"0 постов"];
     } else {
         NSInteger mod = (int)number%100;
         if (mod>=11 && mod<=19) {
-            self.output = [NSString stringWithFormat:@"%ld постов", (long)number];
+            output = [NSString stringWithFormat:@"%ld постов", (long)number];
         } else {
             mod = (int)number%10;
             switch (mod) {
@@ -139,14 +139,14 @@
     return output;
 };
 
-- (NSString *) answers:(NSInteger)number {
++ (NSString *) answers:(NSInteger)number {
     NSString *output = @"";
     if (number == 0) {
         output = [NSString stringWithFormat:@"Нет ответов"];
     } else {
         NSInteger mod = (int)number%100;
         if (mod>=11 && mod<=19) {
-            self.output = [NSString stringWithFormat:@"%ld ответов", (long)number];
+            output = [NSString stringWithFormat:@"%ld ответов", (long)number];
         } else {
             mod = (int)number%10;
             switch (mod) {
@@ -175,11 +175,11 @@
     return output;
 };
 
-- (NSString *) replyTo:(NSInteger)number {
++ (NSString *) replyTo:(NSInteger)number {
     return [NSString stringWithFormat:@"Ответ на %@", [self posts:number]];
 }
 
-- (NSString *) replies:(NSInteger)number {
++ (NSString *) replies:(NSInteger)number {
     return [NSString stringWithFormat:@"%@ на пост", [self answers:number]];;
 }
 

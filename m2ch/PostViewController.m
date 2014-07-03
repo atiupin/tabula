@@ -7,9 +7,6 @@
 //
 
 #import "PostViewController.h"
-#import "JTSImageViewController.h"
-#import "JTSImageInfo.h"
-#import "Declension.h"
 
 @interface PostViewController ()
 
@@ -22,6 +19,7 @@
 
 @property (nonatomic) NSInteger clearSeparator1;
 @property (nonatomic) NSInteger clearSeparator2;
+@property (nonatomic) NSInteger clearSeparator3;
 
 @end
 
@@ -30,6 +28,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.navigationItem.title = [NSString stringWithFormat:@"Пост %@", self.postId];
     
     [self.tableView registerClass:[PostTableViewCell class] forCellReuseIdentifier:@"reuseIndenifier"];
     [self.tableView registerClass:[CommentTableViewCell class] forCellReuseIdentifier:@"commentCell"];
@@ -55,6 +55,7 @@
     
     self.clearSeparator1 = -1;
     self.clearSeparator2 = -1;
+    self.clearSeparator3 = -1;
     
     CGFloat contentHeight = 64;
     
@@ -72,6 +73,7 @@
         self.repliesShift += 1;
         self.postCount += 1;
         self.clearSeparator2 = self.mainPostRow;
+        self.clearSeparator3 = self.bottomCommentRow + self.replies.count;
         contentHeight += 20;
     }
     
@@ -125,13 +127,11 @@
 {
     if (indexPath.row == self.topCommentRow) {
         PostTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"commentCell"];
-        Declension *declension = [[Declension alloc]init];
-        cell.comment.text = [declension replyTo:self.replyTo.count];
+        cell.comment.text = [Declension replyTo:self.replyTo.count];
         return cell;
     } else if (indexPath.row == self.bottomCommentRow) {
         PostTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"commentCell"];
-        Declension *declension = [[Declension alloc]init];
-        cell.comment.text = [declension replies:self.replies.count];
+        cell.comment.text = [Declension replies:self.replies.count];
         return cell;
     } else {
         PostTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"reuseIndenifier"];
@@ -144,7 +144,7 @@
             post = self.currentThread.posts[indexPath.row - self.repliesShift];
         }
         
-        if (indexPath.row == self.clearSeparator1 || indexPath.row == self.clearSeparator2) {
+        if (indexPath.row == self.clearSeparator1 || indexPath.row == self.clearSeparator2 || indexPath.row == self.clearSeparator3) {
             cell.separatorInset = UIEdgeInsetsMake(0, 9999, 0, 0);
         }
         
@@ -183,61 +183,43 @@
     }
 }
 
+//это тоже порефакторить надо
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-
-- (void)imageTapped:(UITapGestureRecognizer *)sender {
     
-    TapImageView *image = (TapImageView *)sender.view;
-    // Create image info
-    JTSImageInfo *imageInfo = [[JTSImageInfo alloc] init];
+    NSInteger shift = 0;
     
-    NSLog(@"%@", image.bigImageUrl);
-    imageInfo.imageURL = image.bigImageUrl;
-    imageInfo.referenceRect = image.frame;
-    imageInfo.referenceView = image.superview;
-    
-    // Setup view controller
-    JTSImageViewController *imageViewer = [[JTSImageViewController alloc]
-                                           initWithImageInfo:imageInfo
-                                           mode:JTSImageViewControllerMode_Image
-                                           backgroundStyle:JTSImageViewControllerBackgroundStyle_ScaledDimmed];
-    
-    // Present the view controller.
-    [imageViewer showFromViewController:self transition:JTSImageViewControllerTransition_FromOffscreen];
-}
-
-- (CGFloat)heightForPost:(Post *)post {
-    
-    if (self == self.navigationController.topViewController) {
-        
-        if (post.postHeight) {
-            return post.postHeight;
-        } else {
-            
-            PostTableViewCell *cell = [[PostTableViewCell alloc]init];
-            
-            [cell setTextPost:post];
-            
-            [cell setNeedsUpdateConstraints];
-            [cell updateConstraintsIfNeeded];
-            
-            cell.bounds = CGRectMake(0.0f, 0.0f, CGRectGetWidth(self.tableView.bounds), CGRectGetHeight(cell.bounds));
-            
-            [cell setNeedsLayout];
-            [cell layoutIfNeeded];
-            
-            CGFloat height = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
-            
-            height += 1;
-            post.postHeight = height;
-            
-            return height;
+    if (indexPath.row >= self.bottomCommentRow) {
+        if (self.replyTo.count > 0) {
+            shift -= 1;
+        }
+        if (self.replies.count > 0) {
+            shift -= 1;
         }
     }
     
-    return 0;
+    if (indexPath.row < self.mainPostRow) {
+        shift = 0;
+    }
+    
+    if (indexPath.row == self.mainPostRow) {
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        return;
+    }
+    
+    if (indexPath.row >= self.bottomCommentRow || indexPath.row < self.mainPostRow) {
+        NSInteger postNum = indexPath.row;
+        postNum += shift;
+        NSUInteger indexArray[] = {0, postNum};
+        NSIndexPath *newIndexPath = [NSIndexPath indexPathWithIndexes:indexArray length:2];
+        
+        UrlNinja *un = [[UrlNinja alloc]init];
+        un.boardId = self.boardId;
+        un.threadId = self.threadId;
+        un.postId = self.currentThread.linksReference[newIndexPath.row];
+        [self openPostWithUN:un];
+    }
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 @end

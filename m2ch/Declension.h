@@ -20,9 +20,9 @@
 - (id) initWithPostCount:(NSUInteger)number;
 + (id) stringWithPostCount:(NSUInteger)number;
 
-- (NSString *) posts:(NSInteger)number;
-- (NSString *) answers:(NSInteger)number;
-- (NSString *) replyTo:(NSInteger)number;
-- (NSString *) replies:(NSInteger)number;
++ (NSString *) posts:(NSInteger)number;
++ (NSString *) answers:(NSInteger)number;
++ (NSString *) replyTo:(NSInteger)number;
++ (NSString *) replies:(NSInteger)number;
 
 @end

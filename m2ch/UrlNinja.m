@@ -68,7 +68,7 @@
     self.postId = [url fragment];
     
     if (self.boardId && self.threadId && self.postId && source.count == 4) {
-        self.type = boardThreadLink;
+        self.type = boardThreadPostLink;
         return self;
     } else if (self.boardId && self.threadId && source.count == 4) {
         self.type = boardThreadLink;
