@@ -33,70 +33,55 @@
             break;
         }
         case boardThreadLink: {
-            //открыть тред
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
-            ThreadViewController *controller = [storyboard instantiateViewControllerWithIdentifier:@"ThreadTag"];
-            controller.boardId = urlNinja.boardId;
-            controller.threadId = urlNinja.threadId;
-            
-            //без этого фачится размер заголовка
-            controller.navigationItem.title = [NSString stringWithFormat:@"Тред в /%@/", urlNinja.boardId];
-            
-            [self.navigationController pushViewController:controller animated:YES];
+            [self openThreadWithUrlNinja:urlNinja];
             break;
         }
         case boardThreadPostLink: {
-            [self openPostWithUN:urlNinja];
+            //если это этот же тред, то он открывается локально, оначе открывается вест тред со скроллом
+            if ([self.threadId isEqualToString:urlNinja.threadId] && [self.boardId isEqualToString:urlNinja.boardId]) {
+                if ([self.thread.linksReference containsObject:urlNinja.postId]) {
+                    [self openPostWithUrlNinja:urlNinja];
+                    return;
+                }
+            }
+            [self openThreadWithUrlNinja:urlNinja];
         }
             break;
         default:
-            //внешня ссылка - предложение открыть в сафари
+            //внешняя ссылка - предложение открыть в сафари
             [[[UIActionSheet alloc] initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:NSLocalizedString(@"Отмена", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Открыть ссылку в Safari", nil), nil] showInView:self.view];
             break;
     }
 }
 
-//это порефакторить бы
-- (void)openPostWithUN:(UrlNinja *)urlNinja {
+//Используется только когда открывается пост в том же треде (потенциал для рефакторинга)
+- (void)openPostWithUrlNinja:(UrlNinja *)urlNinja {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
-    if ([self.threadId isEqualToString:urlNinja.threadId] && [self.boardId isEqualToString:urlNinja.boardId] && [self.postId isEqualToString:urlNinja.postId]) {
-        NSUInteger postNum = [self.currentThread.linksReference indexOfObject:urlNinja.postId];
-        NSUInteger indexArray[] = {0, postNum};
-        NSIndexPath *indexPath = [NSIndexPath indexPathWithIndexes:indexArray length:2];
-
-        [self.tableView selectRowAtIndexPath:indexPath animated:YES scrollPosition:UITableViewScrollPositionNone];
-        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-        
-        return;
-    }
-    if ([self.threadId isEqualToString:urlNinja.threadId] && [self.boardId isEqualToString:urlNinja.boardId]) {
-        
-        NSUInteger postNum = [self.thread.linksReference indexOfObject:urlNinja.postId];
-        if (postNum != NSNotFound) {
-            NSUInteger indexArray[] = {0, postNum};
-            NSIndexPath *indexPath = [NSIndexPath indexPathWithIndexes:indexArray length:2];
-            Post *post = self.thread.posts[indexPath.row];
-            PostViewController *destination = [storyboard instantiateViewControllerWithIdentifier:@"PostTag"];
-            
-            [destination setThread:self.thread];
-            [destination setBoardId:self.boardId];
-            [destination setThreadId:self.threadId];
-            [destination setPostId:post.postId];
-            [destination setReplyTo:post.replyTo];
-            [destination setReplies:post.replies];
-            
-            [self.navigationController pushViewController:destination animated:YES];
-            
-            return;
-        }
-    }
-    ThreadViewController *controller = [storyboard instantiateViewControllerWithIdentifier:@"ThreadTag"];
-    controller.boardId = urlNinja.boardId;
-    controller.threadId = urlNinja.threadId;
-    controller.postId = urlNinja.postId;
-    [self.navigationController pushViewController:controller animated:YES];
+    NSUInteger postNum = [self.thread.linksReference indexOfObject:urlNinja.postId];
     
-    return;
+    NSUInteger indexArray[] = {0, postNum};
+    NSIndexPath *indexPath = [NSIndexPath indexPathWithIndexes:indexArray length:2];
+    Post *post = self.thread.posts[indexPath.row];
+    PostViewController *destination = [storyboard instantiateViewControllerWithIdentifier:@"PostTag"];
+    
+    [destination setThread:self.thread];
+    [destination setBoardId:self.boardId];
+    [destination setThreadId:self.threadId];
+    [destination setPostId:post.postId];
+    [destination setReplyTo:post.replyTo];
+    [destination setReplies:post.replies];
+    
+    [self.navigationController pushViewController:destination animated:YES];
+}
+
+- (void)openThreadWithUrlNinja:(UrlNinja *)urlNinja {
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
+    ThreadViewController *destination = [storyboard instantiateViewControllerWithIdentifier:@"ThreadTag"];
+    [destination setBoardId:urlNinja.boardId];
+    [destination setThreadId:urlNinja.threadId];
+    [destination setPostId:urlNinja.postId];
+    
+    [self.navigationController pushViewController:destination animated:YES];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -110,18 +95,6 @@
         destinationController.postView.text = self.thread.postDraft;
         destinationController.delegate = self;
     }
-    
-    if ([segue.identifier isEqualToString:@"showPost"]) {
-        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        Post *post = self.currentThread.posts[indexPath.row];
-        PostViewController *destination = segue.destinationViewController;
-        [destination setThread:self.thread];
-        [destination setBoardId:self.boardId];
-        [destination setThreadId:self.threadId];
-        [destination setPostId:post.postId];
-        [destination setReplyTo:post.replyTo];
-        [destination setReplies:post.replies];
-    }
 }
 
 #pragma mark - Action Sheet Delegate
@@ -130,7 +103,6 @@
     if (buttonIndex == actionSheet.cancelButtonIndex) {
         return;
     }
-    
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:actionSheet.title]];
 }
 

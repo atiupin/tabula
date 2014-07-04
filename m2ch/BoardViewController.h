@@ -7,13 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "ThreadTableViewCell.h"
-#import "Post.h"
-#import "Thread.h"
+#import "CommonViewController.h"
 
-@interface BoardViewController : UITableViewController <TTTAttributedLabelDelegate, UIActionSheetDelegate, NSURLSessionDelegate, NSURLSessionDownloadDelegate, UIGestureRecognizerDelegate>
+@interface BoardViewController : CommonViewController <NSURLSessionDelegate, NSURLSessionDownloadDelegate>
 
-@property (nonatomic, strong) NSString *boardId;
 @property (nonatomic, strong) NSMutableArray *threadsList;
 @property (nonatomic, strong) ThreadTableViewCell *threadCell;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;

@@ -7,12 +7,6 @@
 //
 
 #import "BoardViewController.h"
-#import "ThreadViewController.h"
-#import "UrlNinja.h"
-#import "JTSImageViewController.h"
-#import "JTSImageInfo.h"
-#import "ThreadData.h"
-#import "Declension.h"
 
 @interface BoardViewController ()
 
@@ -93,6 +87,8 @@
         thread.posts = [NSMutableArray array];
         NSDictionary *postDictionary = [[[i objectForKey:@"posts"] objectAtIndex:0] objectAtIndex:0];
         Post *post = [Post postWithDictionary:postDictionary andBoardId:self.boardId andThreadId:nil];
+        post.boardId = self.boardId;
+        post.threadId = post.postId;
         post.replyCount = [[i objectForKey:@"reply_count"] intValue];
         post.replyCount += 1; //меняем ответы на посты
         
@@ -198,8 +194,7 @@
 
 #pragma mark - UITableViewDelegate
 
-- (void)tableView:(UITableView *)tableView
-didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     ThreadTableViewCell *cell = (ThreadTableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath];
     Post *post = self.threadsList[indexPath.row];
@@ -213,111 +208,17 @@ didSelectRowAtIndexPath:(NSIndexPath *)indexPath
     
     [cell setPost:post];
     
-    [self performSegueWithIdentifier:@"showThread" sender:self];
+    UrlNinja *urlNinja = [[UrlNinja alloc]init];
+    urlNinja.boardId = self.boardId;
+    urlNinja.threadId = post.threadId;
+    [self openThreadWithUrlNinja:urlNinja];
+    
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    if ([segue.identifier isEqualToString:@"showThread"]) {
-        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        
-        Post *post = self.threadsList[indexPath.row];
-        
-        NSString *threadId = [NSString stringWithFormat:@"%ld", (long)post.num];
-        NSString *subject = [NSString string];
-        
-        subject = [NSString stringWithFormat:@"Тред в /%@/", self.boardId];
-        
-        ThreadViewController *destination = segue.destinationViewController;
-        
-        destination.navigationItem.title = subject;
-        
-        [destination setBoardId:self.boardId];
-        [destination setThreadId:threadId];
-    }
-}
-
-#pragma mark - TTTAttributedLabelDelegate
-
-- (void)attributedLabel:(__unused TTTAttributedLabel *)label didSelectLinkWithURL:(NSURL *)url {
-
-    UrlNinja *urlNinja = [UrlNinja unWithUrl:url];
-    
-    switch (urlNinja.type) {
-        case boardLink: {
-            //открыть борду
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
-            BoardViewController *controller = [storyboard instantiateViewControllerWithIdentifier:@"BoardTag"];
-            controller.boardId = urlNinja.boardId;
-            [self.navigationController pushViewController:controller animated:YES];
-            break;
-        }
-        case boardThreadLink: {
-            //открыть тред
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
-            ThreadViewController *controller = [storyboard instantiateViewControllerWithIdentifier:@"ThreadTag"];
-            controller.boardId = urlNinja.boardId;
-            controller.threadId = urlNinja.threadId;
-            
-            //без этого фачится размер заголовка
-            controller.navigationItem.title = [NSString stringWithFormat:@"Тред в /%@/", urlNinja.boardId];
-            
-            [self.navigationController pushViewController:controller animated:YES];
-            break;
-        }
-        case boardThreadPostLink: {
-            //проскроллить страницу
-            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
-            ThreadViewController *controller = [storyboard instantiateViewControllerWithIdentifier:@"ThreadTag"];
-            controller.boardId = urlNinja.boardId;
-            controller.threadId = urlNinja.threadId;
-            controller.postId = urlNinja.postId;
-            [self.navigationController pushViewController:controller animated:YES];
-            break;
-            }
-            break;
-        default:
-            //внешня ссылка - предложение открыть в сафари
-            [[[UIActionSheet alloc] initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:NSLocalizedString(@"Отмена", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Открыть ссылку в Safari", nil), nil] showInView:self.view];
-            break;
-    }
-}
-
-#pragma mark - UIActionSheetDelegate
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (buttonIndex == actionSheet.cancelButtonIndex) {
-        return;
-    }
-    
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:actionSheet.title]];
-}
-
-- (void)imageTapped:(UITapGestureRecognizer *)sender {
-    
-    TapImageView *image = (TapImageView *)sender.view;
-    // Create image info
-    JTSImageInfo *imageInfo = [[JTSImageInfo alloc] init];
-    NSLog(@"%@", image.bigImageUrl);
-    imageInfo.imageURL = image.bigImageUrl;
-    imageInfo.referenceRect = image.frame;
-    imageInfo.referenceView = image.superview;
-    
-    // Setup view controller
-    JTSImageViewController *imageViewer = [[JTSImageViewController alloc]
-                                           initWithImageInfo:imageInfo
-                                           mode:JTSImageViewControllerMode_Image
-                                           backgroundStyle:JTSImageViewControllerBackgroundStyle_ScaledDimmed];
-    
-    // Present the view controller.
-    [imageViewer showFromViewController:self transition:JTSImageViewControllerTransition_FromOffscreen];
 }
 
 - (void)refresh {
     [self.refreshControl endRefreshing];
     [self loadData];
 }
-
 
 @end

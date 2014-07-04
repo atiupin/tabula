@@ -86,4 +86,6 @@
 + (id)unWithUrl:(NSURL *)url {
     return [[UrlNinja alloc]initWithUrl:url];
 }
+
+
 @end

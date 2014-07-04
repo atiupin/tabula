@@ -32,9 +32,11 @@
 @property (nonatomic, strong) Thread *thread;
 @property (nonatomic, strong) Thread *currentThread;
 
-- (void)imageTapped:(UITapGestureRecognizer *)sender;
+- (void)openThreadWithUrlNinja:(UrlNinja *)urlNinja;
+- (void)openPostWithUrlNinja:(UrlNinja *)urlNinja;
+
 - (CGFloat)heightForPost:(Post *)post;
+- (void)imageTapped:(UITapGestureRecognizer *)sender;
 - (void)loadUpdatedData;
-- (void)openPostWithUN:(UrlNinja *)urlNinja;
 
 @end

@@ -28,6 +28,7 @@
 
 - (Thread *)insertMoreTopPostsFrom:(Thread *)thread;
 - (Thread *)insertMoreBottomPostsFrom:(Thread *)thread;
+- (void)updateReplies;
 
 - (id)initWithData:(NSData *)data andBoardId:(NSString *)boardId andThreadId:(NSString *)threadId;
 + (id)threadWithData:(NSData *)data andBoardId:(NSString *)boardId andThreadId:(NSString *)threadId;

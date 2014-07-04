@@ -12,9 +12,33 @@ static NSInteger postsOnPage = 35;
 
 @implementation Thread
 
+#pragma mark - Safe Properties Getters
+
+- (NSMutableArray *)posts {
+    if (!_posts) {
+        _posts = [NSMutableArray array];
+    }
+    return _posts;
+}
+
+- (NSMutableArray *)linksReference {
+    if (!_linksReference) {
+        _linksReference = [NSMutableArray array];
+    }
+    return _linksReference;
+}
+
+- (NSMutableArray *)updatedIndexes {
+    if (_updatedIndexes) {
+        _updatedIndexes = [NSMutableArray array];
+    }
+    return _updatedIndexes;
+}
+
+#pragma mark - Inits
+
 //создает тред из мастер-треда
 - (id)initThreadWithThread:(Thread *)thread andPosition:(NSIndexPath *)index {
-    self.posts = [NSMutableArray array];
     NSInteger i = 0;
     NSUInteger position = 0;
     
@@ -87,25 +111,13 @@ static NSInteger postsOnPage = 35;
         }
     }
     
-    self.posts = [NSMutableArray array];
-    self.linksReference = [NSMutableArray array];
-    
     for (NSDictionary *dic in dataArray) {
         Post *post = [Post postWithDictionary:dic andBoardId:boardId andThreadId:threadId];
-        post.replies = [NSMutableArray array];
         [self.posts addObject:post];
         [self.linksReference addObject:[NSString stringWithFormat:@"%ld", (long)post.num]];
     }
     
-    for (Post *post in self.posts) {
-        for (NSString *replyTo in post.replyTo) {
-            NSInteger index = [self.linksReference indexOfObject:replyTo];
-            if (index != NSNotFound) {
-                Post *reply = self.posts[index];
-                [reply.replies addObject:[NSString stringWithFormat:@"%lu", (long)post.num]];
-            }
-        }
-    }
+    [self updateReplies];
     
     return self;
 }
@@ -115,9 +127,6 @@ static NSInteger postsOnPage = 35;
 };
 
 - (id)initThreadWithThread:(Thread *)thread andReplyTo:(NSArray *)replyTo andReplies:(NSArray *)replies andPostId:(NSString *)postId {
-    
-    self.posts = [NSMutableArray array];
-    self.linksReference = [NSMutableArray array];
     
     for (NSString *replyToId in replyTo) {
         [self.posts addObject:thread.posts[[thread.linksReference indexOfObject:replyToId]]];
@@ -139,6 +148,20 @@ static NSInteger postsOnPage = 35;
     return [[Thread alloc]initThreadWithThread:thread andReplyTo:replyTo andReplies:replies andPostId:postId];
 }
 
+#pragma mark - Thread update
+
+- (void)updateReplies {
+    for (Post *post in self.posts) {
+        for (NSString *replyTo in post.replyTo) {
+            NSInteger index = [self.linksReference indexOfObject:replyTo];
+            if (index != NSNotFound) {
+                Post *reply = self.posts[index];
+                [reply.replies addObject:[NSString stringWithFormat:@"%lu", (long)post.num]];
+            }
+        }
+    }
+}
+
 //догружает посты из мастер-треда сверху
 - (Thread *)insertMoreTopPostsFrom:(Thread *)thread {
     
@@ -152,7 +175,6 @@ static NSInteger postsOnPage = 35;
         i = self.postsTopLeft;
     }
     
-    self.updatedIndexes = [NSMutableArray array];
     NSMutableArray *toInsert = [NSMutableArray array];
     
     for (int k = 0; k < i; k++) {
@@ -180,7 +202,6 @@ static NSInteger postsOnPage = 35;
         i = self.postsBottomLeft;
     }
     
-    self.updatedIndexes = [NSMutableArray array];
     NSMutableArray *toInsert = [NSMutableArray array];
     
     for (int k = 0; k < i; k++) {

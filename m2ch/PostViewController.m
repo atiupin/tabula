@@ -11,8 +11,8 @@
 @interface PostViewController ()
 
 @property (nonatomic) NSInteger topCommentRow;
-@property (nonatomic) NSInteger bottomCommentRow;
 @property (nonatomic) NSInteger mainPostRow;
+@property (nonatomic) NSInteger bottomCommentRow;
 @property (nonatomic) NSInteger mainPostShift;
 @property (nonatomic) NSInteger repliesShift;
 @property (nonatomic) NSInteger postCount;
@@ -20,6 +20,9 @@
 @property (nonatomic) NSInteger clearSeparator1;
 @property (nonatomic) NSInteger clearSeparator2;
 @property (nonatomic) NSInteger clearSeparator3;
+
+@property (nonatomic) CGFloat mainRowContentOffset;
+@property (nonatomic) BOOL needFlash;
 
 @end
 
@@ -45,6 +48,8 @@
      }];
     
     self.currentThread = [Thread currentThreadWithThread:self.thread andReplyTo:self.replyTo andReplies:self.replies andPostId:self.postId];
+    
+    self.needFlash = NO;
     
     self.topCommentRow = -1;
     self.bottomCommentRow = -1;
@@ -102,6 +107,7 @@
     [self.tableView.tableFooterView addSubview:endline];
     
     [self.tableView setContentOffset:contentOffset];
+    self.mainRowContentOffset = contentOffset.y - 64; //до загрузки не учитываются навбар и статусбар
 }
 
 - (void)didReceiveMemoryWarning
@@ -183,32 +189,23 @@
     }
 }
 
-//это тоже порефакторить надо
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    NSInteger shift = 0;
-    
-    if (indexPath.row >= self.bottomCommentRow) {
-        if (self.replyTo.count > 0) {
-            shift -= 1;
+    if (!(indexPath.row == self.topCommentRow || indexPath.row == self.bottomCommentRow || indexPath.row == self.mainPostRow)) {
+        NSInteger shift = 0;
+        if (indexPath.row > self.mainPostRow) {
+            if (self.replyTo.count > 0) {
+                shift += 1;
+            }
+            if (self.replies.count > 0) {
+                shift += 1;
+            }
+        } else if (indexPath.row < self.mainPostRow) {
+            shift = 0;
         }
-        if (self.replies.count > 0) {
-            shift -= 1;
-        }
-    }
-    
-    if (indexPath.row < self.mainPostRow) {
-        shift = 0;
-    }
-    
-    if (indexPath.row == self.mainPostRow) {
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-        return;
-    }
-    
-    if (indexPath.row >= self.bottomCommentRow || indexPath.row < self.mainPostRow) {
+        
         NSInteger postNum = indexPath.row;
-        postNum += shift;
+        postNum -= shift;
         NSUInteger indexArray[] = {0, postNum};
         NSIndexPath *newIndexPath = [NSIndexPath indexPathWithIndexes:indexArray length:2];
         
@@ -216,10 +213,46 @@
         un.boardId = self.boardId;
         un.threadId = self.threadId;
         un.postId = self.currentThread.linksReference[newIndexPath.row];
-        [self openPostWithUN:un];
+        [self openPostWithUrlNinja:un];
     }
-    
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (void)openPostWithUrlNinja:(UrlNinja *)urlNinja {
+    if ([self.threadId isEqualToString:urlNinja.threadId] && [self.boardId isEqualToString:urlNinja.boardId] && [self.postId isEqualToString:urlNinja.postId]) {
+        
+        self.needFlash = YES;
+        NSUInteger scrollIndex = self.mainPostRow;
+        
+        if (self.replyTo.count > 0) {
+            scrollIndex += 1;
+        }
+        
+        NSUInteger scrollIndexArray[] = {0, scrollIndex};
+        NSIndexPath *scrollIndexPath = [NSIndexPath indexPathWithIndexes:scrollIndexArray length:2];
+        [self.tableView scrollToRowAtIndexPath:scrollIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
+        
+        if (self.tableView.contentOffset.y == (self.mainRowContentOffset)) {
+            [self makeFlash];
+        }
+        
+    } else {
+        [super openPostWithUrlNinja:urlNinja];
+    }
+}
+
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    [self makeFlash];
+}
+
+- (void)makeFlash {
+    if (self.needFlash == YES) {
+        NSUInteger mainIndexArray[] = {0, self.mainPostRow};
+        NSIndexPath *mainIndexPath = [NSIndexPath indexPathWithIndexes:mainIndexArray length:2];
+        [self.tableView selectRowAtIndexPath:mainIndexPath animated:YES scrollPosition:UITableViewScrollPositionNone];
+        [self.tableView deselectRowAtIndexPath:mainIndexPath animated:YES];
+        self.needFlash = NO;
+    }
 }
 
 @end

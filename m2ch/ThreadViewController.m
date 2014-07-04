@@ -146,6 +146,7 @@ static NSInteger postsOnPage = 35;
             
             [self.thread.posts addObjectsFromArray:childThread.posts];
             [self.thread.linksReference addObjectsFromArray:childThread.linksReference];
+            [self.thread updateReplies];
             
             self.currentThread.postsBottomLeft += childThread.posts.count;
         }
@@ -270,10 +271,9 @@ static NSInteger postsOnPage = 35;
 }
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    Post *post = self.currentThread.posts[indexPath.row];
-    NSLog(@"reply to %@", post.replyTo);
-    NSLog(@"replies %@", post.replies);
-    [self performSegueWithIdentifier:@"showPost" sender:self];
+    UrlNinja *urlNinja = [[UrlNinja alloc]init];
+    urlNinja.postId = self.currentThread.linksReference[indexPath.row];
+    [self openPostWithUrlNinja:urlNinja];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
