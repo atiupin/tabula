@@ -111,7 +111,7 @@
     [self.postImage autoPinEdge:ALEdgeLeading toEdge:ALEdgeTrailing ofView:self.status withOffset:10 relation:NSLayoutRelationEqual];
     [self.postImage autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:kLabelHorizontalInsets];
     
-    [self.postImage autoSetDimension:ALDimensionWidth toSize:44];
+    [self.postImage autoSetDimension:ALDimensionWidth toSize:44 relation:NSLayoutRelationLessThanOrEqual];
     [self.postImage autoSetDimension:ALDimensionHeight toSize:44];
     
     //comment

@@ -109,24 +109,27 @@
 #pragma mark - Gesture Recognizers
 
 - (void)imageTapped:(UITapGestureRecognizer *)sender {
-    
+
     TapImageView *image = (TapImageView *)sender.view;
-    // Create image info
-    JTSImageInfo *imageInfo = [[JTSImageInfo alloc] init];
     
-    NSLog(@"%@", image.bigImageUrl);
-    imageInfo.imageURL = image.bigImageUrl;
-    imageInfo.referenceRect = image.frame;
-    imageInfo.referenceView = image.superview;
-    
-    // Setup view controller
-    JTSImageViewController *imageViewer = [[JTSImageViewController alloc]
-                                           initWithImageInfo:imageInfo
-                                           mode:JTSImageViewControllerMode_Image
-                                           backgroundStyle:JTSImageViewControllerBackgroundStyle_ScaledDimmed];
-    
-    // Present the view controller.
-    [imageViewer showFromViewController:self transition:JTSImageViewControllerTransition_FromOffscreen];
+    if (image.bigImageUrl) {
+        // Create image info
+        JTSImageInfo *imageInfo = [[JTSImageInfo alloc] init];
+        
+        NSLog(@"%@", image.bigImageUrl);
+        imageInfo.imageURL = image.bigImageUrl;
+        imageInfo.referenceRect = image.frame;
+        imageInfo.referenceView = image.superview;
+        
+        // Setup view controller
+        JTSImageViewController *imageViewer = [[JTSImageViewController alloc]
+                                               initWithImageInfo:imageInfo
+                                               mode:JTSImageViewControllerMode_Image
+                                               backgroundStyle:JTSImageViewControllerBackgroundStyle_ScaledDimmed];
+        
+        // Present the view controller.
+        [imageViewer showFromViewController:self transition:JTSImageViewControllerTransition_FromOffscreen];
+    }
 }
 
 #pragma mark - New Post Delegate
