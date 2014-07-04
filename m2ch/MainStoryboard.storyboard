@@ -46,7 +46,13 @@
                             <outlet property="delegate" destination="nxu-mc-D9u" id="Zop-ts-PiE"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Доски" id="ZYc-Cy-K8U"/>
+                    <navigationItem key="navigationItem" title="Доски" id="ZYc-Cy-K8U">
+                        <barButtonItem key="leftBarButtonItem" title="Тред Табулы" id="Aax-Pv-FBu">
+                            <connections>
+                                <action selector="showTabulaThread:" destination="nxu-mc-D9u" id="4VS-MT-1Lb"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0El-YN-a2d" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

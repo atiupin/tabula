@@ -225,7 +225,7 @@
         NSUInteger scrollIndex = self.mainPostRow;
         
         if (self.replyTo.count > 0) {
-            scrollIndex += 1;
+            scrollIndex -= 1;
         }
         
         NSUInteger scrollIndexArray[] = {0, scrollIndex};

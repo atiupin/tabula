@@ -9,6 +9,8 @@
 #import "MainViewController.h"
 #import "BoardViewController.h"
 #import "BoardData.h"
+#import "ThreadViewController.h"
+#import "UrlNinja.h"
 
 @interface MainViewController ()
 
@@ -221,5 +223,20 @@
         [segue.destinationViewController setBoardId:board.boardId];
     }
 }
- 
+
+//debug only
+- (IBAction)showTabulaThread:(id)sender {
+    UrlNinja *urlNinja = [[UrlNinja alloc]init];
+    urlNinja.boardId = @"mobi";
+    urlNinja.threadId = @"300665";
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
+    ThreadViewController *destination = [storyboard instantiateViewControllerWithIdentifier:@"ThreadTag"];
+    [destination setBoardId:urlNinja.boardId];
+    [destination setThreadId:urlNinja.threadId];
+    [destination setPostId:urlNinja.postId];
+    
+    [self.navigationController pushViewController:destination animated:YES];
+}
+
 @end

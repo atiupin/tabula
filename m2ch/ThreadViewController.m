@@ -299,13 +299,8 @@ static NSInteger postsOnPage = 35;
         }
         
         [self performSegueWithIdentifier:@"newPost" sender:self];
-        
-    } else if (actionSheet.tag == 2) { //клик по ссылке
-        if (buttonIndex == actionSheet.cancelButtonIndex) {
-            return;
-        }
-        //кстати, на конфе видел, что это хуевое решение, потому что юиаппликейнеш не должен за это отвечать и это как-то решается через делегирование
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:actionSheet.title]];
+    } else {
+        [super actionSheet:actionSheet clickedButtonAtIndex:buttonIndex];
     }
 }
 

@@ -152,6 +152,9 @@ static NSInteger postsOnPage = 35;
 
 - (void)updateReplies {
     for (Post *post in self.posts) {
+        post.replies = nil;
+    }
+    for (Post *post in self.posts) {
         for (NSString *replyTo in post.replyTo) {
             NSInteger index = [self.linksReference indexOfObject:replyTo];
             if (index != NSNotFound) {

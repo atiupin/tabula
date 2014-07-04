@@ -47,10 +47,10 @@
             [self openThreadWithUrlNinja:urlNinja];
         }
             break;
-        default:
-            //внешняя ссылка - предложение открыть в сафари
-            [[[UIActionSheet alloc] initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:NSLocalizedString(@"Отмена", nil) destructiveButtonTitle:nil otherButtonTitles:NSLocalizedString(@"Открыть ссылку в Safari", nil), nil] showInView:self.view];
+        default: {
+            [self makeExternalLinkActionSheetWithUrl:url];
             break;
+        }
     }
 }
 
@@ -84,6 +84,7 @@
     [self.navigationController pushViewController:destination animated:YES];
 }
 
+//изжить!
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     if ([segue.identifier isEqualToString:@"newPost"]) {
@@ -97,13 +98,33 @@
     }
 }
 
-#pragma mark - Action Sheet Delegate
+#pragma mark - Action Sheets
+
+- (void)makeExternalLinkActionSheetWithUrl:(NSURL *)url {
+    UIActionSheet *actionSheet = [[UIActionSheet alloc]initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:@"Отмена" destructiveButtonTitle:nil otherButtonTitles:@"Открыть ссылку в Safari", nil];
+    actionSheet.tag = 2;
+    [actionSheet showInView:self.view];
+}
+
+- (void)makeWebmActionSheetWithUrl:(NSURL *)url {
+    UIActionSheet *actionSheet = [[UIActionSheet alloc]initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:@"Отмена" destructiveButtonTitle:nil otherButtonTitles:@"Загрузить через Safari", nil];
+    actionSheet.tag = 3;
+    [actionSheet showInView:self.view];
+}
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (buttonIndex == actionSheet.cancelButtonIndex) {
-        return;
-    }
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:actionSheet.title]];
+    if (actionSheet.tag == 2) { //клик по ссылке
+        if (buttonIndex == actionSheet.cancelButtonIndex) {
+            return;
+        }
+        //кстати, на конфе видел, что это хуевое решение, потому что юиаппликейнеш не должен за это отвечать и это как-то решается через делегирование
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:actionSheet.title]];
+    } else if (actionSheet.tag == 3) { //webm-ссылка
+        if (buttonIndex == actionSheet.cancelButtonIndex) {
+            return;
+        }
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:actionSheet.title]];
+    };
 }
 
 #pragma mark - Gesture Recognizers
@@ -113,10 +134,13 @@
     TapImageView *image = (TapImageView *)sender.view;
     
     if (image.bigImageUrl) {
+        NSLog(@"%@", image.bigImageUrl.pathExtension);
+        if ([image.bigImageUrl.pathExtension isEqualToString:@"webm"]) {
+            [self makeWebmActionSheetWithUrl:image.bigImageUrl];
+        } else {
+        
         // Create image info
         JTSImageInfo *imageInfo = [[JTSImageInfo alloc] init];
-        
-        NSLog(@"%@", image.bigImageUrl);
         imageInfo.imageURL = image.bigImageUrl;
         imageInfo.referenceRect = image.frame;
         imageInfo.referenceView = image.superview;
@@ -129,6 +153,7 @@
         
         // Present the view controller.
         [imageViewer showFromViewController:self transition:JTSImageViewControllerTransition_FromOffscreen];
+        }
     }
 }
 
