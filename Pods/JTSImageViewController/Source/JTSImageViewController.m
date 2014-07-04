@@ -199,11 +199,13 @@ CGFloat const JTSImageViewController_MinimumFlickDismissalVelocity = 800.0f;
 
 - (BOOL)prefersStatusBarHidden {
     
-    if (self.isPresented || self.isTransitioningFromInitialModalToInteractiveState) {
-        return YES;
-    }
-    
-    return self.statusBarHiddenPriorToPresentation;
+//    if (self.isPresented || self.isTransitioningFromInitialModalToInteractiveState) {
+//        return YES;
+//    }
+//    
+//    return self.statusBarHiddenPriorToPresentation;
+
+    return YES;
 }
 
 - (UIStatusBarAnimation)preferredStatusBarUpdateAnimation {
