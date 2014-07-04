@@ -13,6 +13,20 @@
 
 @implementation Post
 
+- (NSMutableArray *)replyTo {
+    if (!_replyTo) {
+        _replyTo = [NSMutableArray array];
+    }
+    return _replyTo;
+}
+
+- (NSMutableArray *)replies {
+    if (!_replies) {
+        _replies = [NSMutableArray array];
+    }
+    return _replies;
+}
+
 - (id) initWithDictionary:(NSDictionary *)source andBoardId:(NSString *)boardId andThreadId:(NSString *)threadId {
     
     self.boardId = boardId;
@@ -90,8 +104,6 @@
     self.date = [source objectForKey:@"date"];
     
     self.subtitle = [NSString stringWithFormat:@"%@, %@", self.name, self.date];
-    
-    self.replyTo = [NSMutableArray array];
     self.body = [self makeBody:[source objectForKey:@"comment"]];
     
     return self;
@@ -218,7 +230,7 @@
         NSURL *url = [[NSURL alloc]initWithString:urlString];
         if (url) {
             UrlNinja *un = [UrlNinja unWithUrl:url];
-            if ([un.boardId isEqualToString:self.boardId] && [un.threadId isEqualToString:self.threadId]) {
+            if ([un.boardId isEqualToString:self.boardId] && [un.threadId isEqualToString:self.threadId] && un.type == boardThreadPostLink) {
                 [self.replyTo addObject:un.postId];
             }
             [maComment addAttribute:NSLinkAttributeName value:url range:result.range];
@@ -267,40 +279,4 @@
     return maComment;
 }
 
-- (NSString *)makeThreadReplies:(NSInteger)count {
-    
-    NSString *threadReplies = @"";
-    if (count == 0) {
-        threadReplies = [NSString stringWithFormat:@"Нет ответов"];
-    } else {
-        NSInteger mod = count%100;
-        if (mod>=11 && mod<=19) {
-            threadReplies = [NSString stringWithFormat:@"%ld ответов", (long)count];
-        } else {
-            mod = count%10;
-            switch (mod) {
-                case 1:
-                    threadReplies = [NSString stringWithFormat:@"%ld ответ", (long)count];
-                    break;
-                    
-                case 2:
-                    threadReplies = [NSString stringWithFormat:@"%ld ответа", (long)count];
-                    break;
-                    
-                case 3:
-                    threadReplies = [NSString stringWithFormat:@"%ld ответа", (long)count];
-                    break;
-                    
-                case 4:
-                    threadReplies = [NSString stringWithFormat:@"%ld ответа", (long)count];
-                    break;
-                    
-                default:
-                    threadReplies = [NSString stringWithFormat:@"%ld ответов", (long)count];
-                    break;
-            }
-        }
-    }
-    return threadReplies;
-}
 @end

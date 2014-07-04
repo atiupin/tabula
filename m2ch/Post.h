@@ -47,7 +47,6 @@
 
 - (NSAttributedString *) makeBody:(NSString *)comment;
 - (NSString *)makeSubtile:(NSString *)name withDate:(NSDate *)date;
-- (NSString *)makeThreadReplies:(NSInteger)count;
 
 - (id) initWithDictionary:(NSDictionary *)source andBoardId:(NSString *)boardId andThreadId:(NSString *)threadId ;
 + (id) postWithDictionary:(NSDictionary *)source andBoardId:(NSString *)boardId andThreadId:(NSString *)threadId ;
