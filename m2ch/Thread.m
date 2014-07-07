@@ -100,21 +100,26 @@ static NSInteger postsOnPage = 35;
     self.threadId = threadId;
     
     NSError *dataError = nil;
-    NSArray *dataArray = [NSArray array];
     
     //может прийти nil, если двач тупит, потом нужно написать обработку
     if (data) {
-        dataArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
+        id dataArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
         if (dataError) {
             NSLog(@"JSON Error: %@", dataError);
             return nil;
         }
-    }
-    
-    for (NSDictionary *dic in dataArray) {
-        Post *post = [Post postWithDictionary:dic andBoardId:boardId andThreadId:threadId];
-        [self.posts addObject:post];
-        [self.linksReference addObject:[NSString stringWithFormat:@"%ld", (long)post.num]];
+        NSLog(@"%@", [dataArray class]);
+        if ([dataArray isKindOfClass:[NSArray class]]) {
+            for (NSDictionary *dic in dataArray) {
+                Post *post = [Post postWithDictionary:dic andBoardId:boardId andThreadId:threadId];
+                [self.posts addObject:post];
+                [self.linksReference addObject:[NSString stringWithFormat:@"%ld", (long)post.num]];
+            }
+        } else {
+            //ошибки приходят как nsdictionary
+            //неплохо бы сделать нормальный возврат ошибок
+            return nil;
+        }
     }
     
     [self updateReplies];

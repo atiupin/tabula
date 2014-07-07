@@ -185,6 +185,15 @@ static NSInteger postsOnPage = 35;
 - (void)nothingHere {
     self.isLoaded = YES;
     [self.spinner stopAnimating];
+    
+    //убрать потом в отдельную вьюху
+    UILabel *errorLabel = [[UILabel alloc]initWithFrame:self.view.frame];
+    errorLabel.center = CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height/2-64);
+    errorLabel.text = @"Ошибка закралась в рассчеты";
+    errorLabel.font = [UIFont systemFontOfSize:14];
+    errorLabel.textColor = [UIColor grayColor];
+    errorLabel.textAlignment = NSTextAlignmentCenter;
+    [self.view addSubview:errorLabel];
 }
 
 - (void)updateLastPost {
