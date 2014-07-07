@@ -59,16 +59,19 @@
     
     if (data) {
         NSString *referenceURL = (canonicalURL.absoluteString.length) ? canonicalURL.absoluteString : imageURL.absoluteString;
-        if ([JTSAnimatedGIFUtility imageURLIsAGIF:referenceURL]) {
-            image = [JTSAnimatedGIFUtility animatedImageWithAnimatedGIFData:data];
-        }
-        if (image == nil) {
-            
-            if ([referenceURL.pathExtension isEqualToString:@"jpg"] && ![self isJPEGValid:data]) {
-                image = [UIImage imageNamed:@"CorruptedJpeg"];
-            } else {
-                image = [[UIImage alloc] initWithData:data];
+        if ([[[UIDevice currentDevice] systemVersion] intValue] >= 8) {
+            if ([JTSAnimatedGIFUtility imageURLIsAGIF:referenceURL]) {
+                image = [JTSAnimatedGIFUtility animatedImageWithAnimatedGIFData:data];
             }
+            if (image == nil) {
+                if ([referenceURL.pathExtension isEqualToString:@"jpg"] && ![self isJPEGValid:data]) {
+                    image = [UIImage imageNamed:@"CorruptedJpeg"];
+                } else {
+                    image = [[UIImage alloc] initWithData:data];
+                }
+            }
+        } else {
+            image = [[UIImage alloc] initWithData:data];
         }
     }
     return image;
