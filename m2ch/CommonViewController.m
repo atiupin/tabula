@@ -65,8 +65,6 @@
     errorLabel.textAlignment = NSTextAlignmentCenter;
     errorLabel.numberOfLines = 0;
     
-    NSLog(@"%ld", error.code);
-    
     if (error.code == NSURLErrorCannotFindHost) {
         errorLabel.text = @"Сайт не найден";
     } else if (error.code == NSURLErrorNotConnectedToInternet){
@@ -201,29 +199,37 @@
 #pragma mark - Action Sheets
 
 - (void)makeExternalLinkActionSheetWithUrl:(NSURL *)url {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc]initWithTitle:[url absoluteString] delegate:nil cancelButtonTitle:@"Отмена" destructiveButtonTitle:nil otherButtonTitles:@"Открыть ссылку в Safari", nil];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc]initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:@"Отмена" destructiveButtonTitle:nil otherButtonTitles:@"Открыть ссылку в Safari", @"Скопировать ссылку", nil];
     actionSheet.tag = 2;
     [actionSheet showInView:self.view];
 }
 
 - (void)makeWebmActionSheetWithUrl:(NSURL *)url {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc]initWithTitle:[url absoluteString] delegate:nil cancelButtonTitle:@"Отмена" destructiveButtonTitle:nil otherButtonTitles:@"Загрузить через Safari", nil];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc]initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:@"Отмена" destructiveButtonTitle:nil otherButtonTitles:@"Загрузить через Safari", @"Скопировать ссылку", nil];
     actionSheet.tag = 3;
     [actionSheet showInView:self.view];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (actionSheet.tag == 2) { //клик по ссылке
-        if (buttonIndex == actionSheet.cancelButtonIndex) {
+        NSLog(@"%lu", buttonIndex);
+        if (buttonIndex == 0) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:actionSheet.title]];
+        } else if (buttonIndex == 1) {
+            UIPasteboard *pasteBoard = [UIPasteboard generalPasteboard];
+            pasteBoard.string = actionSheet.title;
+        } else {
             return;
         }
-        //кстати, на конфе видел, что это хуевое решение, потому что юиаппликейнеш не должен за это отвечать и это как-то решается через делегирование
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:actionSheet.title]];
     } else if (actionSheet.tag == 3) { //webm-ссылка
-        if (buttonIndex == actionSheet.cancelButtonIndex) {
+        if (buttonIndex == 0) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:actionSheet.title]];
+        } else if (buttonIndex == 1) {
+            UIPasteboard *pasteBoard = [UIPasteboard generalPasteboard];
+            pasteBoard.string = actionSheet.title;
+        } else {
             return;
         }
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:actionSheet.title]];
     };
 }
 

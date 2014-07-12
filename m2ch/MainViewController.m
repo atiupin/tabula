@@ -118,6 +118,12 @@
             [self.sectionList removeObjectAtIndex:i];
             [self.sectionNames removeObjectAtIndex:i];
         }
+        
+        for (NSMutableArray *array in self.sectionList) {
+            [array sortUsingDescriptors:
+             [NSArray arrayWithObjects:
+              [NSSortDescriptor sortDescriptorWithKey:@"boardId" ascending:YES], nil]];
+        }
 
         dispatch_async(dispatch_get_main_queue(), ^(void){
             [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
