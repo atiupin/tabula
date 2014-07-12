@@ -44,7 +44,7 @@ static NSString *ROOT_URL = @"http://2ch.hk";
 - (void)loadMorePosts;
 - (void)createDataWithLocation:(NSURL *)location;
 - (void)createChildDataWithLocation:(NSURL *)location;
-- (void)errorMessage;
+- (void)errorMessage:(NSError *)error;
 - (void)creationEnded;
 - (void)updateStarted;
 - (void)updateEnded;

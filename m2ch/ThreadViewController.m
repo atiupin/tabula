@@ -95,7 +95,8 @@ static NSInteger postsOnPage = 35;
                     [self.tableView scrollToRowAtIndexPath:self.currentThread.startingRow atScrollPosition:UITableViewScrollPositionTop animated:NO];
                 }
             } else {
-                [self performSelectorOnMainThread:@selector(errorMessage) withObject:nil waitUntilDone:YES];
+                NSError *error = [NSError errorWithDomain:ROOT_URL code:-666 userInfo:nil];
+                [self performSelectorOnMainThread:@selector(errorMessage:) withObject:error waitUntilDone:YES];
             }
         });
     });

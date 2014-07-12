@@ -27,6 +27,7 @@
         [self updateStarted];
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+        config.timeoutIntervalForRequest = 30;
         NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
         NSURLSessionDownloadTask *task = [session downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
             if (!error && isMain == YES) {
@@ -34,7 +35,7 @@
             } else if (!error && isMain == NO) {
                 [self createChildDataWithLocation:location];
             } else {
-                [self errorMessage];
+                [self performSelectorOnMainThread:@selector(errorMessage:) withObject:error waitUntilDone:NO];
             }
         }];
         [task resume];
@@ -53,16 +54,31 @@
     
 }
 
-- (void)errorMessage {
+- (void)errorMessage:(NSError *)error {
     self.isLoaded = YES;
     [self.spinner stopAnimating];
     
     UILabel *errorLabel = [[UILabel alloc]initWithFrame:self.view.frame];
     errorLabel.center = CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height/2-self.navigationController.navigationBar.frame.size.height);
-    errorLabel.text = @"Ошибка закралась в рассчеты";
     errorLabel.font = [UIFont systemFontOfSize:14];
     errorLabel.textColor = [UIColor grayColor];
     errorLabel.textAlignment = NSTextAlignmentCenter;
+    errorLabel.numberOfLines = 0;
+    
+    NSLog(@"%ld", error.code);
+    
+    if (error.code == NSURLErrorCannotFindHost) {
+        errorLabel.text = @"Сайт не найден";
+    } else if (error.code == NSURLErrorNotConnectedToInternet){
+        errorLabel.text = @"Отсутствует подключение к интернету";
+    } else if (error.code == NSURLErrorTimedOut) {
+        errorLabel.text = @"Сайт не отвечает\nили подключение слишком слабое";
+    } else if (error.code == -666){
+        errorLabel.text = @"Тред не найден";
+    } else {
+        errorLabel.text = @"Ошибка закралась в рассчеты";
+    }
+    
     [self.view addSubview:errorLabel];
 }
 
@@ -178,7 +194,7 @@
         [destinationController setThreadId:self.threadId];
         [destinationController setDraft:self.thread.postDraft];
         destinationController.postView.text = self.thread.postDraft;
-        //destinationController.delegate = self;
+        destinationController.delegate = self;
     }
 }
 

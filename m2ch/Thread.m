@@ -101,14 +101,12 @@ static NSInteger postsOnPage = 35;
     
     NSError *dataError = nil;
     
-    //может прийти nil, если двач тупит, потом нужно написать обработку
     if (data) {
         id dataArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
         if (dataError) {
             NSLog(@"JSON Error: %@", dataError);
             return nil;
         }
-        NSLog(@"%@", [dataArray class]);
         if ([dataArray isKindOfClass:[NSArray class]]) {
             for (NSDictionary *dic in dataArray) {
                 Post *post = [Post postWithDictionary:dic andBoardId:boardId andThreadId:threadId];
