@@ -33,13 +33,6 @@ static NSInteger postsOnPage = 35;
     [self.refreshButton addTarget:self action:@selector(loadMorePosts) forControlEvents:UIControlEventTouchUpInside];
     self.refreshButton.hidden = YES;
     
-    self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-    self.spinner.color = [UIColor grayColor];
-    self.spinner.center = CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height/2-64);
-    self.spinner.hidesWhenStopped = YES;
-    [self.spinner startAnimating];
-    
-    [self.view addSubview:self.spinner];
     self.tableView.tableFooterView = self.refreshButton;
     
     NSString *stringUrl = [NSString stringWithFormat:@"%@/makaba/mobile.fcgi?task=get_thread&board=%@&thread=%@&post=1", ROOT_URL, self.boardId, self.threadId];
@@ -136,28 +129,13 @@ static NSInteger postsOnPage = 35;
 
 #pragma mark - Data updating
 
-- (void)errorMessage {
-    [super errorMessage];
-    [self.spinner stopAnimating];
-    
-    //убрать потом в отдельную вьюху
-    UILabel *errorLabel = [[UILabel alloc]initWithFrame:self.view.frame];
-    errorLabel.center = CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height/2-64);
-    errorLabel.text = @"Ошибка закралась в рассчеты";
-    errorLabel.font = [UIFont systemFontOfSize:14];
-    errorLabel.textColor = [UIColor grayColor];
-    errorLabel.textAlignment = NSTextAlignmentCenter;
-    [self.view addSubview:errorLabel];
-}
-
 - (void)creationEnded {
     [super creationEnded];
     //обновление таблицы бросает исключения автолейаута, если нажать на назад пока оно выполняется, но программу это не крашит
     [self.tableView reloadData];
+    [self updateLastPost];
     self.refreshButton.enabled = YES;
     self.refreshButton.hidden = NO;
-    [self.spinner stopAnimating];
-    [self updateLastPost];
 }
 
 - (void)updateStarted {
@@ -168,10 +146,9 @@ static NSInteger postsOnPage = 35;
 - (void)updateEnded {
     [super updateEnded];
     [self loadMorePostsBottom];
-    self.refreshButton.enabled = YES;
     [self updateLastPost];
+    self.refreshButton.enabled = YES;
 }
-
 
 - (void)updateLastPost {
     //запись последнего поста в БД

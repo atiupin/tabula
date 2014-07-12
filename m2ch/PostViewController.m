@@ -99,13 +99,9 @@
     [self.tableView.tableFooterView addSubview:endline];
     
     [self.tableView setContentOffset:contentOffset];
-    self.mainRowContentOffset = contentOffset.y - 64; //до загрузки не учитываются навбар и статусбар
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    self.mainRowContentOffset = contentOffset.y - self.navigationController.navigationBar.frame.size.height;
+    
+    [self creationEnded];
 }
 
 #pragma mark - Table view data source
@@ -119,7 +115,6 @@
 {
     return self.postCount;
 }
-
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {

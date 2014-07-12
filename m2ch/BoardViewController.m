@@ -22,14 +22,6 @@
     [self.tableView addSubview:self.refreshControl];
     [self.refreshControl addTarget:self action:@selector(refresh) forControlEvents:UIControlEventValueChanged];
     
-    self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-    self.spinner.color = [UIColor grayColor];
-    self.spinner.center = CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height/2-64);
-    self.spinner.hidesWhenStopped = YES;
-    [self.spinner startAnimating];
-    
-    [self.view addSubview:self.spinner];
-    
     //убирает сепараторы снизу и при загрузке
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 0, 0)];
     [self.tableView registerClass:[ThreadTableViewCell class] forCellReuseIdentifier:@"reuseIndenifier"];
@@ -102,8 +94,8 @@
 #pragma mark - Data updating
 
 - (void)creationEnded {
+    [super creationEnded];
     [self.tableView reloadData];
-    [self.spinner stopAnimating];
 }
 
 #pragma mark - Table view data source

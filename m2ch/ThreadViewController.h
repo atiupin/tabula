@@ -18,6 +18,5 @@
 @property (nonatomic, strong) NSString *quote;
 
 @property (nonatomic, strong) UIButton *refreshButton;
-@property (nonatomic, strong) UIActivityIndicatorView *spinner;
 
 @end

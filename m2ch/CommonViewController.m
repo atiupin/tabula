@@ -18,6 +18,8 @@
 
 @implementation CommonViewController
 
+
+
 #pragma mark - Network
 
 - (void)loadDataForUrl:(NSURL *)url isMainUrl:(BOOL)isMain {
@@ -53,24 +55,45 @@
 
 - (void)errorMessage {
     self.isLoaded = YES;
+    [self.spinner stopAnimating];
+    
+    UILabel *errorLabel = [[UILabel alloc]initWithFrame:self.view.frame];
+    errorLabel.center = CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height/2-self.navigationController.navigationBar.frame.size.height);
+    errorLabel.text = @"Ошибка закралась в рассчеты";
+    errorLabel.font = [UIFont systemFontOfSize:14];
+    errorLabel.textColor = [UIColor grayColor];
+    errorLabel.textAlignment = NSTextAlignmentCenter;
+    [self.view addSubview:errorLabel];
 }
 
 - (void)creationEnded {
     self.isLoaded = YES;
+    [self.spinner stopAnimating];
 }
 
 - (void)updateStarted {
-    self.isLoaded = YES;
+    self.isLoaded = NO;
 }
 
 - (void)updateEnded {
     self.isLoaded = YES;
+    [self.spinner stopAnimating];
 }
 
 #pragma mark - Lifecycle
 
+- (void)viewDidLoad {
+    self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    self.spinner.color = [UIColor grayColor];
+    self.spinner.center = CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2 - self.navigationController.navigationBar.frame.size.height);
+    self.spinner.hidesWhenStopped = YES;
+    [self.spinner startAnimating];
+    [self.view addSubview:self.spinner];
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadData) name:UIContentSizeCategoryDidChangeNotification object:nil];
 }
 
