@@ -25,19 +25,19 @@
 @property (nonatomic, strong)NSURL *url;
 @property (nonatomic, strong)NSString *draft;
 
-@property (strong, nonatomic) IBOutlet UIWebView *output;
+@property (weak, nonatomic) IBOutlet UIWebView *output;
 @property (strong, nonatomic) UIView *loader;
 @property (strong, nonatomic) NSTimer *timer;
 @property (strong, nonatomic) NSString *lastPostId;
 @property (nonatomic) BOOL sageStatus;
 
-@property (strong, nonatomic) IBOutlet UITextView *postView;
-@property (strong, nonatomic) IBOutlet UIImageView *captchaImage;
-@property (strong, nonatomic) IBOutlet UITextField *captchaView;
-@property (strong, nonatomic) IBOutlet UILabel *captchaStatus;
-@property (strong, nonatomic) IBOutlet UIButton *sageStatusButton;
-@property (strong, nonatomic) IBOutlet UIBarButtonItem *postButton;
-@property (strong, nonatomic) IBOutlet UIButton *fixCaptcha;
+@property (weak, nonatomic) IBOutlet UITextView *postView;
+@property (weak, nonatomic) IBOutlet UIImageView *captchaImage;
+@property (weak, nonatomic) IBOutlet UITextField *captchaView;
+@property (weak, nonatomic) IBOutlet UILabel *captchaStatus;
+@property (weak, nonatomic) IBOutlet UIButton *sageStatusButton;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *postButton;
+@property (weak, nonatomic) IBOutlet UIButton *fixCaptcha;
 
 - (IBAction)fixCaptcha:(id)sender;
 - (IBAction)switchSageStatus:(id)sender;

@@ -9,10 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "CommonViewController.h"
 
-@interface BoardViewController : CommonViewController <NSURLSessionDelegate, NSURLSessionDownloadDelegate>
+@interface BoardViewController : CommonViewController
 
 @property (nonatomic, strong) NSMutableArray *threadsList;
-@property (nonatomic, strong) ThreadTableViewCell *threadCell;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) UIActivityIndicatorView *spinner;
 

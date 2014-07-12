@@ -26,19 +26,11 @@ static NSInteger postsOnPage = 35;
     self.navigationItem.title = [NSString stringWithFormat:@"Тред в /%@/", self.boardId];
     self.isLoaded = NO;
     
-    [[NSNotificationCenter defaultCenter]
-     addObserverForName:UIContentSizeCategoryDidChangeNotification
-     object:nil
-     queue:[NSOperationQueue mainQueue]
-     usingBlock:^(NSNotification *note) {
-         [self.tableView reloadData];
-     }];
-    
     self.refreshButton = [UIButton buttonWithType:UIButtonTypeSystem];
     self.refreshButton.frame = CGRectMake(0, 0, 320, 44);
     [self.refreshButton setTitle:@"Обновить тред" forState:UIControlStateNormal];
     [self.refreshButton setTitle:@"Загрузка..." forState:UIControlStateDisabled];
-    [self.refreshButton addTarget:self action:@selector(loadUpdatedData) forControlEvents:UIControlEventTouchUpInside];
+    [self.refreshButton addTarget:self action:@selector(loadMorePosts) forControlEvents:UIControlEventTouchUpInside];
     self.refreshButton.hidden = YES;
     
     self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
@@ -50,38 +42,21 @@ static NSInteger postsOnPage = 35;
     [self.view addSubview:self.spinner];
     self.tableView.tableFooterView = self.refreshButton;
     
-    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
-    self.session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
-    
-    [self loadData];
+    NSString *stringUrl = [NSString stringWithFormat:@"%@/makaba/mobile.fcgi?task=get_thread&board=%@&thread=%@&post=1", ROOT_URL, self.boardId, self.threadId];
+    self.mainUrl = [NSURL URLWithString:stringUrl];
+    [self loadDataForUrl:self.mainUrl isMainUrl:YES];
 }
 
 #pragma mark - Data loading and creating
 
-- (void)loadData {
-    [self updateStarted];
-    NSString *threadStringUrl = [NSString stringWithFormat:@"http://2ch.hk/makaba/mobile.fcgi?task=get_thread&board=%@&thread=%@&post=1", self.boardId, self.threadId];
-    NSURL *threadUrl = [NSURL URLWithString:threadStringUrl];
-    NSURLSessionDownloadTask *task = [self.session downloadTaskWithURL:threadUrl completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
-        [self masterThreadWithLocation:location];
-    }];
-    [task resume];
-}
-
-- (void)loadUpdatedData {
-    [self updateStarted];
+- (void)loadMorePosts {
     NSString *lastNum = self.thread.linksReference[self.thread.linksReference.count-1];
-    NSString *threadStringUrl = [NSString stringWithFormat:@"http://2ch.hk/makaba/mobile.fcgi?task=get_thread&board=%@&thread=%@&num=%@", self.boardId, self.threadId, lastNum];
-    
-    NSURL *threadUrl = [NSURL URLWithString:threadStringUrl];
-    
-    NSURLSessionDownloadTask *task = [self.session downloadTaskWithURL:threadUrl completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
-        [self childThreadWithLocation:location];
-    }];
-    [task resume];
+    NSString *stringUrl = [NSString stringWithFormat:@"%@/makaba/mobile.fcgi?task=get_thread&board=%@&thread=%@&num=%@", ROOT_URL, self.boardId, self.threadId, lastNum];
+    NSURL *url = [NSURL URLWithString:stringUrl];
+    [self loadDataForUrl:url isMainUrl:NO];
 }
 
-- (void)masterThreadWithLocation:(NSURL *)location {
+- (void)createDataWithLocation:(NSURL *)location {
     NSData *data = [NSData dataWithContentsOfURL:location];
     //асинхронное задание по созданию массива
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
@@ -127,13 +102,14 @@ static NSInteger postsOnPage = 35;
                     [self.tableView scrollToRowAtIndexPath:self.currentThread.startingRow atScrollPosition:UITableViewScrollPositionTop animated:NO];
                 }
             } else {
-                [self performSelectorOnMainThread:@selector(nothingHere) withObject:nil waitUntilDone:YES];
+                [self performSelectorOnMainThread:@selector(errorMessage) withObject:nil waitUntilDone:YES];
             }
         });
     });
 }
 
-- (void)childThreadWithLocation:(NSURL *)location {
+- (void)createChildDataWithLocation:(NSURL *)location {
+    [super createChildDataWithLocation:location];
     NSData *data = [NSData dataWithContentsOfURL:location];
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
@@ -160,30 +136,8 @@ static NSInteger postsOnPage = 35;
 
 #pragma mark - Data updating
 
-- (void)updateStarted {
-    self.refreshButton.enabled = NO;
-    self.isLoaded = NO;
-}
-
-- (void)creationEnded {
-    //обновление таблицы бросает исключения автолейаута, если нажать на назад пока оно выполняется, но программу это не крашит
-    [self.tableView reloadData];
-    self.refreshButton.enabled = YES;
-    self.refreshButton.hidden = NO;
-    self.isLoaded = YES;
-    [self.spinner stopAnimating];
-    [self updateLastPost];
-}
-
-- (void)updateEnded {
-    [self loadMorePostsBottom];
-    self.refreshButton.enabled = YES;
-    self.isLoaded = YES;
-    [self updateLastPost];
-}
-
-- (void)nothingHere {
-    self.isLoaded = YES;
+- (void)errorMessage {
+    [super errorMessage];
     [self.spinner stopAnimating];
     
     //убрать потом в отдельную вьюху
@@ -195,6 +149,29 @@ static NSInteger postsOnPage = 35;
     errorLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:errorLabel];
 }
+
+- (void)creationEnded {
+    [super creationEnded];
+    //обновление таблицы бросает исключения автолейаута, если нажать на назад пока оно выполняется, но программу это не крашит
+    [self.tableView reloadData];
+    self.refreshButton.enabled = YES;
+    self.refreshButton.hidden = NO;
+    [self.spinner stopAnimating];
+    [self updateLastPost];
+}
+
+- (void)updateStarted {
+    [super updateStarted];
+    self.refreshButton.enabled = NO;
+}
+
+- (void)updateEnded {
+    [super updateEnded];
+    [self loadMorePostsBottom];
+    self.refreshButton.enabled = YES;
+    [self updateLastPost];
+}
+
 
 - (void)updateLastPost {
     //запись последнего поста в БД
@@ -216,20 +193,6 @@ static NSInteger postsOnPage = 35;
     }];
     
     [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
-}
-
-#pragma mark - Session stuff
-//чтобы компилятор не ругался
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location{
-    
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes {
-    
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
 }
 
 #pragma mark - Table view data source

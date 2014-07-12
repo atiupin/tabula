@@ -18,6 +18,67 @@
 
 @implementation CommonViewController
 
+#pragma mark - Network
+
+- (void)loadDataForUrl:(NSURL *)url isMainUrl:(BOOL)isMain {
+    if (url) {
+        [self updateStarted];
+        NSURLRequest *request = [NSURLRequest requestWithURL:url];
+        NSURLSessionConfiguration *config = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+        NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
+        NSURLSessionDownloadTask *task = [session downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+            if (!error && isMain == YES) {
+                [self createDataWithLocation:location];
+            } else if (!error && isMain == NO) {
+                [self createChildDataWithLocation:location];
+            } else {
+                [self errorMessage];
+            }
+        }];
+        [task resume];
+    }
+}
+
+- (void)loadMorePosts {
+
+}
+
+- (void)createDataWithLocation:(NSURL *)location {
+    
+}
+
+- (void)createChildDataWithLocation:(NSURL *)location {
+    
+}
+
+- (void)errorMessage {
+    self.isLoaded = YES;
+}
+
+- (void)creationEnded {
+    self.isLoaded = YES;
+}
+
+- (void)updateStarted {
+    self.isLoaded = YES;
+}
+
+- (void)updateEnded {
+    self.isLoaded = YES;
+}
+
+#pragma mark - Lifecycle
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadData) name:UIContentSizeCategoryDidChangeNotification object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIContentSizeCategoryDidChangeNotification object:nil];
+}
+
 #pragma mark - Links and Segues
 
 - (void)attributedLabel:(__unused TTTAttributedLabel *)label didSelectLinkWithURL:(NSURL *)url {
@@ -94,20 +155,20 @@
         [destinationController setThreadId:self.threadId];
         [destinationController setDraft:self.thread.postDraft];
         destinationController.postView.text = self.thread.postDraft;
-        destinationController.delegate = self;
+        //destinationController.delegate = self;
     }
 }
 
 #pragma mark - Action Sheets
 
 - (void)makeExternalLinkActionSheetWithUrl:(NSURL *)url {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc]initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:@"Отмена" destructiveButtonTitle:nil otherButtonTitles:@"Открыть ссылку в Safari", nil];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc]initWithTitle:[url absoluteString] delegate:nil cancelButtonTitle:@"Отмена" destructiveButtonTitle:nil otherButtonTitles:@"Открыть ссылку в Safari", nil];
     actionSheet.tag = 2;
     [actionSheet showInView:self.view];
 }
 
 - (void)makeWebmActionSheetWithUrl:(NSURL *)url {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc]initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:@"Отмена" destructiveButtonTitle:nil otherButtonTitles:@"Загрузить через Safari", nil];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc]initWithTitle:[url absoluteString] delegate:nil cancelButtonTitle:@"Отмена" destructiveButtonTitle:nil otherButtonTitles:@"Загрузить через Safari", nil];
     actionSheet.tag = 3;
     [actionSheet showInView:self.view];
 }
@@ -166,7 +227,7 @@
 
 - (void)postPosted {
     self.thread.postDraft = nil;
-    [self loadUpdatedData];
+    [self loadMorePosts];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -202,12 +263,6 @@
     }
     
     return 0;
-}
-
-#pragma mark - Little Helpers
-
-- (void)loadUpdatedData {
-    
 }
 
 @end

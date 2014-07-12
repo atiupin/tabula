@@ -16,14 +16,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [[NSNotificationCenter defaultCenter]
-     addObserverForName:UIContentSizeCategoryDidChangeNotification
-     object:nil
-     queue:[NSOperationQueue mainQueue]
-     usingBlock:^(NSNotification *note) {
-         [self.tableView reloadData];
-     }];
-    
+
     self.navigationItem.title = [NSString stringWithFormat:@"/%@/", self.boardId];
     self.refreshControl = [[UIRefreshControl alloc]init];
     [self.tableView addSubview:self.refreshControl];
@@ -39,35 +32,23 @@
     
     //убирает сепараторы снизу и при загрузке
     self.tableView.tableFooterView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 0, 0)];
-    
     [self.tableView registerClass:[ThreadTableViewCell class] forCellReuseIdentifier:@"reuseIndenifier"];
     self.tableView.estimatedRowHeight = UITableViewAutomaticDimension;
-    [self loadData];
     
-}
-
-- (void)loadData {
-    
-    NSString *boardStringUrl = [[@"http://2ch.hk/" stringByAppendingString:self.boardId]stringByAppendingString:@"/wakaba.json"];
-    NSURL *boardUrl = [NSURL URLWithString:boardStringUrl];
-    
-    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
-    NSURLSessionDownloadTask *task = [session downloadTaskWithURL:boardUrl];
-    [task resume];
-    
+    NSString *stringUrl = [NSString stringWithFormat:@"%@/%@/wakaba.json", ROOT_URL, self.boardId];
+    self.mainUrl = [NSURL URLWithString:stringUrl];
+    [self loadDataForUrl:self.mainUrl isMainUrl:YES];
 }
 
 #pragma mark - Data loading and creating
 
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
-
+- (void)createDataWithLocation:(NSURL *)location {
+    [super createDataWithLocation:location];
     NSData *data = [NSData dataWithContentsOfURL:location];
-
     dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
         
         [self loadThreadsListWithData:data];
-
+        
         dispatch_async(dispatch_get_main_queue(), ^(void){
             [self performSelectorOnMainThread:@selector(creationEnded) withObject:nil waitUntilDone:YES];
         });
@@ -123,15 +104,6 @@
 - (void)creationEnded {
     [self.tableView reloadData];
     [self.spinner stopAnimating];
-}
-
-#pragma mark - Session stuff
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didResumeAtOffset:(int64_t)fileOffset expectedTotalBytes:(int64_t)expectedTotalBytes {
-    
-}
-
-- (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
 }
 
 #pragma mark - Table view data source
@@ -218,7 +190,7 @@
 
 - (void)refresh {
     [self.refreshControl endRefreshing];
-    [self loadData];
+    [self loadDataForUrl:self.mainUrl isMainUrl:YES];
 }
 
 @end

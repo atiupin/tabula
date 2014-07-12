@@ -23,7 +23,11 @@
 #import "UrlNinja.h"
 #import "Declension.h"
 
+static NSString *ROOT_URL = @"http://2ch.hk";
+
 @interface CommonViewController : UITableViewController <TTTAttributedLabelDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, NewPostControllerDelegate>
+
+@property (nonatomic, strong) NSURL *mainUrl;
 
 @property (nonatomic, strong) NSString *boardId;
 @property (nonatomic, strong) NSString *threadId;
@@ -32,11 +36,22 @@
 @property (nonatomic, strong) Thread *thread;
 @property (nonatomic, strong) Thread *currentThread;
 
+@property (nonatomic) BOOL isLoaded;
+@property (nonatomic) BOOL isUpdating;
+
+- (void)loadDataForUrl:(NSURL *)url isMainUrl:(BOOL)isMain;
+- (void)loadMorePosts;
+- (void)createDataWithLocation:(NSURL *)location;
+- (void)createChildDataWithLocation:(NSURL *)location;
+- (void)errorMessage;
+- (void)creationEnded;
+- (void)updateStarted;
+- (void)updateEnded;
+
 - (void)openThreadWithUrlNinja:(UrlNinja *)urlNinja;
 - (void)openPostWithUrlNinja:(UrlNinja *)urlNinja;
 
 - (CGFloat)heightForPost:(Post *)post;
 - (void)imageTapped:(UITapGestureRecognizer *)sender;
-- (void)loadUpdatedData;
 
 @end

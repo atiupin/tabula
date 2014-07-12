@@ -39,14 +39,6 @@
     
     self.tableView.estimatedRowHeight = UITableViewAutomaticDimension;
     
-    [[NSNotificationCenter defaultCenter]
-     addObserverForName:UIContentSizeCategoryDidChangeNotification
-     object:nil
-     queue:[NSOperationQueue mainQueue]
-     usingBlock:^(NSNotification *note) {
-         [self.tableView reloadData];
-     }];
-    
     self.currentThread = [Thread currentThreadWithThread:self.thread andReplyTo:self.replyTo andReplies:self.replies andPostId:self.postId];
     
     self.needFlash = NO;
