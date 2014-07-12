@@ -38,7 +38,7 @@ static NSInteger postsOnPage = 35;
     
     NSString *stringUrl = [NSString stringWithFormat:@"%@/makaba/mobile.fcgi?task=get_thread&board=%@&thread=%@&post=1", ROOT_URL, self.boardId, self.threadId];
     self.mainUrl = [NSURL URLWithString:stringUrl];
-    [self loadDataForUrl:self.mainUrl isMainUrl:YES];
+    [self loadDataForUrl:self.mainUrl isMainUrl:YES handleError:YES];
 }
 
 #pragma mark - Data loading and creating
@@ -47,7 +47,7 @@ static NSInteger postsOnPage = 35;
     NSString *lastNum = self.thread.linksReference[self.thread.linksReference.count-1];
     NSString *stringUrl = [NSString stringWithFormat:@"%@/makaba/mobile.fcgi?task=get_thread&board=%@&thread=%@&num=%@", ROOT_URL, self.boardId, self.threadId, lastNum];
     NSURL *url = [NSURL URLWithString:stringUrl];
-    [self loadDataForUrl:url isMainUrl:NO];
+    [self loadDataForUrl:url isMainUrl:NO handleError:NO];
 }
 
 - (void)createDataWithLocation:(NSURL *)location {
@@ -336,7 +336,7 @@ static NSInteger postsOnPage = 35;
         [self.currentThread insertMoreBottomPostsFrom:self.thread];
         [self cacheHeightsForUpdatedIndexes];
         dispatch_async(dispatch_get_main_queue(), ^(void){
-            [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
+            [self.tableView reloadData];
             [self updateLastPost];
             self.refreshButton.enabled = YES;
             self.isUpdating = NO;

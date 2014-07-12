@@ -29,7 +29,7 @@ static NSInteger postsOnPage = 35;
 }
 
 - (NSMutableArray *)updatedIndexes {
-    if (_updatedIndexes) {
+    if (!_updatedIndexes) {
         _updatedIndexes = [NSMutableArray array];
     }
     return _updatedIndexes;

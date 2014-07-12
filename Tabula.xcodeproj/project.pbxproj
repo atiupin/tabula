@@ -16,8 +16,8 @@
 		974B602019566FA800592B1D /* Declension.m in Sources */ = {isa = PBXBuildFile; fileRef = 974B601F19566FA800592B1D /* Declension.m */; };
 		9772D650195CDAEE00C2A545 /* ThreadData.m in Sources */ = {isa = PBXBuildFile; fileRef = 9772D64F195CDAEE00C2A545 /* ThreadData.m */; };
 		977C08C319512CDC00F8F095 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 977C08C219512CDC00F8F095 /* README.md */; };
-		978A6045193771D2001B3F18 /* DebugController.m in Sources */ = {isa = PBXBuildFile; fileRef = 978A6044193771D2001B3F18 /* DebugController.m */; };
 		978A605119394DA5001B3F18 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 978A605019394DA5001B3F18 /* CoreText.framework */; };
+		9793479A19717EF100BD9DDF /* ImageNinja.m in Sources */ = {isa = PBXBuildFile; fileRef = 9793479919717EF100BD9DDF /* ImageNinja.m */; };
 		97A26CC11941486600D632C5 /* UrlNinja.m in Sources */ = {isa = PBXBuildFile; fileRef = 97A26CC01941486600D632C5 /* UrlNinja.m */; };
 		97A26CCA1946741600D632C5 /* TapImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 97A26CC91946741600D632C5 /* TapImageView.m */; };
 		97A26CD319476CDC00D632C5 /* CaptchaFixController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97A26CD219476CDB00D632C5 /* CaptchaFixController.m */; };
@@ -77,9 +77,9 @@
 		9772D64E195CDAEE00C2A545 /* ThreadData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadData.h; sourceTree = "<group>"; };
 		9772D64F195CDAEE00C2A545 /* ThreadData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadData.m; sourceTree = "<group>"; };
 		977C08C219512CDC00F8F095 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
-		978A6043193771D2001B3F18 /* DebugController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugController.h; sourceTree = "<group>"; };
-		978A6044193771D2001B3F18 /* DebugController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugController.m; sourceTree = "<group>"; };
 		978A605019394DA5001B3F18 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		9793479819717EF100BD9DDF /* ImageNinja.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageNinja.h; sourceTree = "<group>"; };
+		9793479919717EF100BD9DDF /* ImageNinja.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageNinja.m; sourceTree = "<group>"; };
 		97A26CB01940B08600D632C5 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		97A26CBF1941486600D632C5 /* UrlNinja.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UrlNinja.h; sourceTree = "<group>"; };
 		97A26CC01941486600D632C5 /* UrlNinja.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UrlNinja.m; sourceTree = "<group>"; };
@@ -166,6 +166,8 @@
 				97C3D531191BDE92008921B5 /* Post.m */,
 				97A26CBF1941486600D632C5 /* UrlNinja.h */,
 				97A26CC01941486600D632C5 /* UrlNinja.m */,
+				9793479819717EF100BD9DDF /* ImageNinja.h */,
+				9793479919717EF100BD9DDF /* ImageNinja.m */,
 				974B601E19566FA800592B1D /* Declension.h */,
 				974B601F19566FA800592B1D /* Declension.m */,
 				848D598D195171C800773BCF /* BoardData.h */,
@@ -214,15 +216,6 @@
 			name = Views;
 			sourceTree = "<group>";
 		};
-		97A26CC6194356A500D632C5 /* Debug */ = {
-			isa = PBXGroup;
-			children = (
-				978A6043193771D2001B3F18 /* DebugController.h */,
-				978A6044193771D2001B3F18 /* DebugController.m */,
-			);
-			name = Debug;
-			sourceTree = "<group>";
-		};
 		97C3D4E4191BC82A008921B5 = {
 			isa = PBXGroup;
 			children = (
@@ -267,7 +260,6 @@
 				97A26CC31943565C00D632C5 /* Model */,
 				97A26CC41943567C00D632C5 /* Controllers */,
 				97A26CC51943569000D632C5 /* Views */,
-				97A26CC6194356A500D632C5 /* Debug */,
 				97C3D51F191BC85F008921B5 /* MainStoryboard.storyboard */,
 				97A26CD61947811300D632C5 /* Test.h */,
 				97A26CD71947811300D632C5 /* Test.m */,
@@ -454,8 +446,8 @@
 				97183A7B192AB607003F429C /* GetRequestViewController.m in Sources */,
 				974A61081964A6AB00B98C5D /* Board.m in Sources */,
 				848D598C1951714D00773BCF /* Data.xcdatamodeld in Sources */,
-				978A6045193771D2001B3F18 /* DebugController.m in Sources */,
 				9772D650195CDAEE00C2A545 /* ThreadData.m in Sources */,
+				9793479A19717EF100BD9DDF /* ImageNinja.m in Sources */,
 				97D28C0C1927FF6300C7407F /* PostTableViewCell.m in Sources */,
 				848D598F195171C800773BCF /* BoardData.m in Sources */,
 				97C3D529191BD485008921B5 /* BoardViewController.m in Sources */,

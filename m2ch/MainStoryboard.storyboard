@@ -230,6 +230,10 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Треды" id="Zba-g7-lbM"/>
+                    <refreshControl key="refreshControl" opaque="NO" multipleTouchEnabled="YES" contentMode="center" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="8bA-aY-B0b">
+                        <autoresizingMask key="autoresizingMask"/>
+                        <attributedString key="attributedTitle"/>
+                    </refreshControl>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="oS2-AA-mux" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

@@ -40,7 +40,7 @@ static NSString *ROOT_URL = @"http://2ch.hk";
 @property (nonatomic) BOOL isLoaded;
 @property (nonatomic) BOOL isUpdating;
 
-- (void)loadDataForUrl:(NSURL *)url isMainUrl:(BOOL)isMain;
+- (void)loadDataForUrl:(NSURL *)url isMainUrl:(BOOL)isMain handleError:(BOOL)handleError;
 - (void)loadMorePosts;
 - (void)createDataWithLocation:(NSURL *)location;
 - (void)createChildDataWithLocation:(NSURL *)location;

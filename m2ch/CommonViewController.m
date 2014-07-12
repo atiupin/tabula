@@ -22,7 +22,7 @@
 
 #pragma mark - Network
 
-- (void)loadDataForUrl:(NSURL *)url isMainUrl:(BOOL)isMain {
+- (void)loadDataForUrl:(NSURL *)url isMainUrl:(BOOL)isMain handleError:(BOOL)handleError {
     if (url) {
         [self updateStarted];
         NSURLRequest *request = [NSURLRequest requestWithURL:url];
@@ -34,7 +34,7 @@
                 [self createDataWithLocation:location];
             } else if (!error && isMain == NO) {
                 [self createChildDataWithLocation:location];
-            } else {
+            } else if (handleError == YES) {
                 [self performSelectorOnMainThread:@selector(errorMessage:) withObject:error waitUntilDone:NO];
             }
         }];
@@ -83,6 +83,7 @@
 - (void)creationEnded {
     self.isLoaded = YES;
     [self.spinner stopAnimating];
+    [self.refreshControl endRefreshing];
 }
 
 - (void)updateStarted {
@@ -92,6 +93,7 @@
 - (void)updateEnded {
     self.isLoaded = YES;
     [self.spinner stopAnimating];
+    [self.refreshControl endRefreshing];
 }
 
 #pragma mark - Lifecycle
@@ -107,7 +109,6 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadData) name:UIContentSizeCategoryDidChangeNotification object:nil];
 }
 
@@ -212,7 +213,6 @@
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (actionSheet.tag == 2) { //клик по ссылке
-        NSLog(@"%lu", buttonIndex);
         if (buttonIndex == 0) {
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:actionSheet.title]];
         } else if (buttonIndex == 1) {

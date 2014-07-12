@@ -18,8 +18,6 @@
     [super viewDidLoad];
 
     self.navigationItem.title = [NSString stringWithFormat:@"/%@/", self.boardId];
-    self.refreshControl = [[UIRefreshControl alloc]init];
-    [self.tableView addSubview:self.refreshControl];
     [self.refreshControl addTarget:self action:@selector(refresh) forControlEvents:UIControlEventValueChanged];
     
     //убирает сепараторы снизу и при загрузке
@@ -29,7 +27,7 @@
     
     NSString *stringUrl = [NSString stringWithFormat:@"%@/%@/wakaba.json", ROOT_URL, self.boardId];
     self.mainUrl = [NSURL URLWithString:stringUrl];
-    [self loadDataForUrl:self.mainUrl isMainUrl:YES];
+    [self loadDataForUrl:self.mainUrl isMainUrl:YES handleError:YES];
 }
 
 #pragma mark - Data loading and creating
@@ -42,7 +40,7 @@
         [self loadThreadsListWithData:data];
         
         dispatch_async(dispatch_get_main_queue(), ^(void){
-            [self performSelectorOnMainThread:@selector(creationEnded) withObject:nil waitUntilDone:YES];
+            [self performSelectorOnMainThread:@selector(creationEnded) withObject:nil waitUntilDone:NO];
         });
     });
 }
@@ -89,6 +87,10 @@
         
         [self.threadsList addObject:post];
     }
+}
+
+- (void)refresh {
+    [self loadDataForUrl:self.mainUrl isMainUrl:YES handleError:NO];
 }
 
 #pragma mark - Data updating
@@ -178,11 +180,6 @@
     [self openThreadWithUrlNinja:urlNinja];
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-
-- (void)refresh {
-    [self.refreshControl endRefreshing];
-    [self loadDataForUrl:self.mainUrl isMainUrl:YES];
 }
 
 @end

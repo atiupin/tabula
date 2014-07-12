@@ -12,6 +12,5 @@
 @interface BoardViewController : CommonViewController
 
 @property (nonatomic, strong) NSMutableArray *threadsList;
-@property (nonatomic, strong) UIRefreshControl *refreshControl;
 
 @end
