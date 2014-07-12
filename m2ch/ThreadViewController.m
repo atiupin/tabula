@@ -24,6 +24,7 @@ static NSInteger postsOnPage = 35;
     [self.tableView registerClass:[PostTableViewCell class] forCellReuseIdentifier:@"reuseIndenifier"];
     self.tableView.estimatedRowHeight = UITableViewAutomaticDimension;
     self.navigationItem.title = [NSString stringWithFormat:@"Тред в /%@/", self.boardId];
+    self.navigationItem.rightBarButtonItem.enabled = NO;
     self.isLoaded = NO;
     
     self.refreshButton = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -137,6 +138,7 @@ static NSInteger postsOnPage = 35;
     [self updateLastPost];
     self.refreshButton.enabled = YES;
     self.refreshButton.hidden = NO;
+    self.navigationItem.rightBarButtonItem.enabled = YES;
 }
 
 - (void)updateStarted {
