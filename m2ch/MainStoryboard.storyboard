@@ -201,7 +201,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="64n-iq-tVg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2540" y="-668"/>
+            <point key="canvasLocation" x="2540" y="-678"/>
         </scene>
         <!--Board View Controller - Треды-->
         <scene sceneID="chZ-iJ-7hU">

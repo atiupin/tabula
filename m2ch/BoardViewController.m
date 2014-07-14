@@ -40,7 +40,7 @@
         [self loadThreadsListWithData:data];
         
         dispatch_async(dispatch_get_main_queue(), ^(void){
-            [self performSelectorOnMainThread:@selector(creationEnded) withObject:nil waitUntilDone:NO];
+            [self performSelectorOnMainThread:@selector(creationOrUpdateEnded) withObject:nil waitUntilDone:NO];
         });
     });
 }
@@ -95,9 +95,10 @@
 
 #pragma mark - Data updating
 
-- (void)creationEnded {
-    [super creationEnded];
+//обратный порядок приводит к резкой анимации обновления
+- (void)creationOrUpdateEnded {
     [self.tableView reloadData];
+    [self creationEnded];
 }
 
 #pragma mark - Table view data source

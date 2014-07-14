@@ -36,6 +36,9 @@
     self.postButton.enabled = NO;
     self.sageStatus = NO;
     self.sageStatusButton.selected = NO;
+    self.postView.text = self.draft;
+    
+    [self.postView becomeFirstResponder];
 
     [self viewPreparations];
 }
@@ -49,67 +52,99 @@
 }
 
 - (void)viewPreparations {
-    
     self.captchaImage.hidden = NO;
     self.captchaView.hidden = NO;
     self.fixCaptcha.hidden = YES;
     self.captchaStatus.text = @"";
-    self.postView.text = self.draft;
-    
-    [self.postView becomeFirstResponder];
-    [self performSelectorInBackground:@selector(loadCaptcha) withObject:nil];
+
+    [self performSelectorInBackground:@selector(captchaRequest) withObject:nil];
 }
 
 #pragma mark - Captcha handling
 
-- (void)loadCaptcha {
-    NSString *urlString = [[[[@"http://2ch.hk/" stringByAppendingString:self.boardId]stringByAppendingString:@"/res/"]stringByAppendingString:self.threadId]stringByAppendingString:@".html"];
-    
+- (void)captchaRequest {
+    NSString *urlString = [NSString stringWithFormat:@"http://2ch.hk/%@/res/%@.html", self.boardId, self.threadId];
     NSURL *url = [[NSURL alloc] initWithString:urlString];
-    NSError *error = nil;
-    NSStringEncoding encoding;
-    NSMutableString *source = [[NSMutableString alloc] initWithContentsOfURL:url usedEncoding:&encoding error:&error];
     
-    if (source) {
-        self.output.delegate = self;
-        
-        NSRegularExpression *css = [[NSRegularExpression alloc]initWithPattern:@"<link[^>]*text\\/css[^>]*>" options:0 error:nil];
-        NSRegularExpression *images = [[NSRegularExpression alloc]initWithPattern:@"<img[^>]*src[^>]*>" options:0 error:nil];
-        
-        NSRange range = NSMakeRange(0, source.length);
-        
-        [css enumerateMatchesInString:source options:0 range:range usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL *stop) {
-            [source deleteCharactersInRange:result.range];
-        }];
-        
-        range = NSMakeRange(0, source.length);
-        
-        [images enumerateMatchesInString:source options:0 range:range usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL *stop) {
-            [source deleteCharactersInRange:result.range];
-        }];
-        
-        [self.output loadHTMLString:source baseURL:url];
-    } else {
-        self.captchaImage.hidden = YES;
-        self.captchaView.hidden = YES;
-        self.fixCaptcha.hidden = NO;
-        self.captchaStatus.text = @"Похоже, что капча сломана защитой от DDoS";
-        self.loader.hidden = YES;
-        self.url = url;
-    }
+    self.url = url;
+    self.output.delegate = self;
     
+    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
+    
+    //очистка куки, бывает нужно для тестов
+//    NSHTTPCookie *cookie;
+//    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+//    for (cookie in [storage cookies]) {
+//        [storage deleteCookie:cookie];
+//    }
+//    [[NSUserDefaults standardUserDefaults] synchronize];
+
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    
+    NSURLSessionDownloadTask *task = [session downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+        NSDictionary *headers = [(NSHTTPURLResponse *)response allHeaderFields];
+        NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
+        if (statusCode == 503 && [[headers objectForKey:@"Server"] isEqualToString:@"cloudflare-nginx"]) {
+            self.output.delegate = self;
+            [self.output loadRequest:request];
+        } else {
+            NSMutableString *source = [[NSMutableString alloc] initWithContentsOfURL:location encoding:NSUTF8StringEncoding error:nil];
+            [self clearSource:source];
+        }
+    }];
+    [task resume];
+}
+
+- (void)clearSource:(NSMutableString *)source {
+    NSRegularExpression *css = [[NSRegularExpression alloc]initWithPattern:@"<link[^>]*text\\/css[^>]*>" options:0 error:nil];
+    NSRegularExpression *images = [[NSRegularExpression alloc]initWithPattern:@"<img[^>]*src[^>]*>" options:0 error:nil];
+    
+    NSRange range = NSMakeRange(0, source.length);
+    
+    [css enumerateMatchesInString:source options:0 range:range usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL *stop) {
+        [source deleteCharactersInRange:result.range];
+    }];
+    
+    range = NSMakeRange(0, source.length);
+    
+    [images enumerateMatchesInString:source options:0 range:range usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL *stop) {
+        [source deleteCharactersInRange:result.range];
+    }];
+    
+    [self.output loadHTMLString:source baseURL:self.url];
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
-    [self.output stringByEvaluatingJavaScriptFromString:@"ToggleNormalReply('TopNormalReply');"];
-    NSString *captchaString = [self.output stringByEvaluatingJavaScriptFromString:@"document.getElementById('captcha_captcha_div').getAttribute('value');"];
-    NSURL *url = [[NSURL alloc] initWithString:[@"http://i.captcha.yandex.net/image?key=" stringByAppendingString:captchaString]];
     
-    NSData *captchaData = [[NSData alloc] initWithContentsOfURL:url];
-    self.captchaImage.image = [[UIImage alloc] initWithData:captchaData];
+    NSString *html = [webView stringByEvaluatingJavaScriptFromString: @"document.body.innerHTML"];
+    self.captchaStatus.text = @"";
     
-    [self.loader removeFromSuperview];
-    self.postButton.enabled = YES;
+    if ([html rangeOfString:@"ToggleNormalReply('TopNormalReply')"].location != NSNotFound) {
+        [self.output stringByEvaluatingJavaScriptFromString:@"ToggleNormalReply('TopNormalReply');"];
+        NSString *captchaString = [self.output stringByEvaluatingJavaScriptFromString:@"document.getElementById('captcha_captcha_div').getAttribute('value');"];
+        NSURL *url = [[NSURL alloc] initWithString:[@"http://i.captcha.yandex.net/image?key=" stringByAppendingString:captchaString]];
+        
+        NSData *captchaData = [[NSData alloc] initWithContentsOfURL:url];
+        self.captchaImage.image = [[UIImage alloc] initWithData:captchaData];
+        
+        [self.loader removeFromSuperview];
+        self.postButton.enabled = YES;
+    } else if ([html rangeOfString:@"<p data-translate=\"process_is_automatic\">"].location != NSNotFound){
+        self.captchaStatus.text = @"Обнаружена защита от DDoS, ждите...";
+        //обнаружен CF и будет редирект через 5 секунд
+    } else {
+        [self captchaBroken];
+        //капча сломана намертво
+    }
+}
+
+- (void)captchaBroken {
+    self.captchaImage.hidden = YES;
+    self.captchaView.hidden = YES;
+    self.fixCaptcha.hidden = NO;
+    self.captchaStatus.text = @"Похоже, что капча сломана защитой от DDoS";
+    self.loader.hidden = YES;
 }
 
 #pragma mark - Post controls
