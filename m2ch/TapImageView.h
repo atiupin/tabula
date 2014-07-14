@@ -6,9 +6,7 @@
 //  Copyright (c) 2014 Alexander Tewpin. All rights reserved.
 //
 
-#import "AsyncImageView.h"
-
-@interface TapImageView : AsyncImageView <UIGestureRecognizerDelegate>
+@interface TapImageView : UIImageView <UIGestureRecognizerDelegate>
 
 @property (nonatomic) NSInteger tnHeight;
 @property (nonatomic) NSInteger tnWidth;

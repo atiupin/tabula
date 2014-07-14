@@ -17,13 +17,11 @@
 		9772D650195CDAEE00C2A545 /* ThreadData.m in Sources */ = {isa = PBXBuildFile; fileRef = 9772D64F195CDAEE00C2A545 /* ThreadData.m */; };
 		977C08C319512CDC00F8F095 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 977C08C219512CDC00F8F095 /* README.md */; };
 		978A605119394DA5001B3F18 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 978A605019394DA5001B3F18 /* CoreText.framework */; };
-		9793479A19717EF100BD9DDF /* ImageNinja.m in Sources */ = {isa = PBXBuildFile; fileRef = 9793479919717EF100BD9DDF /* ImageNinja.m */; };
+		979347B5197499A400BD9DDF /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979347B4197499A400BD9DDF /* ImageIO.framework */; };
 		97A26CC11941486600D632C5 /* UrlNinja.m in Sources */ = {isa = PBXBuildFile; fileRef = 97A26CC01941486600D632C5 /* UrlNinja.m */; };
 		97A26CCA1946741600D632C5 /* TapImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 97A26CC91946741600D632C5 /* TapImageView.m */; };
 		97A26CD319476CDC00D632C5 /* CaptchaFixController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97A26CD219476CDB00D632C5 /* CaptchaFixController.m */; };
 		97A26CD51947803D00D632C5 /* CaptchaFixController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 97A26CD41947803D00D632C5 /* CaptchaFixController.xib */; };
-		97A26CD91947811300D632C5 /* Test.m in Sources */ = {isa = PBXBuildFile; fileRef = 97A26CD71947811300D632C5 /* Test.m */; };
-		97A26CDA1947811300D632C5 /* Test.xib in Resources */ = {isa = PBXBuildFile; fileRef = 97A26CD81947811300D632C5 /* Test.xib */; };
 		97C3D4F1191BC82A008921B5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C3D4F0191BC82A008921B5 /* Foundation.framework */; };
 		97C3D4F3191BC82A008921B5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C3D4F2191BC82A008921B5 /* CoreGraphics.framework */; };
 		97C3D4F5191BC82A008921B5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C3D4F4191BC82A008921B5 /* UIKit.framework */; };
@@ -78,8 +76,7 @@
 		9772D64F195CDAEE00C2A545 /* ThreadData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadData.m; sourceTree = "<group>"; };
 		977C08C219512CDC00F8F095 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		978A605019394DA5001B3F18 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
-		9793479819717EF100BD9DDF /* ImageNinja.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageNinja.h; sourceTree = "<group>"; };
-		9793479919717EF100BD9DDF /* ImageNinja.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageNinja.m; sourceTree = "<group>"; };
+		979347B4197499A400BD9DDF /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		97A26CB01940B08600D632C5 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		97A26CBF1941486600D632C5 /* UrlNinja.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UrlNinja.h; sourceTree = "<group>"; };
 		97A26CC01941486600D632C5 /* UrlNinja.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UrlNinja.m; sourceTree = "<group>"; };
@@ -88,9 +85,6 @@
 		97A26CD119476CDB00D632C5 /* CaptchaFixController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptchaFixController.h; sourceTree = "<group>"; };
 		97A26CD219476CDB00D632C5 /* CaptchaFixController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CaptchaFixController.m; sourceTree = "<group>"; };
 		97A26CD41947803D00D632C5 /* CaptchaFixController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CaptchaFixController.xib; sourceTree = "<group>"; };
-		97A26CD61947811300D632C5 /* Test.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Test.h; sourceTree = "<group>"; };
-		97A26CD71947811300D632C5 /* Test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Test.m; sourceTree = "<group>"; };
-		97A26CD81947811300D632C5 /* Test.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Test.xib; sourceTree = "<group>"; };
 		97AE76D419226CF7007139A6 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		97C3D4ED191BC82A008921B5 /* Tabula.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tabula.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97C3D4F0191BC82A008921B5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -134,6 +128,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				979347B5197499A400BD9DDF /* ImageIO.framework in Frameworks */,
 				978A605119394DA5001B3F18 /* CoreText.framework in Frameworks */,
 				97C3D4F3191BC82A008921B5 /* CoreGraphics.framework in Frameworks */,
 				97C3D4F5191BC82A008921B5 /* UIKit.framework in Frameworks */,
@@ -155,6 +150,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		979347BA19749D9200BD9DDF /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				848D598D195171C800773BCF /* BoardData.h */,
+				848D598E195171C800773BCF /* BoardData.m */,
+				9772D64E195CDAEE00C2A545 /* ThreadData.h */,
+				9772D64F195CDAEE00C2A545 /* ThreadData.m */,
+				848D598A1951714C00773BCF /* Data.xcdatamodeld */,
+			);
+			name = Database;
+			sourceTree = "<group>";
+		};
 		97A26CC31943565C00D632C5 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -166,15 +173,8 @@
 				97C3D531191BDE92008921B5 /* Post.m */,
 				97A26CBF1941486600D632C5 /* UrlNinja.h */,
 				97A26CC01941486600D632C5 /* UrlNinja.m */,
-				9793479819717EF100BD9DDF /* ImageNinja.h */,
-				9793479919717EF100BD9DDF /* ImageNinja.m */,
 				974B601E19566FA800592B1D /* Declension.h */,
 				974B601F19566FA800592B1D /* Declension.m */,
-				848D598D195171C800773BCF /* BoardData.h */,
-				848D598E195171C800773BCF /* BoardData.m */,
-				9772D64E195CDAEE00C2A545 /* ThreadData.h */,
-				9772D64F195CDAEE00C2A545 /* ThreadData.m */,
-				848D598A1951714C00773BCF /* Data.xcdatamodeld */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -241,13 +241,14 @@
 		97C3D4EF191BC82A008921B5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				97A26CB01940B08600D632C5 /* libxml2.dylib */,
+				979347B4197499A400BD9DDF /* ImageIO.framework */,
 				978A605019394DA5001B3F18 /* CoreText.framework */,
 				97C3D4F0191BC82A008921B5 /* Foundation.framework */,
 				97C3D4F2191BC82A008921B5 /* CoreGraphics.framework */,
 				97C3D4F4191BC82A008921B5 /* UIKit.framework */,
 				97C3D509191BC82A008921B5 /* XCTest.framework */,
 				9805745336464EA7A343A4A2 /* libPods.a */,
+				97A26CB01940B08600D632C5 /* libxml2.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -255,15 +256,11 @@
 		97C3D4F6191BC82A008921B5 /* m2ch */ = {
 			isa = PBXGroup;
 			children = (
-				97C3D4FF191BC82A008921B5 /* AppDelegate.h */,
-				97C3D500191BC82A008921B5 /* AppDelegate.m */,
+				979347BA19749D9200BD9DDF /* Database */,
 				97A26CC31943565C00D632C5 /* Model */,
 				97A26CC41943567C00D632C5 /* Controllers */,
 				97A26CC51943569000D632C5 /* Views */,
 				97C3D51F191BC85F008921B5 /* MainStoryboard.storyboard */,
-				97A26CD61947811300D632C5 /* Test.h */,
-				97A26CD71947811300D632C5 /* Test.m */,
-				97A26CD81947811300D632C5 /* Test.xib */,
 				97C3D502191BC82A008921B5 /* Images.xcassets */,
 				97AE76D419226CF7007139A6 /* Podfile */,
 				97C3D4F7191BC82A008921B5 /* Supporting Files */,
@@ -274,6 +271,8 @@
 		97C3D4F7191BC82A008921B5 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				97C3D4FF191BC82A008921B5 /* AppDelegate.h */,
+				97C3D500191BC82A008921B5 /* AppDelegate.m */,
 				97C3D4F8191BC82A008921B5 /* Tabula-Info.plist */,
 				97C3D4F9191BC82A008921B5 /* InfoPlist.strings */,
 				97C3D4FC191BC82A008921B5 /* main.m */,
@@ -382,7 +381,6 @@
 			files = (
 				97E757001951378A00E76A97 /* .gitignore in Resources */,
 				97C3D520191BC85F008921B5 /* MainStoryboard.storyboard in Resources */,
-				97A26CDA1947811300D632C5 /* Test.xib in Resources */,
 				97C3D4FB191BC82A008921B5 /* InfoPlist.strings in Resources */,
 				977C08C319512CDC00F8F095 /* README.md in Resources */,
 				97A26CD51947803D00D632C5 /* CaptchaFixController.xib in Resources */,
@@ -438,7 +436,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				97A26CD91947811300D632C5 /* Test.m in Sources */,
 				97A26CD319476CDC00D632C5 /* CaptchaFixController.m in Sources */,
 				97A26CC11941486600D632C5 /* UrlNinja.m in Sources */,
 				974B602019566FA800592B1D /* Declension.m in Sources */,
@@ -447,7 +444,6 @@
 				974A61081964A6AB00B98C5D /* Board.m in Sources */,
 				848D598C1951714D00773BCF /* Data.xcdatamodeld in Sources */,
 				9772D650195CDAEE00C2A545 /* ThreadData.m in Sources */,
-				9793479A19717EF100BD9DDF /* ImageNinja.m in Sources */,
 				97D28C0C1927FF6300C7407F /* PostTableViewCell.m in Sources */,
 				848D598F195171C800773BCF /* BoardData.m in Sources */,
 				97C3D529191BD485008921B5 /* BoardViewController.m in Sources */,
@@ -582,6 +578,10 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "m2ch/Tabula-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -592,8 +592,9 @@
 				);
 				INFOPLIST_FILE = "m2ch/Tabula-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = Tabula;
-				PROVISIONING_PROFILE = "EDB56345-5081-4947-9469-1B4CD86A7090";
+				PROVISIONING_PROFILE = "3AA577DE-51C0-4750-AD8D-26E536523FF2";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -607,6 +608,10 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Aleksandr Tyupin (6PVMJV8LPQ)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "m2ch/Tabula-Prefix.pch";
 				HEADER_SEARCH_PATHS = (
@@ -617,8 +622,9 @@
 				);
 				INFOPLIST_FILE = "m2ch/Tabula-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = Tabula;
-				PROVISIONING_PROFILE = "EDB56345-5081-4947-9469-1B4CD86A7090";
+				PROVISIONING_PROFILE = "3AA577DE-51C0-4750-AD8D-26E536523FF2";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};

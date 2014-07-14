@@ -18,8 +18,6 @@
 
 @implementation CommonViewController
 
-
-
 #pragma mark - Network
 
 - (void)loadDataForUrl:(NSURL *)url isMainUrl:(BOOL)isMain handleError:(BOOL)handleError {
@@ -285,7 +283,6 @@
         if (post.postHeight) {
             return post.postHeight;
         } else {
-            
             PostTableViewCell *cell = [[PostTableViewCell alloc]init];
             
             [cell setTextPost:post];

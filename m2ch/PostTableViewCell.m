@@ -58,17 +58,9 @@
         [self.contentView addSubview:self.comment];
         [self.contentView addSubview:self.postImage];
         
-//        self.selectionStyle = UITableViewCellSelectionStyleNone; //это убивает анимацию, отстой
-        
         [self updateFonts];
     }
     return self;
-}
-
-- (void)prepareForReuse {
-    [super prepareForReuse];
-    //возможно поможет от негрузящихся картинок
-    self.postImage.bigImageUrl = nil;
 }
 
 - (void)updateConstraints
@@ -144,8 +136,8 @@
 
     self.postImage.tnHeight = post.tnHeight;
     self.postImage.tnWidth = post.tnWidth;
-    self.postImage.imageURL = post.thumbnailUrl;
     self.postImage.bigImageUrl = post.imageUrl;
+    [self.postImage setImageWithURL:post.thumbnailUrl];
     return self;
 }
 

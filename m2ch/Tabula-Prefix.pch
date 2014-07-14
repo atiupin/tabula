@@ -15,6 +15,6 @@
     #import <Foundation/Foundation.h>
     #import <TTTAttributedLabel/TTTAttributedLabel.h>
     #import <PureLayout.h>
-    #import <AsyncImageView/AsyncImageView.h>
     #import <MagicalRecord/CoreData+MagicalRecord.h>
+    #import <SDWebImage/UIImageView+WebCache.h>
 #endif

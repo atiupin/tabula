@@ -1,24 +1,26 @@
 PODS:
-  - AsyncImageView (1.5.1)
   - JTSImageViewController (1.1.1)
   - MagicalRecord (2.2):
     - MagicalRecord/Core
   - MagicalRecord/Core (2.2)
   - PureLayout (1.0.1)
+  - SDWebImage (3.6):
+    - SDWebImage/Core
+  - SDWebImage/Core (3.6)
   - TTTAttributedLabel (1.10.1)
 
 DEPENDENCIES:
-  - AsyncImageView
   - JTSImageViewController
   - MagicalRecord
   - PureLayout
+  - SDWebImage
   - TTTAttributedLabel
 
 SPEC CHECKSUMS:
-  AsyncImageView: 388442ae8314a5c99de0d98040c2926826d31da7
   JTSImageViewController: e8167cffe5ffdb9203a8931d41ba5a4dd5ac5f5a
   MagicalRecord: 2b471584fc9e3137f3d0a56967917baa4979e224
   PureLayout: 972964b21dbcbc5cc36785aed16aba03176f057d
+  SDWebImage: c6989652c1cdf27cbdf3f56957e2030f825af5bc
   TTTAttributedLabel: 94bb04f1e005616002dd2cee0262a0082e533627
 
 COCOAPODS: 0.33.1

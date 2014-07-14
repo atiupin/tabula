@@ -1,5 +1,5 @@
 pod 'TTTAttributedLabel'
 pod 'PureLayout'
 pod 'JTSImageViewController'
-pod 'AsyncImageView'
 pod 'MagicalRecord'
+pod 'SDWebImage'

@@ -64,12 +64,6 @@
     return self;
 }
 
-- (void)prepareForReuse {
-    [super prepareForReuse];
-    //возможно поможет от негрузящихся картинок
-    self.postImage.bigImageUrl = nil;
-}
-
 - (void)updateConstraints
 {
     [super updateConstraints];
@@ -142,8 +136,8 @@
     
     self.postImage.tnHeight = post.tnHeight;
     self.postImage.tnWidth = post.tnWidth;
-    self.postImage.imageURL = post.thumbnailUrl;
     self.postImage.bigImageUrl = post.imageUrl;
+    [self.postImage setImageWithURL:post.thumbnailUrl];
     return self;
 }
 

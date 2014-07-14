@@ -122,7 +122,6 @@
     Post *post = self.threadsList[indexPath.row];
     
     [cell setPost:post];
-    
     [cell setNeedsUpdateConstraints];
     [cell updateConstraintsIfNeeded];
     

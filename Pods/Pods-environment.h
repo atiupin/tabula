@@ -6,12 +6,6 @@
 // project.
 
 
-// AsyncImageView
-#define COCOAPODS_POD_AVAILABLE_AsyncImageView
-#define COCOAPODS_VERSION_MAJOR_AsyncImageView 1
-#define COCOAPODS_VERSION_MINOR_AsyncImageView 5
-#define COCOAPODS_VERSION_PATCH_AsyncImageView 1
-
 // JTSImageViewController
 #define COCOAPODS_POD_AVAILABLE_JTSImageViewController
 #define COCOAPODS_VERSION_MAJOR_JTSImageViewController 1
@@ -35,6 +29,18 @@
 #define COCOAPODS_VERSION_MAJOR_PureLayout 1
 #define COCOAPODS_VERSION_MINOR_PureLayout 0
 #define COCOAPODS_VERSION_PATCH_PureLayout 1
+
+// SDWebImage
+#define COCOAPODS_POD_AVAILABLE_SDWebImage
+#define COCOAPODS_VERSION_MAJOR_SDWebImage 3
+#define COCOAPODS_VERSION_MINOR_SDWebImage 6
+#define COCOAPODS_VERSION_PATCH_SDWebImage 0
+
+// SDWebImage/Core
+#define COCOAPODS_POD_AVAILABLE_SDWebImage_Core
+#define COCOAPODS_VERSION_MAJOR_SDWebImage_Core 3
+#define COCOAPODS_VERSION_MINOR_SDWebImage_Core 6
+#define COCOAPODS_VERSION_PATCH_SDWebImage_Core 0
 
 // TTTAttributedLabel
 #define COCOAPODS_POD_AVAILABLE_TTTAttributedLabel
