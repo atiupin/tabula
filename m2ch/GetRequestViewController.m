@@ -8,6 +8,10 @@
 
 #import "GetRequestViewController.h"
 
+static NSString *CAPTCHA_CF_WAIT = @"Обнаружена защита от DDoS, ждите...";
+static NSString *CAPTCHA_DDOS_BROKEN = @"Похоже, что капча сломана защитой от DDoS";
+static NSString *CAPTCHA_PLEASE_WAIT = @"Ждите...";
+static NSString *CAPTCHA_EMPTY = @"";
 
 @interface GetRequestViewController ()
 
@@ -43,10 +47,6 @@
     [self viewPreparations];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-}
-
 - (void)viewDidDisappear:(BOOL)animated {
     [self.timer invalidate];
 }
@@ -55,7 +55,7 @@
     self.captchaImage.hidden = NO;
     self.captchaView.hidden = NO;
     self.fixCaptcha.hidden = YES;
-    self.captchaStatus.text = @"";
+    self.captchaStatus.text = CAPTCHA_EMPTY;
 
     [self performSelectorInBackground:@selector(captchaRequest) withObject:nil];
 }
@@ -118,9 +118,13 @@
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
     
     NSString *html = [webView stringByEvaluatingJavaScriptFromString: @"document.body.innerHTML"];
-    self.captchaStatus.text = @"";
     
     if ([html rangeOfString:@"ToggleNormalReply('TopNormalReply')"].location != NSNotFound) {
+        
+        if ([self.captchaStatus.text isEqualToString:CAPTCHA_CF_WAIT] || [self.captchaStatus.text isEqualToString:CAPTCHA_DDOS_BROKEN]) {
+            self.captchaStatus.text = CAPTCHA_EMPTY;
+        }
+        
         [self.output stringByEvaluatingJavaScriptFromString:@"ToggleNormalReply('TopNormalReply');"];
         NSString *captchaString = [self.output stringByEvaluatingJavaScriptFromString:@"document.getElementById('captcha_captcha_div').getAttribute('value');"];
         NSURL *url = [[NSURL alloc] initWithString:[@"http://i.captcha.yandex.net/image?key=" stringByAppendingString:captchaString]];
@@ -131,7 +135,7 @@
         [self.loader removeFromSuperview];
         self.postButton.enabled = YES;
     } else if ([html rangeOfString:@"<p data-translate=\"process_is_automatic\">"].location != NSNotFound){
-        self.captchaStatus.text = @"Обнаружена защита от DDoS, ждите...";
+        self.captchaStatus.text = CAPTCHA_CF_WAIT;
         //обнаружен CF и будет редирект через 5 секунд
     } else {
         [self captchaBroken];
@@ -143,7 +147,7 @@
     self.captchaImage.hidden = YES;
     self.captchaView.hidden = YES;
     self.fixCaptcha.hidden = NO;
-    self.captchaStatus.text = @"Похоже, что капча сломана защитой от DDoS";
+    self.captchaStatus.text = CAPTCHA_DDOS_BROKEN;
     self.loader.hidden = YES;
 }
 
@@ -209,14 +213,10 @@
     
     if (![abuAlert isEqualToString:@""]) {
         self.captchaStatus.text = abuAlert;
-    }
-    
-    else if (![abuAlertWait isEqualToString:@""]) {
-        self.captchaStatus.text = @"Ждите";
-    }
-    
-    else {
-        self.captchaStatus.text = @"";
+    } else if (![abuAlertWait isEqualToString:@""]) {
+        self.captchaStatus.text = CAPTCHA_PLEASE_WAIT;
+    } else {
+        self.captchaStatus.text = CAPTCHA_EMPTY;
     }
     
     if (![self.lastPostId isEqualToString:lastPostId]) {
