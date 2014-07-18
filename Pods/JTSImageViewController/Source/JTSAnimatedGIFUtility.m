@@ -76,12 +76,19 @@ static int vectorGCD(size_t const count, int const *const values) {
         // Note that after I process the first few elements of the vector, `gcd` will probably be smaller than any remaining element.  By passing the smaller value as the second argument to `pairGCD`, I avoid making it swap the arguments.
         gcd = pairGCD(values[i], gcd);
     }
+    if (gcd == 0) {
+        gcd = 1;
+    }
     return gcd;
 }
 
-static NSArray *frameArray(size_t const count, CGImageRef const images[count], int const delayCentiseconds[count], int const totalDurationCentiseconds) {
+static NSArray *frameArray(size_t const count, CGImageRef const images[count], int delayCentiseconds[count], int const totalDurationCentiseconds) {
     int const gcd = vectorGCD(count, delayCentiseconds);
-    size_t const frameCount = totalDurationCentiseconds / gcd;
+    size_t frameCount = totalDurationCentiseconds / gcd;
+    if (frameCount == 0 && delayCentiseconds[0] == 0) {
+        frameCount = 1;
+        delayCentiseconds[0] = 1;
+    }
     UIImage *frames[frameCount];
     for (size_t i = 0, f = 0; i < count; ++i) {
         UIImage *const frame = [UIImage imageWithCGImage:images[i]];

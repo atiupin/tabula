@@ -53,33 +53,36 @@
 }
 
 - (void)errorMessage:(NSError *)error {
-    self.isLoaded = YES;
-    [self.spinner stopAnimating];
+    [self updateEnded];
     
-    UILabel *errorLabel = [[UILabel alloc]initWithFrame:self.view.frame];
-    errorLabel.center = CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height/2-self.navigationController.navigationBar.frame.size.height);
-    errorLabel.font = [UIFont systemFontOfSize:14];
-    errorLabel.textColor = [UIColor grayColor];
-    errorLabel.textAlignment = NSTextAlignmentCenter;
-    errorLabel.numberOfLines = 0;
-    
-    if (error.code == NSURLErrorCannotFindHost) {
-        errorLabel.text = @"Сайт не найден";
-    } else if (error.code == NSURLErrorNotConnectedToInternet){
-        errorLabel.text = @"Отсутствует подключение к интернету";
-    } else if (error.code == NSURLErrorTimedOut) {
-        errorLabel.text = @"Сайт не отвечает\nили подключение слишком слабое";
-    } else if (error.code == -666){
-        errorLabel.text = @"Тред не найден";
-    } else {
-        errorLabel.text = @"Ошибка закралась в рассчеты";
+    //ошибку показываем только если нет контента
+    if ([self.thread.posts count] == 0) {
+        self.errorLabel = [[UILabel alloc]initWithFrame:self.view.frame];
+        self.errorLabel.center = CGPointMake(self.view.frame.size.width/2, self.view.frame.size.height/2-self.navigationController.navigationBar.frame.size.height);
+        self.errorLabel.font = [UIFont systemFontOfSize:14];
+        self.errorLabel.textColor = [UIColor grayColor];
+        self.errorLabel.textAlignment = NSTextAlignmentCenter;
+        self.errorLabel.numberOfLines = 0;
+        
+        if (error.code == NSURLErrorCannotFindHost) {
+            self.errorLabel.text = @"Сайт не найден";
+        } else if (error.code == NSURLErrorNotConnectedToInternet){
+            self.errorLabel.text = @"Отсутствует подключение к интернету";
+        } else if (error.code == NSURLErrorTimedOut) {
+            self.errorLabel.text = @"Сайт не отвечает\nили подключение слишком слабое";
+        } else if (error.code == -666){
+            self.errorLabel.text = @"Тред не найден";
+        } else {
+            self.errorLabel.text = @"Ошибка закралась в рассчеты";
+        }
+        
+        [self.view addSubview:self.errorLabel];
     }
-    
-    [self.view addSubview:errorLabel];
 }
 
 - (void)creationEnded {
     self.isLoaded = YES;
+    [self.errorLabel removeFromSuperview];
     [self.spinner stopAnimating];
     [self.refreshControl endRefreshing];
 }
@@ -90,6 +93,7 @@
 
 - (void)updateEnded {
     self.isLoaded = YES;
+    [self.errorLabel removeFromSuperview];
     [self.spinner stopAnimating];
     [self.refreshControl endRefreshing];
 }
@@ -198,7 +202,7 @@
 #pragma mark - Action Sheets
 
 - (void)makeExternalLinkActionSheetWithUrl:(NSURL *)url {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc]initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:@"Отмена" destructiveButtonTitle:nil otherButtonTitles:@"Открыть ссылку в Safari", @"Скопировать ссылку", nil];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc]initWithTitle:[url absoluteString] delegate:self cancelButtonTitle:@"Отмена" destructiveButtonTitle:nil otherButtonTitles:@"Открыть в Safari", @"Скопировать ссылку", nil];
     actionSheet.tag = 2;
     [actionSheet showInView:self.view];
 }

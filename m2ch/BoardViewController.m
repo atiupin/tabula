@@ -49,9 +49,9 @@
     
     NSError *dataError = nil;
     NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
-    self.threadsList = [NSMutableArray array];
     
     NSArray *threadsArray = [dataDictionary objectForKey:@"threads"];
+    self.thread = [[Thread alloc]init];
     
     for (NSDictionary *i in threadsArray) {
         Thread *thread = [[Thread alloc]init];
@@ -85,12 +85,12 @@
         Declension *declension = [Declension stringWithAnswerCount:post.replyCount andNewPosts:post.newReplies];
         post.threadReplies = declension.output;
         
-        [self.threadsList addObject:post];
+        [self.thread.posts addObject:post];
     }
 }
 
 - (void)refresh {
-    [self loadDataForUrl:self.mainUrl isMainUrl:YES handleError:NO];
+    [self loadDataForUrl:self.mainUrl isMainUrl:YES handleError:YES];
 }
 
 #pragma mark - Data updating
@@ -110,7 +110,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.threadsList.count;
+    return self.thread.posts.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -119,7 +119,7 @@
     
     [cell updateFonts];
     
-    Post *post = self.threadsList[indexPath.row];
+    Post *post = self.thread.posts[indexPath.row];
     
     [cell setPost:post];
     [cell setNeedsUpdateConstraints];
@@ -138,7 +138,7 @@
     
     ThreadTableViewCell *cell = [[ThreadTableViewCell alloc]init];
     
-    Post *post = self.threadsList[indexPath.row];
+    Post *post = self.thread.posts[indexPath.row];
     
     [cell setPost:post];
     
@@ -163,7 +163,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     ThreadTableViewCell *cell = (ThreadTableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath];
-    Post *post = self.threadsList[indexPath.row];
+    Post *post = self.thread.posts[indexPath.row];
     
     if (post.replyCount == 0) {
         post.replyCount = post.newReplies;

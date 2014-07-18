@@ -47,7 +47,7 @@ static NSInteger postsOnPage = 35;
     NSString *lastNum = self.thread.linksReference[self.thread.linksReference.count-1];
     NSString *stringUrl = [NSString stringWithFormat:@"%@/makaba/mobile.fcgi?task=get_thread&board=%@&thread=%@&num=%@", ROOT_URL, self.boardId, self.threadId, lastNum];
     NSURL *url = [NSURL URLWithString:stringUrl];
-    [self loadDataForUrl:url isMainUrl:NO handleError:NO];
+    [self loadDataForUrl:url isMainUrl:NO handleError:YES];
 }
 
 - (void)createDataWithLocation:(NSURL *)location {

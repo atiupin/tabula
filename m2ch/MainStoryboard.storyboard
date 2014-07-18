@@ -71,7 +71,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="qyJ-lC-X0d">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="271"/>
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="253"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="320" id="b7D-KA-MgN"/>
@@ -96,11 +96,11 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                             </textField>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Абустатус капчи" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bWN-G3-6bo">
-                                <rect key="frame" x="20" y="279" width="280" height="21"/>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Абустатус капчи" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="bWN-G3-6bo">
+                                <rect key="frame" x="20" y="266" width="280" height="34"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="280" id="HGW-Nw-SVh"/>
-                                    <constraint firstAttribute="height" constant="21" id="ssJ-h0-Whp"/>
+                                    <constraint firstAttribute="height" constant="34" id="ssJ-h0-Whp"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -151,8 +151,8 @@
                             <constraint firstItem="hAn-4b-sEX" firstAttribute="top" secondItem="rL3-3J-z9q" secondAttribute="bottom" constant="215" id="2z2-Zz-BjR"/>
                             <constraint firstItem="bWN-G3-6bo" firstAttribute="leading" secondItem="flP-Pk-8XJ" secondAttribute="leading" constant="20" id="5UL-1Y-QO5"/>
                             <constraint firstItem="hAn-4b-sEX" firstAttribute="leading" secondItem="flP-Pk-8XJ" secondAttribute="leading" id="C5x-K6-OKv"/>
-                            <constraint firstItem="bWN-G3-6bo" firstAttribute="top" secondItem="qyJ-lC-X0d" secondAttribute="bottom" constant="8" id="D3T-8F-w3N"/>
-                            <constraint firstItem="bWN-G3-6bo" firstAttribute="top" secondItem="qyJ-lC-X0d" secondAttribute="bottom" constant="8" id="ENR-zW-YIY"/>
+                            <constraint firstItem="bWN-G3-6bo" firstAttribute="top" secondItem="qyJ-lC-X0d" secondAttribute="bottom" constant="13" id="D3T-8F-w3N"/>
+                            <constraint firstItem="bWN-G3-6bo" firstAttribute="top" secondItem="qyJ-lC-X0d" secondAttribute="bottom" constant="13" id="ENR-zW-YIY"/>
                             <constraint firstItem="qyJ-lC-X0d" firstAttribute="top" secondItem="flP-Pk-8XJ" secondAttribute="top" id="GdH-Vy-rbN"/>
                             <constraint firstItem="mBk-zV-NIS" firstAttribute="top" secondItem="bWN-G3-6bo" secondAttribute="bottom" constant="3" id="I4B-zZ-ERA"/>
                             <constraint firstAttribute="trailing" secondItem="qyJ-lC-X0d" secondAttribute="trailing" id="IE2-FS-AOS"/>
