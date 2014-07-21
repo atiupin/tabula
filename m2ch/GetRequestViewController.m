@@ -8,10 +8,10 @@
 
 #import "GetRequestViewController.h"
 
-static const NSString *CAPTCHA_CF_WAIT = @"Обнаружена защита от DDoS, ждите...";
-static const NSString *CAPTCHA_DDOS_BROKEN = @"Похоже, что капча сломана защитой от DDoS";
-static const NSString *CAPTCHA_PLEASE_WAIT = @"Ждите...";
-static const NSString *CAPTCHA_EMPTY = @"";
+NSString *const CAPTCHA_CF_WAIT = @"Обнаружена защита от DDoS, ждите...";
+NSString *const CAPTCHA_DDOS_BROKEN = @"Похоже, что капча сломана защитой от DDoS";
+NSString *const CAPTCHA_PLEASE_WAIT = @"Ждите...";
+NSString *const CAPTCHA_EMPTY = @"";
 
 @interface GetRequestViewController ()
 

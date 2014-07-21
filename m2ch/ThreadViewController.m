@@ -96,7 +96,7 @@ static NSInteger postsOnPage = 35;
                     [self.tableView scrollToRowAtIndexPath:self.currentThread.startingRow atScrollPosition:UITableViewScrollPositionTop animated:NO];
                 }
             } else {
-                NSError *error = [NSError errorWithDomain:ROOT_URL code:-666 userInfo:nil];
+                NSError *error = [NSError errorWithDomain:@"notnil" code:-666 userInfo:nil];
                 [self performSelectorOnMainThread:@selector(errorMessage:) withObject:error waitUntilDone:YES];
             }
         });

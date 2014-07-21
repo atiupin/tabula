@@ -6,4 +6,4 @@
 //  Copyright (c) 2014 Alexander Tewpin. All rights reserved.
 //
 
-static const NSString *ROOT_URL = @"http://2ch.hk";
+static NSString *const ROOT_URL = @"http://2ch.hk";
