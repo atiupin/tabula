@@ -23,8 +23,6 @@
 #import "UrlNinja.h"
 #import "Declension.h"
 
-static NSString *ROOT_URL = @"http://2ch.hk";
-
 @interface CommonViewController : UITableViewController <TTTAttributedLabelDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, NewPostControllerDelegate>
 
 @property (nonatomic, strong) UIActivityIndicatorView *spinner;

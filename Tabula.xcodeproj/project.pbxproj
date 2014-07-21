@@ -86,6 +86,7 @@
 		97A26CD219476CDB00D632C5 /* CaptchaFixController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CaptchaFixController.m; sourceTree = "<group>"; };
 		97A26CD41947803D00D632C5 /* CaptchaFixController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CaptchaFixController.xib; sourceTree = "<group>"; };
 		97AE76D419226CF7007139A6 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		97B8917E197D5AC60024EADB /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		97C3D4ED191BC82A008921B5 /* Tabula.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tabula.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97C3D4F0191BC82A008921B5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		97C3D4F2191BC82A008921B5 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -165,6 +166,7 @@
 		97A26CC31943565C00D632C5 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				97B8917E197D5AC60024EADB /* Constants.h */,
 				974A61061964A6AB00B98C5D /* Board.h */,
 				974A61071964A6AB00B98C5D /* Board.m */,
 				97C3D533191BDEF1008921B5 /* Thread.h */,

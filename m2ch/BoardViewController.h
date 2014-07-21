@@ -11,6 +11,4 @@
 
 @interface BoardViewController : CommonViewController
 
-@property (nonatomic, strong) NSMutableArray *threadsList;
-
 @end

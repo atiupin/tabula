@@ -17,4 +17,5 @@
     #import <PureLayout.h>
     #import <MagicalRecord/CoreData+MagicalRecord.h>
     #import <SDWebImage/UIImageView+WebCache.h>
+    #import "Constants.h"
 #endif

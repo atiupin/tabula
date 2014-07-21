@@ -8,10 +8,10 @@
 
 #import "GetRequestViewController.h"
 
-static NSString *CAPTCHA_CF_WAIT = @"Обнаружена защита от DDoS, ждите...";
-static NSString *CAPTCHA_DDOS_BROKEN = @"Похоже, что капча сломана защитой от DDoS";
-static NSString *CAPTCHA_PLEASE_WAIT = @"Ждите...";
-static NSString *CAPTCHA_EMPTY = @"";
+static const NSString *CAPTCHA_CF_WAIT = @"Обнаружена защита от DDoS, ждите...";
+static const NSString *CAPTCHA_DDOS_BROKEN = @"Похоже, что капча сломана защитой от DDoS";
+static const NSString *CAPTCHA_PLEASE_WAIT = @"Ждите...";
+static const NSString *CAPTCHA_EMPTY = @"";
 
 @interface GetRequestViewController ()
 
@@ -34,7 +34,7 @@ static NSString *CAPTCHA_EMPTY = @"";
     [self.loader addSubview:spinner];
     [spinner startAnimating];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardDidShowNotification object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardDidShowNotification object:nil];
     
     //предварительная настройка лейблов
     self.postButton.enabled = NO;
@@ -63,7 +63,7 @@ static NSString *CAPTCHA_EMPTY = @"";
 #pragma mark - Captcha handling
 
 - (void)captchaRequest {
-    NSString *urlString = [NSString stringWithFormat:@"http://2ch.hk/%@/res/%@.html", self.boardId, self.threadId];
+    NSString *urlString = [NSString stringWithFormat:@"%@/%@/res/%@.html", ROOT_URL, self.boardId, self.threadId];
     NSURL *url = [[NSURL alloc] initWithString:urlString];
     
     self.url = url;
