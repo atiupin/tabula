@@ -22,6 +22,7 @@
 		97A26CCA1946741600D632C5 /* TapImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 97A26CC91946741600D632C5 /* TapImageView.m */; };
 		97A26CD319476CDC00D632C5 /* CaptchaFixController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97A26CD219476CDB00D632C5 /* CaptchaFixController.m */; };
 		97A26CD51947803D00D632C5 /* CaptchaFixController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 97A26CD41947803D00D632C5 /* CaptchaFixController.xib */; };
+		97B89182197DCADC0024EADB /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97B89181197DCADC0024EADB /* Crashlytics.framework */; };
 		97C3D4F1191BC82A008921B5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C3D4F0191BC82A008921B5 /* Foundation.framework */; };
 		97C3D4F3191BC82A008921B5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C3D4F2191BC82A008921B5 /* CoreGraphics.framework */; };
 		97C3D4F5191BC82A008921B5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C3D4F4191BC82A008921B5 /* UIKit.framework */; };
@@ -87,6 +88,7 @@
 		97A26CD41947803D00D632C5 /* CaptchaFixController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CaptchaFixController.xib; sourceTree = "<group>"; };
 		97AE76D419226CF7007139A6 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		97B8917E197D5AC60024EADB /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
+		97B89181197DCADC0024EADB /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		97C3D4ED191BC82A008921B5 /* Tabula.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tabula.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97C3D4F0191BC82A008921B5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		97C3D4F2191BC82A008921B5 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -135,6 +137,7 @@
 				97C3D4F5191BC82A008921B5 /* UIKit.framework in Frameworks */,
 				97C3D4F1191BC82A008921B5 /* Foundation.framework in Frameworks */,
 				AEB2414BBF56415F917E74E6 /* libPods.a in Frameworks */,
+				97B89182197DCADC0024EADB /* Crashlytics.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,6 +246,7 @@
 		97C3D4EF191BC82A008921B5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				97B89181197DCADC0024EADB /* Crashlytics.framework */,
 				979347B4197499A400BD9DDF /* ImageIO.framework */,
 				978A605019394DA5001B3F18 /* CoreText.framework */,
 				97C3D4F0191BC82A008921B5 /* Foundation.framework */,
@@ -313,6 +317,7 @@
 				97C3D4EA191BC82A008921B5 /* Frameworks */,
 				97C3D4EB191BC82A008921B5 /* Resources */,
 				1B16935E8D3543A7A3FDC8CE /* Copy Pods Resources */,
+				97B89180197DCA2C0024EADB /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -415,6 +420,19 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		97B89180197DCA2C0024EADB /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = "./Crashlytics.framework/run 123dacd4faccb8a97ec46d77de14fb5edca929ca b7735d30ae3c49b61c4ca9a2be132c6d1918e30b98631e71570e23311bee0e6c";
+			shellScript = "";
 		};
 		C11C00B0D54A4EE7B62F90A0 /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -596,7 +614,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = Tabula;
-				PROVISIONING_PROFILE = "6B680C51-837C-4E76-A539-F1E967E3C133";
+				PROVISIONING_PROFILE = "74BE95AA-4057-45F1-9296-4999C516F459";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -626,7 +644,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = Tabula;
-				PROVISIONING_PROFILE = "6B680C51-837C-4E76-A539-F1E967E3C133";
+				PROVISIONING_PROFILE = "74BE95AA-4057-45F1-9296-4999C516F459";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};

@@ -7,11 +7,13 @@
 //
 
 #import "AppDelegate.h"
+#import <Crashlytics/Crashlytics.h>
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    [Crashlytics startWithAPIKey:@"123dacd4faccb8a97ec46d77de14fb5edca929ca"];
     [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:@"Data"];
     return YES;
 }
