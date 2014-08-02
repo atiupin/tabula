@@ -17,7 +17,7 @@
         self.frame = CGRectMake(0, 0, 320, 20);
         self.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1];
         self.separatorInset = UIEdgeInsetsMake(0, 9999, 0, 0);
-        self.userInteractionEnabled = NO;
+        self.userInteractionEnabled = YES;
         
         self.comment = [[UILabel alloc] initWithFrame:self.frame];
         self.comment.textAlignment = NSTextAlignmentCenter;

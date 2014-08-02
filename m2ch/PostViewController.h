@@ -7,11 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "CommonViewController.h"
+#import "CommonThreadViewController.h"
 
-@interface PostViewController : CommonViewController
+@interface PostViewController : CommonThreadViewController
 
 @property (nonatomic, strong) NSArray *replyTo;
 @property (nonatomic, strong) NSArray *replies;
+
+- (IBAction)showRepliesButton:(id)sender;
 
 @end

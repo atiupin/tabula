@@ -16,13 +16,9 @@
 
 @implementation ThreadViewController
 
-static NSInteger postsOnPage = 35;
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self.tableView registerClass:[PostTableViewCell class] forCellReuseIdentifier:@"reuseIndenifier"];
-    self.tableView.estimatedRowHeight = UITableViewAutomaticDimension;
     self.navigationItem.title = [NSString stringWithFormat:@"Тред в /%@/", self.boardId];
     self.navigationItem.rightBarButtonItem.enabled = NO;
     self.isLoaded = NO;
@@ -34,7 +30,11 @@ static NSInteger postsOnPage = 35;
     [self.refreshButton addTarget:self action:@selector(loadMorePosts) forControlEvents:UIControlEventTouchUpInside];
     self.refreshButton.hidden = YES;
     
-    self.tableView.tableFooterView = self.refreshButton;
+    self.tableView.tableFooterView = [[UIView alloc]initWithFrame:self.refreshButton.frame];
+    [self.tableView.tableFooterView addSubview:self.refreshButton];
+    UIView *endline = [[UIView alloc]initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0.5)];
+    endline.backgroundColor = [UIColor colorWithRed:0.8 green:0.8 blue:0.8 alpha:1];
+    [self.tableView.tableFooterView addSubview:endline];
     
     NSString *stringUrl = [NSString stringWithFormat:@"%@/makaba/mobile.fcgi?task=get_thread&board=%@&thread=%@&post=1", ROOT_URL, self.boardId, self.threadId];
     self.mainUrl = [NSURL URLWithString:stringUrl];
@@ -79,21 +79,19 @@ static NSInteger postsOnPage = 35;
             NSUInteger postNum = [self.thread.linksReference indexOfObject:self.thread.startingPost];
             if (postNum == NSNotFound) {
                 postNum = 0;
-            } else {
-                postNum += 1;
             }
             
             NSUInteger indexArray[] = {0, postNum};
             self.thread.startingRow = [NSIndexPath indexPathWithIndexes:indexArray length:2];
         }
         
-        self.currentThread = [Thread currentThreadWithThread:self.thread andPosition:self.thread.startingRow];
+        [self cacheHeightForAllPosts];
         
         dispatch_async(dispatch_get_main_queue(), ^(void){
-            if (self.currentThread.posts.count != 0) {
+            if (self.thread.posts.count != 0) {
                 [self performSelectorOnMainThread:@selector(creationEnded) withObject:nil waitUntilDone:YES];
-                if ([self.currentThread.startingRow indexAtPosition:1] != 0) {
-                    [self.tableView scrollToRowAtIndexPath:self.currentThread.startingRow atScrollPosition:UITableViewScrollPositionTop animated:NO];
+                if ([self.thread.startingRow indexAtPosition:1] != 0) {
+                    [self.tableView scrollToRowAtIndexPath:self.thread.startingRow atScrollPosition:UITableViewScrollPositionTop animated:NO];
                 }
             } else {
                 NSError *error = [NSError errorWithDomain:@"notnil" code:-666 userInfo:nil];
@@ -118,22 +116,20 @@ static NSInteger postsOnPage = 35;
             [self.thread.posts addObjectsFromArray:childThread.posts];
             [self.thread.linksReference addObjectsFromArray:childThread.linksReference];
             [self.thread updateReplies];
-            
-            self.currentThread.postsBottomLeft += childThread.posts.count;
+            [self.thread updatePostIndexes];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^(void){
             [self performSelectorOnMainThread:@selector(updateEnded) withObject:nil waitUntilDone:YES];
         });
     });
-
+    
 }
 
 #pragma mark - Data updating
 
 - (void)creationEnded {
     [super creationEnded];
-    //обновление таблицы бросает исключения автолейаута, если нажать на назад пока оно выполняется, но программу это не крашит
     [self.tableView reloadData];
     [self updateLastPost];
     self.refreshButton.enabled = YES;
@@ -148,7 +144,7 @@ static NSInteger postsOnPage = 35;
 
 - (void)updateEnded {
     [super updateEnded];
-    [self loadMorePostsBottom];
+    [self.tableView reloadData];
     [self updateLastPost];
     self.refreshButton.enabled = YES;
 }
@@ -184,171 +180,70 @@ static NSInteger postsOnPage = 35;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.currentThread.posts.count;
+    return self.thread.posts.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    PostTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"reuseIndenifier"];
-    
-    [cell updateFonts];
-    
-    Post *post = self.currentThread.posts[indexPath.row];
+    PostCell *cell = [tableView dequeueReusableCellWithIdentifier:@"reuseIdentifier" forIndexPath:indexPath];
+    Post *post = self.thread.posts[indexPath.row];
     
     [cell setPost:post];
     
-    [cell setNeedsUpdateConstraints];
-    [cell updateConstraintsIfNeeded];
-    
     cell.comment.delegate = self;
     
-    UITapGestureRecognizer *tgr = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageTapped:)];
-    UILongPressGestureRecognizer *lpgr = [[UILongPressGestureRecognizer alloc]initWithTarget:self action:@selector(postLongPress:)];
+    //похоже, что это единственный вариант надежно убить сепаратор между таблицей и футером
+    if (indexPath.row == [self.thread.posts count]-1) {
+        cell.separator.hidden = YES;
+    } else {
+        cell.separator.hidden = NO;
+    }
     
-    lpgr.minimumPressDuration = 0.5;
-    [cell.comment setTag:cell.num];
+    UITapGestureRecognizer *tgrImage = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageTapped:)];
+    tgrImage.delegate = self;
+    [cell.postImage addGestureRecognizer:tgrImage];
     
-    tgr.delegate = self;
-    lpgr.delegate = self;
-    
-    [cell addGestureRecognizer:lpgr];
-    [cell.postImage addGestureRecognizer:tgr];
+    UITapGestureRecognizer *tgrCell = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(clearTextViewSelections)];
+    tgrCell.delegate = self;
+    [cell addGestureRecognizer:tgrCell];
     
     return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    Post *post = self.currentThread.posts[indexPath.row];
+    Post *post = self.thread.posts[indexPath.row];
     return [self heightForPost:post];
 }
 
-- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    UrlNinja *urlNinja = [[UrlNinja alloc]init];
-    urlNinja.postId = self.currentThread.linksReference[indexPath.row];
-    [self openPostWithUrlNinja:urlNinja];
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-}
-
-#pragma mark - UIActionSheetDelegate
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if(actionSheet.tag == 1) // лонгпресс по посту
-    {
-        if (buttonIndex == actionSheet.cancelButtonIndex) {
-            return;
-        } else if (buttonIndex == 0) { // ответить
-            if (![self.thread.postDraft isEqualToString:@""] && self.thread.postDraft) {
-                self.thread.postDraft = [NSString stringWithFormat:@"%@%@\n", self.thread.postDraft, self.reply];
-            } else {
-                self.thread.postDraft = [NSString stringWithFormat:@"%@\n", self.reply];
-            }
-        } else if (buttonIndex == 1) { //ответ с цитатой
-            if (![self.thread.postDraft isEqualToString:@""] && self.thread.postDraft) {
-                self.thread.postDraft = [NSString stringWithFormat:@"%@\n%@\n%@\n", self.thread.postDraft, self.reply, self.quote];
-            } else {
-                self.thread.postDraft = [NSString stringWithFormat:@"%@\n%@\n", self.reply, self.quote];
-            }
-        }
-        
-        [self performSegueWithIdentifier:@"newPost" sender:self];
+#pragma mark - Text View Delegate
+- (void)textViewDidChangeSelection:(UITextView *)textView {
+    //это несколько стремный способ, но вариант вида superview-superview-superview ломается в восьмерке
+    CGPoint point = [textView convertPoint:CGPointZero toView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:point];
+    PostCell *cell = (PostCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+    
+    self.responder = cell.comment;
+    if (textView.selectedRange.length != 0) {
+        [cell.replyButton setTitle:@"Цитировать" forState:UIControlStateNormal];
     } else {
-        [super actionSheet:actionSheet clickedButtonAtIndex:buttonIndex];
+        [cell.replyButton setTitle:@"Ответить" forState:UIControlStateNormal];
     }
 }
 
-- (void)postLongPress:(UIGestureRecognizer *)sender {
-    
-    if (sender.state == UIGestureRecognizerStateBegan){
-        PostTableViewCell *cell = (PostTableViewCell *)sender.view;
-        TTTAttributedLabel *post = cell.comment;
-//        TTTAttributedLabel *post = (TTTAttributedLabel *)sender.view;
-        self.reply = [@">>" stringByAppendingString:[NSString stringWithFormat:@"%ld", (long)cell.num]];
-        self.quote = [self makeQuote:post.text];
-    
-        UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:
-          NSLocalizedString(@"Отмена", nil) destructiveButtonTitle:nil otherButtonTitles:
-          NSLocalizedString(@"Ответить", nil),
-          NSLocalizedString(@"Ответить с цитатой", nil), nil];
-        actionSheet.tag = 1;
-        [actionSheet showInView:self.view];
-    }
+#pragma mark - Buttons
+
+- (IBAction)replyButton:(id)sender {
+    CGPoint point = [sender convertPoint:CGPointZero toView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:point];
+    PostCell *cell = (PostCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+    [self replyOrQuoteWithCell:cell];
 }
 
-- (NSString *)makeQuote:(NSString *)sourceString {
-    NSMutableString *mString = [sourceString mutableCopy];
-    NSMutableArray *resultArray = [NSMutableArray array];
-    NSRegularExpression *quoteReg = [NSRegularExpression regularExpressionWithPattern:@"^.+$" options:NSRegularExpressionAnchorsMatchLines error:nil];
-    [quoteReg enumerateMatchesInString:sourceString options:0 range:NSMakeRange(0, sourceString.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
-        [resultArray addObject:result];
-    }];
-    NSInteger shift = 0;
-    for (NSTextCheckingResult *result in resultArray) {
-        [mString insertString:@">" atIndex:result.range.location + shift];
-        shift ++;
-    }
-    return mString;
-}
-
-#pragma mark - Loading and refreshing
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if ((self.tableView.contentSize.height - self.tableView.contentOffset.y) < 3000 && self.isLoaded == YES && self.currentThread.postsBottomLeft !=0 && self.isUpdating == NO) {
-        [self loadMorePostsBottom];
-    }
-    if (self.tableView.contentOffset.y < 3000 && self.isLoaded == YES && self.currentThread.postsTopLeft !=0 && self.isUpdating == NO) {
-        [self loadMorePostsTop];
-    }
-}
-
-- (void)loadMorePostsTop {
-    self.isUpdating = YES;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-        
-        NSInteger i = 0;
-        CGPoint newContentOffset = CGPointMake(0, 0);
-        
-        if (self.currentThread.postsTopLeft > postsOnPage) {
-            i = postsOnPage;
-        }
-        else {
-            i = self.currentThread.postsTopLeft;
-        }
-        
-        for (int k = 0; k < i; k++) {
-            newContentOffset.y += [self heightForPost:[self.thread.posts objectAtIndex:self.currentThread.postsTopLeft+k-i]];
-        }
-        
-        [self.currentThread insertMoreTopPostsFrom:self.thread];
-        newContentOffset.y += self.tableView.contentOffset.y;
-        
-        dispatch_async(dispatch_get_main_queue(), ^(void){
-            [self.tableView performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:YES];
-            [self.tableView setContentOffset:newContentOffset];
-            self.isUpdating = NO;
-        });
-    });
-}
-
-- (void)loadMorePostsBottom {
-    self.isUpdating = YES;
-    self.refreshButton.enabled = NO;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-        [self.currentThread insertMoreBottomPostsFrom:self.thread];
-        [self cacheHeightsForUpdatedIndexes];
-        dispatch_async(dispatch_get_main_queue(), ^(void){
-            [self.tableView reloadData];
-            [self updateLastPost];
-            self.refreshButton.enabled = YES;
-            self.isUpdating = NO;
-        });
-    });
-}
-
-- (CGFloat)cacheHeightsForUpdatedIndexes {
-    CGFloat height = 0;
-    for (NSIndexPath *indexPath in self.currentThread.updatedIndexes)
-        height += [self.tableView.delegate tableView:self.tableView heightForRowAtIndexPath:indexPath];
-    return height;
+- (IBAction)showRepliesButton:(id)sender {
+    CGPoint point = [sender convertPoint:CGPointZero toView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:point];
+    PostCell *cell = (PostCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+    [self showRepliesWithCell:cell];
 }
 
 @end

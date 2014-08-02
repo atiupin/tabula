@@ -18,7 +18,7 @@
 
 @interface GetRequestViewController : UIViewController <UIWebViewDelegate, CaptchaFixViewControllerDelegate>
 
-@property (nonatomic, assign) id<NewPostControllerDelegate> delegate;
+@property (nonatomic, weak) id<NewPostControllerDelegate> delegate;
 
 @property (nonatomic, strong)NSString *boardId;
 @property (nonatomic, strong)NSString *threadId;

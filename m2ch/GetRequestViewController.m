@@ -194,7 +194,7 @@ NSString *const CAPTCHA_EMPTY = @"";
     
     //установка таймера для проверки окна абустатуса
     [self.timer invalidate];
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.05 target:self selector:@selector(abuStatusChecker) userInfo:nil repeats:YES];
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(abuStatusChecker) userInfo:nil repeats:YES];
     [self.timer fire];
     
     //клик по кнопке отправить (submit() не работает)
@@ -233,6 +233,7 @@ NSString *const CAPTCHA_EMPTY = @"";
 #pragma mark - Post cancel
 
 - (void)postCanceled:(NSString *)draft {
+    [self.output stopLoading];
     [self.delegate postCanceled:self.postView.text];
 }
 

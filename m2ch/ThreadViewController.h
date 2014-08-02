@@ -7,16 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "CommonViewController.h"
+#import "CommonThreadViewController.h"
 #import "GetRequestViewController.h"
 
-@interface ThreadViewController : CommonViewController <UIGestureRecognizerDelegate, NSFetchedResultsControllerDelegate>
+@interface ThreadViewController : CommonThreadViewController <UIGestureRecognizerDelegate, NSFetchedResultsControllerDelegate, UITextViewDelegate>
 
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 
-@property (nonatomic, strong) NSString *reply;
-@property (nonatomic, strong) NSString *quote;
-
 @property (nonatomic, strong) UIButton *refreshButton;
+
+- (IBAction)replyButton:(id)sender;
+- (IBAction)showRepliesButton:(id)sender;
 
 @end

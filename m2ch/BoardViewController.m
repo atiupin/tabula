@@ -64,7 +64,7 @@
         post.replyCount += 1; //меняем ответы на посты
         
         post.newReplies = 0;
-        NSString *comboId = [NSString stringWithFormat:@"%@%ld", self.boardId, (long)post.num];
+        NSString *comboId = [NSString stringWithFormat:@"%@%@", self.boardId, post.postId];
         
         //на всякий случай, если в результате глюков или легаси ДБ по запросу будет более одного результата, то ищем наибольший
         NSArray *dataArray = [ThreadData MR_findByAttribute:@"name" withValue:comboId];

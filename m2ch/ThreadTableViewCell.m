@@ -131,7 +131,7 @@
 
 - (id) setPost:(Post *)post {
     self.title.text = post.threadReplies;
-    self.subtitle.text = post.subtitle;
+    self.subtitle.text = [NSString stringWithFormat:@"%@, %@", post.name, post.date];
     self.comment.text = post.body;
     
     self.postImage.tnHeight = post.tnHeight;

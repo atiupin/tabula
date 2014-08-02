@@ -12,8 +12,9 @@
 #import "Thread.h"
 #import "Post.h"
 
+#import "PostCell.h"
+
 #import "ThreadTableViewCell.h"
-#import "PostTableViewCell.h"
 #import "CommentTableViewCell.h"
 #import "GetRequestViewController.h"
 
@@ -21,12 +22,12 @@
 #import "JTSImageInfo.h"
 #import "ThreadData.h"
 #import "UrlNinja.h"
-#import "Declension.h"
 
-@interface CommonViewController : UITableViewController <TTTAttributedLabelDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, NewPostControllerDelegate>
+@interface CommonViewController : UITableViewController <TTTAttributedLabelDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UITextViewDelegate>
 
 @property (nonatomic, strong) UIActivityIndicatorView *spinner;
 @property (nonatomic, strong) UILabel *errorLabel;
+@property (nonatomic, strong) NSTextStorage *dummyStorage;
 
 @property (nonatomic, strong) NSURL *mainUrl;
 @property (nonatomic, strong) NSString *boardId;
@@ -40,7 +41,6 @@
 @property (nonatomic) BOOL isUpdating;
 
 - (void)loadDataForUrl:(NSURL *)url isMainUrl:(BOOL)isMain handleError:(BOOL)handleError;
-- (void)loadMorePosts;
 - (void)createDataWithLocation:(NSURL *)location;
 - (void)createChildDataWithLocation:(NSURL *)location;
 - (void)errorMessage:(NSError *)error;
@@ -51,7 +51,6 @@
 - (void)openThreadWithUrlNinja:(UrlNinja *)urlNinja;
 - (void)openPostWithUrlNinja:(UrlNinja *)urlNinja;
 
-- (CGFloat)heightForPost:(Post *)post;
 - (void)imageTapped:(UITapGestureRecognizer *)sender;
 
 @end

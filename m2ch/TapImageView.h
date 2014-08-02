@@ -12,4 +12,6 @@
 @property (nonatomic) NSInteger tnWidth;
 @property (nonatomic, strong)NSURL *bigImageUrl;
 
+- (void)resetSize;
+
 @end

@@ -32,7 +32,7 @@
     self.boardId = boardId;
     self.threadId = threadId;
     
-    NSString *stringUrl = [[@"http://2ch.hk/" stringByAppendingString:boardId] stringByAppendingString:@"/"];
+    NSString *stringUrl = [NSString stringWithFormat:@"%@/%@/", ROOT_URL, boardId];
     NSURL *boardUrl = [NSURL URLWithString:stringUrl];
     NSString *thumbnail = [source objectForKey:@"thumbnail"];
     NSString *image = [source objectForKey:@"image"];
@@ -86,11 +86,9 @@
     NSNumber *num = [source objectForKey:@"num"];
     
     if (num != (id)[NSNull null]) {
-        self.num = [num intValue];
         self.postId = [NSString stringWithFormat:@"%@", num];
     }
     else {
-        self.num = 0;
         self.postId = nil;
     }
     
@@ -103,7 +101,6 @@
     self.name = [source objectForKey:@"name"];
     self.date = [source objectForKey:@"date"];
     
-    self.subtitle = [NSString stringWithFormat:@"%@, %@", self.name, self.date];
     self.body = [self makeBody:[source objectForKey:@"comment"]];
     
     return self;
@@ -136,10 +133,6 @@
                              @"op": @0
                              };
     return [[self alloc]initWithDictionary:source];
-}
-
-- (NSString *) makeSubtile:(NSString *)name withDate:(NSDate *)date {
-    return @"Title";
 }
 
 - (NSAttributedString *) makeBody:(NSString *)comment {
@@ -211,7 +204,8 @@
     }];
     
     //quote
-    UIColor *quoteColor = [UIColor colorWithRed:(120/255.0) green:(153/255.0) blue:(2/255.0) alpha:1.0];
+    //UIColor *quoteColor = [UIColor colorWithRed:(120/255.0) green:(153/255.0) blue:(2/255.0) alpha:1.0];
+    UIColor *quoteColor = [UIColor colorWithRed:(17/255.0) green:(139/255.0) blue:(116/255.0) alpha:1.0];
     NSRegularExpression *quote = [[NSRegularExpression alloc]initWithPattern:@"<span class=\"unkfunc\">(.*?)</span>" options:0 error:nil];
     [quote enumerateMatchesInString:comment options:0 range:range usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
         [maComment addAttribute:NSForegroundColorAttributeName value:quoteColor range:result.range];
@@ -221,21 +215,36 @@
     UIColor *linkColor = [UIColor colorWithRed:(255/255.0) green:(102/255.0) blue:(0/255.0) alpha:1.0];
     NSRegularExpression *link = [[NSRegularExpression alloc]initWithPattern:@"<a[^>]*>(.*?)</a>" options:0 error:nil];
     NSRegularExpression *linkLink = [[NSRegularExpression alloc]initWithPattern:@"href=\"(.*?)\"" options:0 error:nil];
+    NSRegularExpression *linkLinkTwo = [[NSRegularExpression alloc]initWithPattern:@"href='(.*?)'" options:0 error:nil];
 
     [link enumerateMatchesInString:comment options:0 range:range usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL *stop) {
         NSString *fullLink = [comment substringWithRange:result.range];
         NSTextCheckingResult *linkLinkResult = [linkLink firstMatchInString:fullLink options:0 range:NSMakeRange(0, fullLink.length)];
-        NSRange urlRange = NSMakeRange(linkLinkResult.range.location+6, linkLinkResult.range.length-7);
-        NSString *urlString = [fullLink substringWithRange:urlRange];
-        NSURL *url = [[NSURL alloc]initWithString:urlString];
-        if (url) {
-            UrlNinja *un = [UrlNinja unWithUrl:url];
-            if ([un.boardId isEqualToString:self.boardId] && [un.threadId isEqualToString:self.threadId] && un.type == boardThreadPostLink) {
-                [self.replyTo addObject:un.postId];
+        NSTextCheckingResult *linkLinkTwoResult = [linkLinkTwo firstMatchInString:fullLink options:0 range:NSMakeRange(0, fullLink.length)];
+        
+        NSRange urlRange = NSMakeRange(0, 0);
+        
+        if (linkLinkResult.numberOfRanges != 0) {
+            urlRange = NSMakeRange(linkLinkResult.range.location+6, linkLinkResult.range.length-7);
+        } else if (linkLinkResult.numberOfRanges != 0) {
+            urlRange = NSMakeRange(linkLinkTwoResult.range.location+6, linkLinkTwoResult.range.length-7);
+            NSLog(@"%@", fullLink);
+        }
+        
+        if (urlRange.length != 0) {
+            NSString *urlString = [fullLink substringWithRange:urlRange];
+            NSURL *url = [[NSURL alloc]initWithString:urlString];
+            if (url) {
+                UrlNinja *un = [UrlNinja unWithUrl:url];
+                if ([un.boardId isEqualToString:self.boardId] && [un.threadId isEqualToString:self.threadId] && un.type == boardThreadPostLink) {
+                    if (![self.replyTo containsObject:un.postId]) {
+                        [self.replyTo addObject:un.postId];
+                    }
+                }
+                [maComment addAttribute:NSLinkAttributeName value:url range:result.range];
+                [maComment addAttribute:NSForegroundColorAttributeName value:linkColor range:result.range];
+                [maComment addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInt:NSUnderlineStyleNone] range:result.range];
             }
-            [maComment addAttribute:NSLinkAttributeName value:url range:result.range];
-            [maComment addAttribute:NSForegroundColorAttributeName value:linkColor range:result.range];
-            [maComment addAttribute:NSUnderlineStyleAttributeName value:[NSNumber numberWithInt:NSUnderlineStyleNone] range:result.range];
         }
     }];
     

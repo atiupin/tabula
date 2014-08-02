@@ -17,9 +17,7 @@
 @property (nonatomic) NSInteger repliesShift;
 @property (nonatomic) NSInteger postCount;
 
-@property (nonatomic) NSInteger clearSeparator1;
-@property (nonatomic) NSInteger clearSeparator2;
-@property (nonatomic) NSInteger clearSeparator3;
+@property (nonatomic, strong) NSMutableArray *clearSeparatorsIndexes;
 
 @property (nonatomic) CGFloat mainRowContentOffset;
 @property (nonatomic) BOOL needFlash;
@@ -32,12 +30,8 @@
 {
     [super viewDidLoad];
     
-    self.navigationItem.title = [NSString stringWithFormat:@"Пост %@", self.postId];
-    
-    [self.tableView registerClass:[PostTableViewCell class] forCellReuseIdentifier:@"reuseIndenifier"];
+    self.navigationItem.title = @"Пост";
     [self.tableView registerClass:[CommentTableViewCell class] forCellReuseIdentifier:@"commentCell"];
-    
-    self.tableView.estimatedRowHeight = UITableViewAutomaticDimension;
     
     self.currentThread = [Thread currentThreadWithThread:self.thread andReplyTo:self.replyTo andReplies:self.replies andPostId:self.postId];
     
@@ -50,9 +44,7 @@
     self.repliesShift = 0;
     self.postCount = self.currentThread.posts.count;
     
-    self.clearSeparator1 = -1;
-    self.clearSeparator2 = -1;
-    self.clearSeparator3 = -1;
+    self.clearSeparatorsIndexes = [@[] mutableCopy];
     
     CGFloat contentHeight = 64;
     
@@ -62,17 +54,20 @@
         self.mainPostShift = 1;
         self.repliesShift += 1;
         self.postCount += 1;
-        self.clearSeparator1 = self.replyTo.count - 1;
+        [self.clearSeparatorsIndexes addObject:[NSNumber numberWithLong:self.replyTo.count-1]];
         contentHeight += 20;
     }
     if (self.replies.count > 0) {
         self.bottomCommentRow = self.mainPostRow + 1;
         self.repliesShift += 1;
         self.postCount += 1;
-        self.clearSeparator2 = self.mainPostRow;
-        self.clearSeparator3 = self.bottomCommentRow + self.replies.count;
+        [self.clearSeparatorsIndexes addObject:[NSNumber numberWithLong:self.bottomCommentRow]];
         contentHeight += 20;
     }
+    
+    NSInteger lastRow = [self.currentThread.posts count]+self.repliesShift-1;
+    [self.clearSeparatorsIndexes addObject:[NSNumber numberWithLong:self.mainPostRow]];
+    [self.clearSeparatorsIndexes addObject:[NSNumber numberWithLong:lastRow]];
     
     NSInteger i = self.replyTo.count;
     CGPoint contentOffset = CGPointMake(0, 0);
@@ -101,6 +96,10 @@
     [self.tableView setContentOffset:contentOffset];
     self.mainRowContentOffset = contentOffset.y - self.navigationController.navigationBar.frame.size.height;
     
+    UITapGestureRecognizer *tgrCell = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(clearTextViewSelections)];
+    tgrCell.delegate = self;
+    [self.tableView.tableFooterView addGestureRecognizer:tgrCell];
+    
     [self creationEnded];
 }
 
@@ -119,15 +118,25 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.row == self.topCommentRow) {
-        PostTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"commentCell"];
+        CommentTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"commentCell"];
         cell.comment.text = [Declension replyTo:self.replyTo.count];
+        
+        UITapGestureRecognizer *tgrCell = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(clearTextViewSelections)];
+        tgrCell.delegate = self;
+        [cell addGestureRecognizer:tgrCell];
+        
         return cell;
     } else if (indexPath.row == self.bottomCommentRow) {
-        PostTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"commentCell"];
+        CommentTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"commentCell"];
         cell.comment.text = [Declension replies:self.replies.count];
+        
+        UITapGestureRecognizer *tgrCell = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(clearTextViewSelections)];
+        tgrCell.delegate = self;
+        [cell addGestureRecognizer:tgrCell];
+        
         return cell;
     } else {
-        PostTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"reuseIndenifier"];
+        PostCell *cell = [tableView dequeueReusableCellWithIdentifier:@"reuseIdentifier"];
         Post *post = [[Post alloc]init];
         if (indexPath.row < self.mainPostRow) {
             post = self.currentThread.posts[indexPath.row];
@@ -137,22 +146,32 @@
             post = self.currentThread.posts[indexPath.row - self.repliesShift];
         }
         
-        if (indexPath.row == self.clearSeparator1 || indexPath.row == self.clearSeparator2 || indexPath.row == self.clearSeparator3) {
+        if ([self.clearSeparatorsIndexes containsObject:[NSNumber numberWithLong:indexPath.row]]) {
             cell.separatorInset = UIEdgeInsetsMake(0, 9999, 0, 0);
+        } else {
+            //дефолтное значение, константы похоже не существует
+            cell.separatorInset = UIEdgeInsetsMake(0, 15, 0, 0);
         }
         
-        [cell updateFonts];
+        cell.separator.hidden = YES;
+        
         [cell setPost:post];
         
-        [cell setNeedsUpdateConstraints];
-        [cell updateConstraintsIfNeeded];
+        if (indexPath.row == self.mainPostRow) {
+            cell.repliesButton.hidden = YES;
+        } else {
+            cell.repliesButton.hidden = NO;
+        }
         
         cell.comment.delegate = self;
         
         UITapGestureRecognizer *tgr = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageTapped:)];
-        [cell.comment setTag:cell.num];
         tgr.delegate = self;
         [cell.postImage addGestureRecognizer:tgr];
+        
+        UITapGestureRecognizer *tgrCell = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(clearTextViewSelections)];
+        tgrCell.delegate = self;
+        [cell addGestureRecognizer:tgrCell];
         
         return cell;
     }
@@ -172,7 +191,7 @@
         } else {
             post = self.currentThread.posts[indexPath.row - self.repliesShift];
         }
-    return [self heightForPost:post];
+        return [self heightForPost:post];
     }
 }
 
@@ -233,13 +252,49 @@
 }
 
 - (void)makeFlash {
-    if (self.needFlash == YES) {
         NSUInteger mainIndexArray[] = {0, self.mainPostRow};
         NSIndexPath *mainIndexPath = [NSIndexPath indexPathWithIndexes:mainIndexArray length:2];
-        [self.tableView selectRowAtIndexPath:mainIndexPath animated:YES scrollPosition:UITableViewScrollPositionNone];
-        [self.tableView deselectRowAtIndexPath:mainIndexPath animated:YES];
-        self.needFlash = NO;
+        PostCell *cell = (PostCell *)[self.tableView cellForRowAtIndexPath:mainIndexPath];
+        
+        [UIView animateWithDuration:0.1 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+            cell.backgroundColor = [UIColor colorWithRed:0.8 green:0.8 blue:0.8 alpha:1];
+        } completion:^(BOOL finished) {
+            [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+                cell.backgroundColor = [UIColor whiteColor];
+            } completion:^(BOOL finished) {
+                
+            }];
+        }];
+}
+
+- (IBAction)showRepliesButton:(id)sender {
+    CGPoint point = [sender convertPoint:CGPointZero toView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:point];
+    Post *post = [[Post alloc]init];
+    
+    UrlNinja *un = [[UrlNinja alloc]init];
+    un.boardId = self.boardId;
+    un.threadId = self.threadId;
+    
+    if (indexPath.row < self.mainPostRow) {
+        post = self.currentThread.posts[indexPath.row];
+        if (post.replyTo.count == 0 && post.replies.count == 1 && [post.replies[0] isEqualToString:self.postId]) {
+            un.postId = self.postId;
+        } else {
+            un.postId = post.postId;
+        }
+    } else if (indexPath.row == self.mainPostRow) {
+        un.postId = self.postId;
+    } else {
+        post = self.currentThread.posts[indexPath.row - self.repliesShift];
+        if (post.replies.count == 0 && post.replyTo.count == 1 && [post.replyTo[0] isEqualToString:self.postId]) {
+            un.postId = self.postId;
+        } else {
+            un.postId = post.postId;
+        }
     }
+    
+    [self openPostWithUrlNinja:un];
 }
 
 @end
