@@ -57,6 +57,7 @@
     
     [self updatePostIndexes];
     [self updateReplies];
+    [self updateDates];
     
     return self;
 }
@@ -108,6 +109,12 @@
     for (Post *post in self.posts) {
         NSInteger postIndex = [self.posts indexOfObject:post];
         post.threadNumber = [NSString stringWithFormat:@"%lu", (long)postIndex+1];
+    }
+}
+
+- (void)updateDates {
+    for (Post *post in self.posts) {
+        post.date = [DateFormatter dateFromTimestamp:post.timestamp];
     }
 }
 

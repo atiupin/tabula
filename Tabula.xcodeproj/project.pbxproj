@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		848D598C1951714D00773BCF /* Data.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 848D598A1951714C00773BCF /* Data.xcdatamodeld */; };
 		848D598F195171C800773BCF /* BoardData.m in Sources */ = {isa = PBXBuildFile; fileRef = 848D598E195171C800773BCF /* BoardData.m */; };
+		9717C0D1198CFFAF00EA72EE /* DateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 9717C0D0198CFFAF00EA72EE /* DateFormatter.m */; };
 		97183A7B192AB607003F429C /* GetRequestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97183A7A192AB607003F429C /* GetRequestViewController.m */; };
 		97223088198A2DD800E7C926 /* CommonThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97223087198A2DD800E7C926 /* CommonThreadViewController.m */; };
 		974A6105196446E800B98C5D /* CommentTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 974A6104196446E800B98C5D /* CommentTableViewCell.m */; };
@@ -65,6 +66,8 @@
 		848D598B1951714C00773BCF /* Data.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Data.xcdatamodel; sourceTree = "<group>"; };
 		848D598D195171C800773BCF /* BoardData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardData.h; sourceTree = "<group>"; };
 		848D598E195171C800773BCF /* BoardData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardData.m; sourceTree = "<group>"; };
+		9717C0CF198CFFAF00EA72EE /* DateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateFormatter.h; sourceTree = "<group>"; };
+		9717C0D0198CFFAF00EA72EE /* DateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateFormatter.m; sourceTree = "<group>"; };
 		97183A79192AB607003F429C /* GetRequestViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetRequestViewController.h; sourceTree = "<group>"; };
 		97183A7A192AB607003F429C /* GetRequestViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetRequestViewController.m; sourceTree = "<group>"; };
 		97223086198A2DD800E7C926 /* CommonThreadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonThreadViewController.h; sourceTree = "<group>"; };
@@ -186,6 +189,8 @@
 				97A26CC01941486600D632C5 /* UrlNinja.m */,
 				974B601E19566FA800592B1D /* Declension.h */,
 				974B601F19566FA800592B1D /* Declension.m */,
+				9717C0CF198CFFAF00EA72EE /* DateFormatter.h */,
+				9717C0D0198CFFAF00EA72EE /* DateFormatter.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -470,6 +475,7 @@
 				97A26CC11941486600D632C5 /* UrlNinja.m in Sources */,
 				974B602019566FA800592B1D /* Declension.m in Sources */,
 				97C3D526191BD46B008921B5 /* ThreadViewController.m in Sources */,
+				9717C0D1198CFFAF00EA72EE /* DateFormatter.m in Sources */,
 				97183A7B192AB607003F429C /* GetRequestViewController.m in Sources */,
 				974A61081964A6AB00B98C5D /* Board.m in Sources */,
 				848D598C1951714D00773BCF /* Data.xcdatamodeld in Sources */,
@@ -626,7 +632,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = Tabula;
-				PROVISIONING_PROFILE = "74BE95AA-4057-45F1-9296-4999C516F459";
+				PROVISIONING_PROFILE = "DDE5A0E4-86E7-4969-83EA-4FFE0CF87DB7";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -656,7 +662,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = Tabula;
-				PROVISIONING_PROFILE = "74BE95AA-4057-45F1-9296-4999C516F459";
+				PROVISIONING_PROFILE = "DDE5A0E4-86E7-4969-83EA-4FFE0CF87DB7";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};

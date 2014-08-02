@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "UrlNinja.h"
+#import "DateFormatter.h"
 
 @interface Post : NSObject
 
@@ -19,16 +20,17 @@
 @property (nonatomic, strong) NSString *postId;
 
 @property (nonatomic, strong) NSString *lasthit;
-@property (nonatomic, strong) NSString *timestamp;
 @property (nonatomic, strong) NSString *parent;
 @property (nonatomic, strong) NSString *subject;
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString *date;
+@property (nonatomic, strong) NSString *tripcode;
 
 @property (nonatomic, strong) NSURL *imageUrl;
 @property (nonatomic, strong) NSURL *thumbnailUrl;
 @property (nonatomic, strong) NSURL *postUrl;
 
+@property (nonatomic) NSInteger timestamp;
 @property (nonatomic) NSInteger tnHeight;
 @property (nonatomic) NSInteger tnWidth;
 @property (nonatomic) NSInteger imgHeight;

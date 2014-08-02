@@ -83,6 +83,15 @@
         self.imgHeight = 0;
     }
     
+    NSNumber *timestamp = [source objectForKey:@"timestamp"];
+    
+    if (timestamp != (id)[NSNull null]) {
+        self.timestamp = [timestamp intValue];
+    }
+    else {
+        self.timestamp = 0;
+    }
+    
     NSNumber *num = [source objectForKey:@"num"];
     
     if (num != (id)[NSNull null]) {
@@ -95,11 +104,12 @@
     self.sage = YES;
     
     self.lasthit = [source objectForKey:@"lasthit"];
-    self.timestamp = [source objectForKey:@"timestamp"];
     self.parent = [source objectForKey:@"parent"];
     self.subject = [source objectForKey:@"subject"];
     self.name = [source objectForKey:@"name"];
-    self.date = [source objectForKey:@"date"];
+    self.tripcode = [source objectForKey:@"trip"];
+    
+    self.date = [DateFormatter dateFromTimestamp:self.timestamp];
     
     self.body = [self makeBody:[source objectForKey:@"comment"]];
     

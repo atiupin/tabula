@@ -36,6 +36,8 @@
     endline.backgroundColor = [UIColor colorWithRed:0.8 green:0.8 blue:0.8 alpha:1];
     [self.tableView.tableFooterView addSubview:endline];
     
+    //http://2ch.hk/makaba/mobile.fcgi?task=get_thread&board=mobi&thread=300665&post=1
+    
     NSString *stringUrl = [NSString stringWithFormat:@"%@/makaba/mobile.fcgi?task=get_thread&board=%@&thread=%@&post=1", ROOT_URL, self.boardId, self.threadId];
     self.mainUrl = [NSURL URLWithString:stringUrl];
     [self loadDataForUrl:self.mainUrl isMainUrl:YES handleError:YES];
@@ -116,6 +118,7 @@
             [self.thread.posts addObjectsFromArray:childThread.posts];
             [self.thread.linksReference addObjectsFromArray:childThread.linksReference];
             [self.thread updateReplies];
+            [self.thread updateDates];
             [self.thread updatePostIndexes];
         }
         

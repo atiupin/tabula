@@ -55,7 +55,16 @@
 
 - (id) setPost:(Post *)post {
     //title
-    self.title.text = post.name;
+    NSMutableAttributedString *title = [[NSMutableAttributedString alloc]init];
+    //NSAttributedString *tripcode = [[NSMutableAttributedString alloc]initWithString:post.tripcode attributes:@{NSForegroundColorAttributeName: self.darkGrey}];
+    
+    if (![post.name isEqualToString:@""]) {
+        title = [[NSMutableAttributedString alloc]initWithString:[NSString stringWithFormat:@"%@ %@", post.name, post.tripcode]];
+        [title addAttribute:NSForegroundColorAttributeName value:self.celestiaGreen range:NSMakeRange(post.name.length, post.tripcode.length+1)];
+    } else {
+        title = [[NSMutableAttributedString alloc]initWithString:post.tripcode attributes:@{NSForegroundColorAttributeName: self.celestiaGreen}];
+    }
+    self.title.attributedText = title;
     
     //subtitle
     self.subtitle.text = [NSString stringWithFormat:@"#%@  №%@", post.threadNumber, post.postId];
@@ -86,24 +95,24 @@
     //replies
     NSInteger postReplies = [post.replies count];
     NSInteger postReplyTo = [post.replyTo count];
-    NSString *title = @"";
+    NSString *repliesTitle = @"";
     
     if (postReplies > 0 && postReplyTo > 0) {
         self.repliesButton.hidden = NO;
-        title = [NSString stringWithFormat:@"▲%ld  ▼%ld", (long)postReplyTo, (long)postReplies];
+        repliesTitle = [NSString stringWithFormat:@"▲%ld ▼%ld", (long)postReplyTo, (long)postReplies];
     } else if (postReplies > 0) {
         self.repliesButton.hidden = NO;
-        title = [NSString stringWithFormat:@"▼%ld", (long)postReplies];
+        repliesTitle = [NSString stringWithFormat:@"▼%ld", (long)postReplies];
     } else if (postReplyTo > 0) {
         self.repliesButton.hidden = NO;
-        title = [NSString stringWithFormat:@"▲%ld", (long)postReplyTo];
+        repliesTitle = [NSString stringWithFormat:@"▲%ld", (long)postReplyTo];
     } else {
         self.repliesButton.hidden = YES;
     }
     
     //воркэраунд против бага(?) в 7, который несмотря ни на что анимирует изменение текста
-    self.repliesButton.titleLabel.text = title;
-    [self.repliesButton setTitle:title forState:UIControlStateNormal];
+    self.repliesButton.titleLabel.text = repliesTitle;
+    [self.repliesButton setTitle:repliesTitle forState:UIControlStateNormal];
     
     self.postId = post.postId;
     self.separator.frame = CGRectMake(15, self.frame.size.height-0.5, 305, 0.5);
