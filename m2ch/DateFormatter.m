@@ -24,15 +24,15 @@
         [formatter setTimeZone:[NSTimeZone systemTimeZone]];
         [formatter setDateFormat:@"dd.MM.yy"];
         return [formatter stringFromDate:date];
-    } else if (components.month > 1) {
+    } else if (components.month > 0) {
         [formatter setTimeZone:[NSTimeZone systemTimeZone]];
         [formatter setDateFormat:@"dd.MM"];
         return [formatter stringFromDate:date];
-    } else if (components.day > 1) {
+    } else if (components.day > 0) {
         return [NSString stringWithFormat:@"%ld д.", (long)components.day];
-    } else if (components.hour > 1) {
+    } else if (components.hour > 0) {
         return [NSString stringWithFormat:@"%ld ч.", (long)components.hour];
-    } else if (components.minute > 1){
+    } else if (components.minute > 0){
         return [NSString stringWithFormat:@"%ld мин.", (long)components.minute];
     } else if (components.second > 15){
         return [NSString stringWithFormat:@"%ld сек.", (long)components.second];
