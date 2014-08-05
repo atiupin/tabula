@@ -74,7 +74,7 @@
 
 - (void)loadData {
     
-    NSURL *boardUrl = [NSURL URLWithString:@"http://2ch.hk/makaba/mobile.fcgi?task=get_boards"];
+    NSURL *boardUrl = [NSURL URLWithString:@"https://2ch.hk/makaba/mobile.fcgi?task=get_boards"];
     
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];

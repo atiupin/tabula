@@ -56,8 +56,6 @@
 - (id) setPost:(Post *)post {
     //title
     NSMutableAttributedString *title = [[NSMutableAttributedString alloc]init];
-    //NSAttributedString *tripcode = [[NSMutableAttributedString alloc]initWithString:post.tripcode attributes:@{NSForegroundColorAttributeName: self.darkGrey}];
-    
     if (![post.name isEqualToString:@""]) {
         title = [[NSMutableAttributedString alloc]initWithString:[NSString stringWithFormat:@"%@ %@", post.name, post.tripcode]];
         [title addAttribute:NSForegroundColorAttributeName value:self.celestiaGreen range:NSMakeRange(post.name.length, post.tripcode.length+1)];
@@ -69,8 +67,8 @@
     //subtitle
     self.subtitle.text = [NSString stringWithFormat:@"#%@  №%@", post.threadNumber, post.postId];
     
-    //status & date
-    self.status.text = post.date;
+    //date
+    self.date.text = post.date;
     
     //image
     self.postImage.tnHeight = post.tnHeight;
@@ -80,7 +78,8 @@
     [self.postImage resetSize];
     
     self.postImage.bigImageUrl = post.imageUrl;
-    [self.postImage setImageWithURL:post.thumbnailUrl];
+    [self.postImage setImageWithURL:post.thumbnailUrl completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+    }];
     
     //comment (image-depend)
     if (post.tnHeight > 0 && post.tnWidth > 0) {

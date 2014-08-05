@@ -271,6 +271,7 @@
     
     if (image.bigImageUrl) {
         NSLog(@"%@", image.bigImageUrl.pathExtension);
+        NSLog(@"%@", image.bigImageUrl.absoluteString);
         if ([image.bigImageUrl.pathExtension isEqualToString:@"webm"]) {
             [self makeWebmActionSheetWithUrl:image.bigImageUrl];
         } else {

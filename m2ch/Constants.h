@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Alexander Tewpin. All rights reserved.
 //
 
-static NSString *const ROOT_URL = @"http://2ch.hk";
+static NSString *const ROOT_URL = @"https://2ch.hk";
 
 //магические числа для верстки ячейки с постом
 static CGFloat const CELL_H_MINUS_TEXT = 61.0;

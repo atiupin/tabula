@@ -211,6 +211,13 @@
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Статусы" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="HfJ-pc-iiB">
+                                            <rect key="frame" x="250" y="10" width="50" height="17"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Порядковый номер и ИД" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="S4X-9q-EuZ">
                                             <rect key="frame" x="15" y="28" width="289" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -218,7 +225,7 @@
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Дата и статус" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="fAM-Cl-GmM">
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Дата " textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="fAM-Cl-GmM">
                                             <rect key="frame" x="145" y="28" width="160" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
@@ -262,11 +269,12 @@
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="comment" destination="SKh-9z-YMO" id="VOc-1r-giW"/>
+                                    <outlet property="date" destination="fAM-Cl-GmM" id="XE6-xY-q5H"/>
                                     <outlet property="moreButton" destination="n9a-ft-6vf" id="1in-nK-wdn"/>
                                     <outlet property="postImage" destination="4FC-Ma-ax8" id="68E-Fe-sjd"/>
                                     <outlet property="repliesButton" destination="OaR-52-acF" id="E0p-D6-FZH"/>
                                     <outlet property="replyButton" destination="dMC-kb-LmT" id="WRA-wz-Wbn"/>
-                                    <outlet property="status" destination="fAM-Cl-GmM" id="MIC-Fq-0SY"/>
+                                    <outlet property="status" destination="HfJ-pc-iiB" id="4bQ-Jw-ZLV"/>
                                     <outlet property="subtitle" destination="S4X-9q-EuZ" id="qyw-Qk-tul"/>
                                     <outlet property="title" destination="noZ-9f-bvW" id="VRQ-Jv-xLI"/>
                                 </connections>
@@ -316,7 +324,14 @@
                                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                         </textView>
                                         <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Заголовок поста" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="COS-Ib-ED1">
-                                            <rect key="frame" x="15" y="10" width="200" height="17"/>
+                                            <rect key="frame" x="15" y="10" width="240" height="17"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Статусы" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yOX-Hr-pqR">
+                                            <rect key="frame" x="255" y="10" width="50" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="14"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -329,7 +344,7 @@
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Дата и статус" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Imh-Or-pUh">
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Дата" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Imh-Or-pUh">
                                             <rect key="frame" x="145" y="28" width="160" height="17"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="12"/>
@@ -363,10 +378,11 @@
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="comment" destination="Oeb-BS-OwM" id="awb-Dx-ode"/>
+                                    <outlet property="date" destination="Imh-Or-pUh" id="p5n-sh-S0k"/>
                                     <outlet property="moreButton" destination="qGD-i2-VzY" id="MLd-LY-Hch"/>
                                     <outlet property="postImage" destination="Jy9-QL-kVR" id="oha-9L-drU"/>
                                     <outlet property="repliesButton" destination="iwY-H0-Vpe" id="VqX-1m-E0m"/>
-                                    <outlet property="status" destination="Imh-Or-pUh" id="iw6-j4-reW"/>
+                                    <outlet property="status" destination="yOX-Hr-pqR" id="ObG-nK-9Ql"/>
                                     <outlet property="subtitle" destination="RSr-K1-vR3" id="miN-41-8Pe"/>
                                     <outlet property="title" destination="COS-Ib-ED1" id="rNs-kE-BAI"/>
                                 </connections>

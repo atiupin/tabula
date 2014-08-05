@@ -238,7 +238,6 @@
             urlRange = NSMakeRange(linkLinkResult.range.location+6, linkLinkResult.range.length-7);
         } else if (linkLinkResult.numberOfRanges != 0) {
             urlRange = NSMakeRange(linkLinkTwoResult.range.location+6, linkLinkTwoResult.range.length-7);
-            NSLog(@"%@", fullLink);
         }
         
         if (urlRange.length != 0) {

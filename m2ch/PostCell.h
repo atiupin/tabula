@@ -16,6 +16,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *title;
 @property (weak, nonatomic) IBOutlet UILabel *subtitle;
 @property (weak, nonatomic) IBOutlet UILabel *status;
+@property (weak, nonatomic) IBOutlet UILabel *date;
 @property (weak, nonatomic) IBOutlet TapImageView *postImage;
 @property (weak, nonatomic) IBOutlet CTTextView *comment;
 @property (strong, nonatomic) UIView *separator;

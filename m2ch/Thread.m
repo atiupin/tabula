@@ -38,7 +38,6 @@
     if (data) {
         id dataArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
         if (dataError) {
-            NSLog(@"JSON Error: %@", dataError);
             return nil;
         }
         if ([dataArray isKindOfClass:[NSArray class]]) {

@@ -29,13 +29,13 @@
         [formatter setDateFormat:@"dd.MM"];
         return [formatter stringFromDate:date];
     } else if (components.day > 1) {
-        return [NSString stringWithFormat:@"%ld д.", components.day];
+        return [NSString stringWithFormat:@"%ld д.", (long)components.day];
     } else if (components.hour > 1) {
-        return [NSString stringWithFormat:@"%ld ч.", components.hour];
+        return [NSString stringWithFormat:@"%ld ч.", (long)components.hour];
     } else if (components.minute > 1){
-        return [NSString stringWithFormat:@"%ld мин.", components.minute];
+        return [NSString stringWithFormat:@"%ld мин.", (long)components.minute];
     } else if (components.second > 15){
-        return [NSString stringWithFormat:@"%ld сек.", components.second];
+        return [NSString stringWithFormat:@"%ld сек.", (long)components.second];
     } else {
         return @"Только что";
     }
