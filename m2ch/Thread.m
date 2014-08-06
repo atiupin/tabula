@@ -68,8 +68,11 @@
 - (id)initThreadWithThread:(Thread *)thread andReplyTo:(NSArray *)replyTo andReplies:(NSArray *)replies andPostId:(NSString *)postId {
     
     for (NSString *replyToId in replyTo) {
-        [self.posts addObject:thread.posts[[thread.linksReference indexOfObject:replyToId]]];
-        [self.linksReference addObject:replyToId];
+        NSInteger index = [thread.linksReference indexOfObject:replyToId];
+        if (index != NSNotFound) {
+            [self.posts addObject:thread.posts[index]];
+            [self.linksReference addObject:replyToId];
+        }
     }
     
     [self.posts addObject:thread.posts[[thread.linksReference indexOfObject:postId]]];
@@ -94,12 +97,18 @@
         post.replies = nil;
     }
     for (Post *post in self.posts) {
+        NSMutableArray *delete = [NSMutableArray array];
         for (NSString *replyTo in post.replyTo) {
             NSInteger index = [self.linksReference indexOfObject:replyTo];
             if (index != NSNotFound) {
                 Post *reply = self.posts[index];
                 [reply.replies addObject:post.postId];
+            } else {
+                [delete addObject:replyTo];
             }
+        }
+        for (NSString *replyTo in delete) {
+            [post.replyTo removeObject:replyTo];
         }
     }
 }
