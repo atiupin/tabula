@@ -71,6 +71,9 @@
         self.errorLabel.textAlignment = NSTextAlignmentCenter;
         self.errorLabel.numberOfLines = 0;
         
+        //очистка ненужных сепараторов
+        [self.tableView.tableFooterView removeFromSuperview];
+        
         if (error.code == NSURLErrorCannotFindHost) {
             self.errorLabel.text = @"Сайт не найден";
         } else if (error.code == NSURLErrorNotConnectedToInternet){

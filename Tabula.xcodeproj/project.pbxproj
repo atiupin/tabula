@@ -22,11 +22,13 @@
 		977C08C319512CDC00F8F095 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 977C08C219512CDC00F8F095 /* README.md */; };
 		978A605119394DA5001B3F18 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 978A605019394DA5001B3F18 /* CoreText.framework */; };
 		979347B5197499A400BD9DDF /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979347B4197499A400BD9DDF /* ImageIO.framework */; };
+		979BCD71199233160091C40B /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = 979BCD70199233160091C40B /* Constants.m */; };
 		97A26CC11941486600D632C5 /* UrlNinja.m in Sources */ = {isa = PBXBuildFile; fileRef = 97A26CC01941486600D632C5 /* UrlNinja.m */; };
 		97A26CCA1946741600D632C5 /* TapImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 97A26CC91946741600D632C5 /* TapImageView.m */; };
 		97A26CD319476CDC00D632C5 /* CaptchaFixController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97A26CD219476CDB00D632C5 /* CaptchaFixController.m */; };
 		97A26CD51947803D00D632C5 /* CaptchaFixController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 97A26CD41947803D00D632C5 /* CaptchaFixController.xib */; };
 		97B89182197DCADC0024EADB /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97B89181197DCADC0024EADB /* Crashlytics.framework */; };
+		97BDB7D21992442A00500491 /* Media.m in Sources */ = {isa = PBXBuildFile; fileRef = 97BDB7D11992442A00500491 /* Media.m */; };
 		97C3D4F1191BC82A008921B5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C3D4F0191BC82A008921B5 /* Foundation.framework */; };
 		97C3D4F3191BC82A008921B5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C3D4F2191BC82A008921B5 /* CoreGraphics.framework */; };
 		97C3D4F5191BC82A008921B5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C3D4F4191BC82A008921B5 /* UIKit.framework */; };
@@ -89,6 +91,7 @@
 		977C08C219512CDC00F8F095 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		978A605019394DA5001B3F18 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		979347B4197499A400BD9DDF /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		979BCD70199233160091C40B /* Constants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Constants.m; sourceTree = "<group>"; };
 		97A26CB01940B08600D632C5 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		97A26CBF1941486600D632C5 /* UrlNinja.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UrlNinja.h; sourceTree = "<group>"; };
 		97A26CC01941486600D632C5 /* UrlNinja.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UrlNinja.m; sourceTree = "<group>"; };
@@ -100,6 +103,8 @@
 		97AE76D419226CF7007139A6 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		97B8917E197D5AC60024EADB /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		97B89181197DCADC0024EADB /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
+		97BDB7D01992442A00500491 /* Media.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Media.h; sourceTree = "<group>"; };
+		97BDB7D11992442A00500491 /* Media.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Media.m; sourceTree = "<group>"; };
 		97C3D4ED191BC82A008921B5 /* Tabula.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tabula.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97C3D4F0191BC82A008921B5 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		97C3D4F2191BC82A008921B5 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -179,12 +184,15 @@
 			isa = PBXGroup;
 			children = (
 				97B8917E197D5AC60024EADB /* Constants.h */,
+				979BCD70199233160091C40B /* Constants.m */,
 				974A61061964A6AB00B98C5D /* Board.h */,
 				974A61071964A6AB00B98C5D /* Board.m */,
 				97C3D533191BDEF1008921B5 /* Thread.h */,
 				97C3D534191BDEF1008921B5 /* Thread.m */,
 				97C3D530191BDE92008921B5 /* Post.h */,
 				97C3D531191BDE92008921B5 /* Post.m */,
+				97BDB7D01992442A00500491 /* Media.h */,
+				97BDB7D11992442A00500491 /* Media.m */,
 				97A26CBF1941486600D632C5 /* UrlNinja.h */,
 				97A26CC01941486600D632C5 /* UrlNinja.m */,
 				974B601E19566FA800592B1D /* Declension.h */,
@@ -476,6 +484,7 @@
 				974B602019566FA800592B1D /* Declension.m in Sources */,
 				97C3D526191BD46B008921B5 /* ThreadViewController.m in Sources */,
 				9717C0D1198CFFAF00EA72EE /* DateFormatter.m in Sources */,
+				979BCD71199233160091C40B /* Constants.m in Sources */,
 				97183A7B192AB607003F429C /* GetRequestViewController.m in Sources */,
 				974A61081964A6AB00B98C5D /* Board.m in Sources */,
 				848D598C1951714D00773BCF /* Data.xcdatamodeld in Sources */,
@@ -494,6 +503,7 @@
 				97A26CCA1946741600D632C5 /* TapImageView.m in Sources */,
 				97C3D4FD191BC82A008921B5 /* main.m in Sources */,
 				97609023197F3C40009BAAD3 /* CTTextView.m in Sources */,
+				97BDB7D21992442A00500491 /* Media.m in Sources */,
 				97C3D532191BDE92008921B5 /* Post.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

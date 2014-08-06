@@ -134,10 +134,14 @@
     self.subtitle.text = [NSString stringWithFormat:@"%@, %@", post.name, post.date];
     self.comment.text = post.body;
     
-    self.postImage.tnHeight = post.tnHeight;
-    self.postImage.tnWidth = post.tnWidth;
-    self.postImage.bigImageUrl = post.imageUrl;
-    [self.postImage setImageWithURL:post.thumbnailUrl];
+    if (post.mediaBox.count > 0) {
+        Media *media = post.mediaBox[0];
+        self.postImage.tnHeight = media.tnHeight;
+        self.postImage.tnWidth = media.tnWidth;
+        self.postImage.bigImageUrl = media.url;
+        [self.postImage setImageWithURL:media.thumbnailUrl];
+    }
+    
     return self;
 }
 

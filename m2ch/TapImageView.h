@@ -13,5 +13,7 @@
 @property (nonatomic, strong)NSURL *bigImageUrl;
 
 - (void)resetSize;
+- (void)resetToMediaSize;
+- (void)shiftOnTextInset;
 
 @end

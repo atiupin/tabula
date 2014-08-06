@@ -19,6 +19,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *date;
 @property (weak, nonatomic) IBOutlet TapImageView *postImage;
 @property (weak, nonatomic) IBOutlet CTTextView *comment;
+@property (weak, nonatomic) IBOutlet UIView *mediaBoxView;
 @property (strong, nonatomic) UIView *separator;
 
 @property (weak, nonatomic) IBOutlet UIButton *repliesButton;
@@ -26,6 +27,8 @@
 @property (weak, nonatomic) IBOutlet UIButton *moreButton;
 
 @property (nonatomic) CGPoint imagePosition;
+@property (nonatomic) CGRect textFrame;
+@property (nonatomic, strong) NSMutableArray *mediaBox; //of TapImageViews
 
 @property (nonatomic, strong) NSString *postId;
 

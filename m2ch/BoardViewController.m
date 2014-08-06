@@ -25,7 +25,13 @@
     [self.tableView registerClass:[ThreadTableViewCell class] forCellReuseIdentifier:@"reuseIndenifier"];
     self.tableView.estimatedRowHeight = UITableViewAutomaticDimension;
     
-    NSString *stringUrl = [NSString stringWithFormat:@"%@/%@/wakaba.json", ROOT_URL, self.boardId];
+    NSString *stringUrl = @"";
+    if ([[Constants makabaBoards] containsObject:self.boardId]) {
+        stringUrl = [NSString stringWithFormat:@"%@/%@/index.json", ROOT_URL, self.boardId];
+    } else {
+        stringUrl = [NSString stringWithFormat:@"%@/%@/wakaba.json", ROOT_URL, self.boardId];
+    }
+    
     self.mainUrl = [NSURL URLWithString:stringUrl];
     [self loadDataForUrl:self.mainUrl isMainUrl:YES handleError:YES];
 }
@@ -50,18 +56,38 @@
     NSError *dataError = nil;
     NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
     
+    BOOL makabaEnabled = NO;
+    
+    if ([[dataDictionary objectForKey:@"enable_makaba"]intValue] == 1) {
+        makabaEnabled = YES;
+    }
+    
     NSArray *threadsArray = [dataDictionary objectForKey:@"threads"];
     self.thread = [[Thread alloc]init];
     
     for (NSDictionary *i in threadsArray) {
         Thread *thread = [[Thread alloc]init];
         thread.posts = [NSMutableArray array];
-        NSDictionary *postDictionary = [[[i objectForKey:@"posts"] objectAtIndex:0] objectAtIndex:0];
-        Post *post = [Post postWithDictionary:postDictionary andBoardId:self.boardId andThreadId:nil];
+        
+        Post *post = [[Post alloc]init];
+        
+        NSDictionary *postDictionary = @{};
+        if (makabaEnabled == YES) {
+            NSArray *postsArray = [i objectForKey:@"posts"];
+            postDictionary = [postsArray objectAtIndex:0];
+            post = [Post postWithDictionary:postDictionary andBoardId:self.boardId andThreadId:nil];
+            //шизофреничный посткаунт макабы, из которого вычитаются показываемые посты
+            post.replyCount = [[i objectForKey:@"posts_count"] intValue];
+            post.replyCount += [postsArray count];
+        } else {
+            postDictionary = [[[i objectForKey:@"posts"] objectAtIndex:0] objectAtIndex:0];
+            post = [Post postWithDictionary:postDictionary andBoardId:self.boardId andThreadId:nil];
+            post.replyCount = [[i objectForKey:@"reply_count"] intValue];
+            post.replyCount += 1; //меняем ответы на посты
+        }
+        
         post.boardId = self.boardId;
         post.threadId = post.postId;
-        post.replyCount = [[i objectForKey:@"reply_count"] intValue];
-        post.replyCount += 1; //меняем ответы на посты
         
         post.newReplies = 0;
         NSString *comboId = [NSString stringWithFormat:@"%@%@", self.boardId, post.postId];

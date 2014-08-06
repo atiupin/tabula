@@ -55,27 +55,58 @@
 
 - (CGFloat)heightForPost:(Post *)post {
     //особого выигрыша в скорости хранение сторейджа не дает, но пусть будет. От boundingRectWithSize отказался, потому что выигрыша в скорости тоже нет, нефиг усложнять код
-    if (!post.postHeight) {[self.dummyStorage setAttributedString:post.body];
+    if (!post.postHeight) {
+        [self.dummyStorage setAttributedString:post.body];
         NSLayoutManager *layoutManager = self.dummyStorage.layoutManagers[0];
         NSTextContainer *textContainer = layoutManager.textContainers[0];
         
-        CGFloat tnHeight = post.tnHeight;
-        CGFloat tnWidth = post.tnWidth;
+        CGFloat oneImageHeight = 0;
+        CGFloat manyImagesHeight = 0;
         
-        if (tnHeight > 0 && tnWidth > 0) {
-            CGFloat i = 1;
+        if ([post.mediaBox count] == 1) {
+            Media *media = post.mediaBox[0];
+            CGFloat tnHeight = media.tnHeight;
+            CGFloat tnWidth = media.tnWidth;
             
-            if (tnHeight > CELL_IMAGE_BOX_SIZE_PX || tnWidth > CELL_IMAGE_BOX_SIZE_PX) {
-                if (tnHeight > tnWidth) {
-                    i = CELL_IMAGE_BOX_SIZE_PX/tnHeight;
-                } else {
-                    i = CELL_IMAGE_BOX_SIZE_PX/tnWidth;
+            if (tnHeight > 0 && tnWidth > 0) {
+                CGFloat i = 1;
+                
+                if (tnHeight > CELL_IMAGE_BOX_SIZE_PX || tnWidth > CELL_IMAGE_BOX_SIZE_PX) {
+                    if (tnHeight > tnWidth) {
+                        i = CELL_IMAGE_BOX_SIZE_PX/tnHeight;
+                    } else {
+                        i = CELL_IMAGE_BOX_SIZE_PX/tnWidth;
+                    }
+                    tnHeight = tnHeight*i;
+                    tnWidth = tnWidth*i;
                 }
-                tnHeight = tnHeight*i;
-                tnWidth = tnWidth*i;
+                
+                UIBezierPath *imagePath = [UIBezierPath bezierPathWithRect:CGRectMake(0, 0, (tnWidth/2)+CELL_IMAGE_H_INSET, (tnHeight/2)+CELL_IMAGE_V_INSET)];
+                textContainer.exclusionPaths = @[imagePath];
             }
-            
-            UIBezierPath *imagePath = [UIBezierPath bezierPathWithRect:CGRectMake(0, 0, (tnWidth/2)+CELL_IMAGE_H_INSET, (tnHeight/2)+CELL_IMAGE_V_INSET)];
+            oneImageHeight = tnHeight/2;
+        } else if ([post.mediaBox count] > 1 && [post.mediaBox count] <= 4) {
+            for (Media *media in post.mediaBox) {
+                CGFloat tnHeight = media.tnHeight;
+                CGFloat tnWidth = media.tnWidth;
+                if (tnHeight > 0 && tnWidth > 0) {
+                    CGFloat i = 1;
+                    
+                    if (tnHeight > CELL_MEDIA_BOX_SIZE_PX || tnWidth > CELL_MEDIA_BOX_SIZE_PX) {
+                        if (tnHeight > tnWidth) {
+                            i = CELL_MEDIA_BOX_SIZE_PX/tnHeight;
+                        } else {
+                            i = CELL_MEDIA_BOX_SIZE_PX/tnWidth;
+                        }
+                        tnHeight = tnHeight*i;
+                        tnWidth = tnWidth*i;
+                    }
+                }
+                if (tnHeight/2 > manyImagesHeight) {
+                    manyImagesHeight = tnHeight/2;
+                }
+            }
+            UIBezierPath *imagePath = [UIBezierPath bezierPathWithRect:CGRectMake(0, 0, CELL_TEXT_VIEW_WIDTH, manyImagesHeight+CELL_IMAGE_V_INSET)];
             textContainer.exclusionPaths = @[imagePath];
         } else {
             textContainer.exclusionPaths = nil;
@@ -83,10 +114,19 @@
         
         [layoutManager glyphRangeForTextContainer:textContainer];
         CGSize size = [layoutManager usedRectForTextContainer:textContainer].size;
-        if (size.height < (tnHeight/2)) {
-            size.height = (tnHeight/2);
+        if (size.height < oneImageHeight) {
+            size.height = oneImageHeight;
+        }
+        
+        if (manyImagesHeight > 0) {
+            if (self.dummyStorage.length == 0) {
+                size.height = manyImagesHeight;
+            } else {
+                size.height += manyImagesHeight+CELL_IMAGE_V_INSET;
+            }
         }
         post.postHeight = size.height+CELL_H_MINUS_TEXT+CELL_TEXT_VIEW_V_INSET*2+1;
+        
     }
     return post.postHeight;
 }

@@ -176,7 +176,6 @@ NSString *const CAPTCHA_EMPTY = @"";
     postText = [postText stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
     NSString *postJs = [[@"document.getElementById('shampoo').value = '" stringByAppendingString:postText] stringByAppendingString:@"'"];
     [self.output stringByEvaluatingJavaScriptFromString:postJs];
-    NSLog(@"%@", postText);
     
     //вставка капчи в форму
     NSString *captchaJs = [[@"document.getElementsByName('captcha_value_id_06')[0].value = '" stringByAppendingString:self.captchaView.text] stringByAppendingString:@"'"];

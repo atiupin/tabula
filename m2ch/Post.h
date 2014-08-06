@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "UrlNinja.h"
 #import "DateFormatter.h"
+#import "Media.h"
 
 @interface Post : NSObject
 
@@ -35,10 +36,10 @@
 @property (nonatomic) NSInteger tnWidth;
 @property (nonatomic) NSInteger imgHeight;
 @property (nonatomic) NSInteger imgWidth;
+
 @property (nonatomic) BOOL sage;
-
+@property (nonatomic, strong) NSMutableArray *mediaBox;
 @property (nonatomic, strong) NSMutableArray *replyTo;
-
 @property (nonatomic, strong) NSAttributedString *body;
 
 //записываются извне
@@ -50,10 +51,8 @@
 @property (nonatomic) NSInteger replyCount;
 @property (nonatomic) NSInteger newReplies;
 
-- (NSAttributedString *) makeBody:(NSString *)comment;
-
-- (id) initWithDictionary:(NSDictionary *)source andBoardId:(NSString *)boardId andThreadId:(NSString *)threadId ;
-+ (id) postWithDictionary:(NSDictionary *)source andBoardId:(NSString *)boardId andThreadId:(NSString *)threadId ;
 + (id) examplePost;
 
+- (id) initWithDictionary:(NSDictionary *)source andBoardId:(NSString *)boardId andThreadId:(NSString *)threadId;
++ (id) postWithDictionary:(NSDictionary *)source andBoardId:(NSString *)boardId andThreadId:(NSString *)threadId;
 @end

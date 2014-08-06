@@ -74,7 +74,7 @@
 
 - (void)loadData {
     
-    NSURL *boardUrl = [NSURL URLWithString:@"https://2ch.hk/makaba/mobile.fcgi?task=get_boards"];
+    NSURL *boardUrl = [NSURL URLWithString:[NSString stringWithFormat:@"%@/makaba/mobile.fcgi?task=get_boards", ROOT_URL]];
     
     NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
@@ -113,10 +113,12 @@
         
         for (NSString *iStr in sortingArray) {
             NSInteger i = [self.sectionNames indexOfObject:iStr];
-            [self.sectionList addObject:self.sectionList[i]];
-            [self.sectionNames addObject:self.sectionNames[i]];
-            [self.sectionList removeObjectAtIndex:i];
-            [self.sectionNames removeObjectAtIndex:i];
+            if (i != NSNotFound) {
+                [self.sectionList addObject:self.sectionList[i]];
+                [self.sectionNames addObject:self.sectionNames[i]];
+                [self.sectionList removeObjectAtIndex:i];
+                [self.sectionNames removeObjectAtIndex:i];
+            }
         }
         
         for (NSMutableArray *array in self.sectionList) {
@@ -238,6 +240,19 @@
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
     ThreadViewController *destination = [storyboard instantiateViewControllerWithIdentifier:@"ThreadTag"];
+    [destination setBoardId:urlNinja.boardId];
+    [destination setThreadId:urlNinja.threadId];
+    [destination setPostId:urlNinja.postId];
+    
+    [self.navigationController pushViewController:destination animated:YES];
+}
+
+- (IBAction)showTestBoard:(id)sender {
+    UrlNinja *urlNinja = [[UrlNinja alloc]init];
+    urlNinja.boardId = @"test";
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
+    ThreadViewController *destination = [storyboard instantiateViewControllerWithIdentifier:@"BoardTag"];
     [destination setBoardId:urlNinja.boardId];
     [destination setThreadId:urlNinja.threadId];
     [destination setPostId:urlNinja.postId];

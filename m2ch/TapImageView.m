@@ -37,8 +37,30 @@
         tnWidth = tnWidth*i;
     }
     
-    CGRect imageFrame = CGRectMake(self.frame.origin.x, self.frame.origin.y+CELL_TEXT_VIEW_V_INSET, tnWidth/2, tnHeight/2);
-    self.frame = imageFrame;
+    self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, tnWidth/2, tnHeight/2);
+}
+
+- (void)resetToMediaSize {
+    //используется, если в посте несколько картинок
+    CGFloat tnHeight = self.tnHeight;
+    CGFloat tnWidth = self.tnWidth;
+    CGFloat i = 1;
+    
+    if (tnHeight > CELL_MEDIA_BOX_SIZE_PX || tnWidth > CELL_MEDIA_BOX_SIZE_PX) {
+        if (tnHeight > tnWidth) {
+            i = CELL_MEDIA_BOX_SIZE_PX/tnHeight;
+        } else {
+            i = CELL_MEDIA_BOX_SIZE_PX/tnWidth;
+        }
+        tnHeight = tnHeight*i;
+        tnWidth = tnWidth*i;
+    }
+    
+    self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, tnWidth/2, tnHeight/2);
+}
+
+- (void)shiftOnTextInset {
+    self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y+CELL_TEXT_VIEW_V_INSET, self.frame.size.width, self.frame.size.height);
 }
 
 @end

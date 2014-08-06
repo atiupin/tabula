@@ -137,7 +137,9 @@
     [self updateLastPost];
     self.refreshButton.enabled = YES;
     self.refreshButton.hidden = NO;
-    self.navigationItem.rightBarButtonItem.enabled = YES;
+    if (![[Constants makabaBoards] containsObject:self.boardId]) {
+        self.navigationItem.rightBarButtonItem.enabled = YES;
+    }
 }
 
 - (void)updateStarted {
@@ -202,9 +204,11 @@
         cell.separator.hidden = NO;
     }
     
-    UITapGestureRecognizer *tgrImage = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageTapped:)];
-    tgrImage.delegate = self;
-    [cell.postImage addGestureRecognizer:tgrImage];
+    for (TapImageView *image in cell.mediaBox) {
+        UITapGestureRecognizer *tgrImage = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageTapped:)];
+        tgrImage.delegate = self;
+        [image addGestureRecognizer:tgrImage];
+    }
     
     UITapGestureRecognizer *tgrCell = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(clearTextViewSelections)];
     tgrCell.delegate = self;

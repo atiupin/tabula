@@ -20,6 +20,13 @@
 
 @implementation PostCell
 
+- (NSMutableArray *)mediaBox {
+    if (!_mediaBox) {
+        _mediaBox = [NSMutableArray array];
+    }
+    return _mediaBox;
+}
+
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
@@ -40,6 +47,7 @@
     self.comment.textContainerInset = UIEdgeInsetsMake(CELL_TEXT_VIEW_V_INSET, 0, CELL_TEXT_VIEW_V_INSET, 0);
     self.comment.linkTextAttributes = @{NSForegroundColorAttributeName: self.celestiaOrange};
     self.imagePosition = self.postImage.frame.origin;
+    self.textFrame = self.comment.frame;
     
     self.separator = [[UIView alloc]init];
     self.separator.backgroundColor = self.separatorGrey;
@@ -71,24 +79,66 @@
     self.date.text = post.date;
     
     //image
-    self.postImage.tnHeight = post.tnHeight;
-    self.postImage.tnWidth = post.tnWidth;
-    
-    self.postImage.frame = CGRectMake(self.imagePosition.x, self.imagePosition.y, 0, 0);
-    [self.postImage resetSize];
-    
-    self.postImage.bigImageUrl = post.imageUrl;
-    [self.postImage setImageWithURL:post.thumbnailUrl completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
-    }];
-    
-    //comment (image-depend)
-    if (post.tnHeight > 0 && post.tnWidth > 0) {
+    if ([post.mediaBox count] == 1) {
+        Media *media = post.mediaBox[0];
+        
+        self.postImage.tnHeight = media.tnHeight;
+        self.postImage.tnWidth = media.tnWidth;
+        
+        self.postImage.frame = CGRectMake(self.imagePosition.x, self.imagePosition.y, 0, 0);
+        
+        [self.postImage resetSize];
+        [self.postImage shiftOnTextInset];
+        
+        self.postImage.bigImageUrl = media.url;
+        [self.postImage setImageWithURL:media.thumbnailUrl completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+        }];
+        
         UIBezierPath *imagePath = [UIBezierPath bezierPathWithRect:CGRectMake(0, 0, self.postImage.bounds.size.width+CELL_IMAGE_H_INSET, self.postImage.bounds.size.height+CELL_IMAGE_V_INSET)];
         self.comment.textContainer.exclusionPaths = @[imagePath];
+        
+        self.postImage.hidden = NO;
+        self.mediaBoxView.hidden = YES;
+    } else if ([post.mediaBox count] > 1 && [post.mediaBox count] <= 4) {
+        [self.mediaBoxView.subviews makeObjectsPerformSelector: @selector(removeFromSuperview)];
+        
+        NSInteger shift = 0;
+        NSInteger maxHeight = 0;
+        
+        for (Media *media in post.mediaBox) {
+            TapImageView *image = [[TapImageView alloc]init];
+            
+            image.tnHeight = media.tnHeight;
+            image.tnWidth = media.tnWidth;
+            [image resetToMediaSize];
+            image.frame = CGRectMake(image.frame.origin.x + shift, image.frame.origin.y, image.frame.size.width, image.frame.size.height);
+            shift += image.frame.size.width + CELL_IMAGE_H_INSET;
+            if (image.frame.size.height > maxHeight) {
+                maxHeight = image.frame.size.height;
+            }
+            
+            image.bigImageUrl = media.url;
+            [image setImageWithURL:media.thumbnailUrl completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+            }];
+            
+            [self.mediaBoxView addSubview:image];
+            [self.mediaBox addObject:image];
+        }
+        self.mediaBoxView.frame = CGRectMake(self.imagePosition.x, self.imagePosition.y+CELL_TEXT_VIEW_V_INSET, shift-CELL_IMAGE_H_INSET, maxHeight);
+        
+        //проще, чем двигать текствью
+        UIBezierPath *imagePath = [UIBezierPath bezierPathWithRect:CGRectMake(0, 0, CELL_TEXT_VIEW_WIDTH, maxHeight+CELL_IMAGE_V_INSET)];
+        self.comment.textContainer.exclusionPaths = @[imagePath];
+        
+        self.mediaBoxView.hidden = NO;
+        self.postImage.hidden = YES;
     } else {
         self.comment.textContainer.exclusionPaths = nil;
+        self.mediaBoxView.hidden = YES;
+        self.postImage.hidden = YES;
     }
     
+    //comment (image-depend)
     self.comment.attributedText = post.body;
     
     //replies

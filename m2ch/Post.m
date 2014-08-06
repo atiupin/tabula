@@ -27,6 +27,13 @@
     return _replies;
 }
 
+- (NSMutableArray *)mediaBox {
+    if (!_mediaBox) {
+        _mediaBox = [NSMutableArray array];
+    }
+    return _mediaBox;
+}
+
 - (id) initWithDictionary:(NSDictionary *)source andBoardId:(NSString *)boardId andThreadId:(NSString *)threadId {
     
     self.boardId = boardId;
@@ -34,53 +41,17 @@
     
     NSString *stringUrl = [NSString stringWithFormat:@"%@/%@/", ROOT_URL, boardId];
     NSURL *boardUrl = [NSURL URLWithString:stringUrl];
-    NSString *thumbnail = [source objectForKey:@"thumbnail"];
-    NSString *image = [source objectForKey:@"image"];
     
-    
-    if (thumbnail != (id)[NSNull null] && thumbnail != nil) {
-        self.thumbnailUrl = [NSURL URLWithString:thumbnail relativeToURL:boardUrl];
-    }
-    
-    
-    if (image != (id)[NSNull null] && image != nil) {
-        self.imageUrl = [NSURL URLWithString:image relativeToURL:boardUrl];
-    }
-    
-    NSNumber *tnWidth = [source objectForKey:@"tn_width"];
-    
-    if (tnWidth != (id)[NSNull null]) {
-        self.tnWidth = [tnWidth intValue];
-    }
-    else {
-        self.tnWidth = 0;
-    }
-    
-    NSNumber *tnHeight = [source objectForKey:@"tn_height"];
-    
-    if (tnHeight != (id)[NSNull null]) {
-        self.tnHeight = [tnHeight intValue];
-    }
-    else {
-        self.tnHeight = 0;
-    }
-    
-    NSNumber *imgWidth = [source objectForKey:@"width"];
-    
-    if (imgWidth != (id)[NSNull null]) {
-        self.imgWidth = [imgWidth intValue];
-    }
-    else {
-        self.imgWidth = 0;
-    }
-    
-    NSNumber *imgHeight = [source objectForKey:@"height"];
-    
-    if (imgHeight != (id)[NSNull null]) {
-        self.imgHeight = [imgHeight intValue];
-    }
-    else {
-        self.imgHeight = 0;
+    if ([source objectForKey:@"files"]) {
+        for (NSDictionary *mediaDictionary in [source objectForKey:@"files"]) {
+            Media *media = [Media mediaWithDictionary:mediaDictionary andRootUrl:boardUrl];
+            [self.mediaBox addObject:media];
+        }
+    } else {
+        Media *media = [Media mediaWithDictionary:source andRootUrl:boardUrl];
+        if (media.tnHeight > 0 && media.tnWidth > 0) {
+            [self.mediaBox addObject:media];
+        }
     }
     
     NSNumber *timestamp = [source objectForKey:@"timestamp"];
@@ -111,6 +82,7 @@
     
     self.date = [DateFormatter dateFromTimestamp:self.timestamp];
     
+    self.name = [Post clearName:self.name];
     self.body = [self makeBody:[source objectForKey:@"comment"]];
     
     return self;
@@ -145,6 +117,13 @@
     return [[self alloc]initWithDictionary:source];
 }
 
++ (NSString *)clearName:(NSString *)name {
+    name = [name stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@" "];
+    name = [name stringByReplacingOccurrencesOfString:@"&nbsp" withString:@" "]; //иногда отдается так
+    name = [name stringByReplacingOccurrencesOfString:@"  " withString:@" "];
+    return name;
+}
+
 - (NSAttributedString *) makeBody:(NSString *)comment {
     
     //чистка исходника и посильная замена хтмл-литералов
@@ -153,8 +132,11 @@
     comment = [comment stringByReplacingOccurrencesOfString:@"</p>" withString:@""];
     comment = [comment stringByReplacingOccurrencesOfString:@"<br />" withString:@"\n"];
     comment = [comment stringByReplacingOccurrencesOfString:@"<br/>" withString:@"\n"];
+    comment = [comment stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
     comment = [comment stringByReplacingOccurrencesOfString:@"&#39;" withString:@"'"];
     comment = [comment stringByReplacingOccurrencesOfString:@"&#44;" withString:@","];
+    comment = [comment stringByReplacingOccurrencesOfString:@"&#47;" withString:@"/"];
+    comment = [comment stringByReplacingOccurrencesOfString:@"&#92;" withString:@"\\"];
     
     NSRange range = NSMakeRange(0, comment.length);
     
