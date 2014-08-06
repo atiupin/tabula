@@ -204,10 +204,16 @@
         cell.separator.hidden = NO;
     }
     
-    for (TapImageView *image in cell.mediaBox) {
+    if (post.mediaBox.count == 1) {
         UITapGestureRecognizer *tgrImage = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageTapped:)];
         tgrImage.delegate = self;
-        [image addGestureRecognizer:tgrImage];
+        [cell.postImage addGestureRecognizer:tgrImage];
+    } else if (post.mediaBox.count > 1 && post.mediaBox.count <= 4) {
+        for (TapImageView *image in cell.mediaBox) {
+            UITapGestureRecognizer *tgrImage = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageTapped:)];
+            tgrImage.delegate = self;
+            [image addGestureRecognizer:tgrImage];
+        }
     }
     
     UITapGestureRecognizer *tgrCell = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(clearTextViewSelections)];

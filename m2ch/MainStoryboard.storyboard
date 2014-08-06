@@ -52,11 +52,6 @@
                                 <action selector="showTabulaThread:" destination="nxu-mc-D9u" id="4VS-MT-1Lb"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="/test/" id="zbC-z5-PKj">
-                            <connections>
-                                <action selector="showTestBoard:" destination="nxu-mc-D9u" id="K1g-Xi-B8I"/>
-                            </connections>
-                        </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0El-YN-a2d" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -367,6 +362,11 @@
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <view contentMode="scaleToFill" id="DMf-Cn-XNC">
+                                            <rect key="frame" x="15" y="39" width="290" height="20"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
+                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                        </view>
                                         <imageView contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="Jy9-QL-kVR" customClass="TapImageView">
                                             <rect key="frame" x="15" y="39" width="50" height="50"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -395,6 +395,7 @@
                                 <connections>
                                     <outlet property="comment" destination="Oeb-BS-OwM" id="awb-Dx-ode"/>
                                     <outlet property="date" destination="Imh-Or-pUh" id="p5n-sh-S0k"/>
+                                    <outlet property="mediaBoxView" destination="DMf-Cn-XNC" id="2xl-Cb-jMe"/>
                                     <outlet property="moreButton" destination="qGD-i2-VzY" id="MLd-LY-Hch"/>
                                     <outlet property="postImage" destination="Jy9-QL-kVR" id="oha-9L-drU"/>
                                     <outlet property="repliesButton" destination="iwY-H0-Vpe" id="VqX-1m-E0m"/>

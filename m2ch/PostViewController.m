@@ -165,9 +165,17 @@
         
         cell.comment.delegate = self;
         
-        UITapGestureRecognizer *tgr = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageTapped:)];
-        tgr.delegate = self;
-        [cell.postImage addGestureRecognizer:tgr];
+        if (post.mediaBox.count == 1) {
+            UITapGestureRecognizer *tgrImage = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageTapped:)];
+            tgrImage.delegate = self;
+            [cell.postImage addGestureRecognizer:tgrImage];
+        } else if (post.mediaBox.count > 1 && post.mediaBox.count <= 4) {
+            for (TapImageView *image in cell.mediaBox) {
+                UITapGestureRecognizer *tgrImage = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(imageTapped:)];
+                tgrImage.delegate = self;
+                [image addGestureRecognizer:tgrImage];
+            }
+        }
         
         UITapGestureRecognizer *tgrCell = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(clearTextViewSelections)];
         tgrCell.delegate = self;

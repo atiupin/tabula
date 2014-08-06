@@ -247,17 +247,4 @@
     [self.navigationController pushViewController:destination animated:YES];
 }
 
-- (IBAction)showTestBoard:(id)sender {
-    UrlNinja *urlNinja = [[UrlNinja alloc]init];
-    urlNinja.boardId = @"test";
-    
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
-    ThreadViewController *destination = [storyboard instantiateViewControllerWithIdentifier:@"BoardTag"];
-    [destination setBoardId:urlNinja.boardId];
-    [destination setThreadId:urlNinja.threadId];
-    [destination setPostId:urlNinja.postId];
-    
-    [self.navigationController pushViewController:destination animated:YES];
-}
-
 @end
