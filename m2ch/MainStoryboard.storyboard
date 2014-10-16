@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="UQU-08-8jJ">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="14A361p" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="UQU-08-8jJ">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <deployment defaultVersion="1808" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
     </dependencies>
     <scenes>
-        <!--Main View Controller - Доски-->
+        <!--Доски-->
         <scene sceneID="hMQ-Zs-7kN">
             <objects>
                 <tableViewController id="nxu-mc-D9u" customClass="MainViewController" sceneMemberID="viewController">
@@ -58,7 +59,7 @@
             </objects>
             <point key="canvasLocation" x="658" y="13"/>
         </scene>
-        <!--Get Request View Controller - Новый пост-->
+        <!--Новый пост-->
         <scene sceneID="1jG-UU-4dn">
             <objects>
                 <viewController id="tus-0C-Kzq" customClass="GetRequestViewController" sceneMemberID="viewController">
@@ -147,7 +148,7 @@
             </objects>
             <point key="canvasLocation" x="2540" y="-678"/>
         </scene>
-        <!--Board View Controller - Треды-->
+        <!--Треды-->
         <scene sceneID="chZ-iJ-7hU">
             <objects>
                 <tableViewController storyboardIdentifier="BoardTag" id="2Bq-bt-RYH" customClass="BoardViewController" sceneMemberID="viewController">
@@ -183,7 +184,7 @@
             </objects>
             <point key="canvasLocation" x="1126" y="13"/>
         </scene>
-        <!--Thread View Controller - Тред-->
+        <!--Тред-->
         <scene sceneID="Kfk-u0-RGu">
             <objects>
                 <tableViewController storyboardIdentifier="ThreadTag" id="JqW-jP-XLf" customClass="ThreadViewController" sceneMemberID="viewController">
@@ -308,7 +309,7 @@
             </objects>
             <point key="canvasLocation" x="1566" y="13"/>
         </scene>
-        <!--Post View Controller - Пост-->
+        <!--Пост-->
         <scene sceneID="ePs-I7-oQD">
             <objects>
                 <tableViewController storyboardIdentifier="PostTag" id="B6W-qQ-ESG" customClass="PostViewController" sceneMemberID="viewController">
@@ -329,7 +330,7 @@
                                     </userGuides>
                                     <subviews>
                                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="Тело поста. Все настройки шрифта — в исходном тексте" id="Oeb-BS-OwM" customClass="CTTextView">
-                                            <rect key="frame" x="10" y="39" width="300" height="50"/>
+                                            <rect key="frame" x="10" y="39" width="300" height="50.5"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="14"/>
                                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -373,7 +374,7 @@
                                             <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                         </imageView>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" id="iwY-H0-Vpe">
-                                            <rect key="frame" x="15" y="81" width="70" height="24"/>
+                                            <rect key="frame" x="15" y="81.5" width="70" height="24"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
                                             <state key="normal" title="Ответы"/>
@@ -383,7 +384,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="right" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="qGD-i2-VzY">
-                                            <rect key="frame" x="255" y="81" width="50" height="24"/>
+                                            <rect key="frame" x="255" y="81.5" width="50" height="24"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
                                             <state key="normal" title="●●●">

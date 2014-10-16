@@ -8,8 +8,6 @@
 
 #import "UrlNinja.h"
 
-#define kBasicUrl = "2ch.hk"
-
 @implementation UrlNinja
 
 - (id)initWithUrl:(NSURL *)url {

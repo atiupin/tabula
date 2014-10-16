@@ -97,21 +97,22 @@ NSString *const CAPTCHA_EMPTY = @"";
 }
 
 - (void)clearSource:(NSMutableString *)source {
-    NSRegularExpression *css = [[NSRegularExpression alloc]initWithPattern:@"<link[^>]*text\\/css[^>]*>" options:0 error:nil];
-    NSRegularExpression *images = [[NSRegularExpression alloc]initWithPattern:@"<img[^>]*src[^>]*>" options:0 error:nil];
-    
-    NSRange range = NSMakeRange(0, source.length);
-    
-    [css enumerateMatchesInString:source options:0 range:range usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL *stop) {
-        [source deleteCharactersInRange:result.range];
-    }];
-    
-    range = NSMakeRange(0, source.length);
-    
-    [images enumerateMatchesInString:source options:0 range:range usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL *stop) {
-        [source deleteCharactersInRange:result.range];
-    }];
-    
+    if (source) {
+        NSRegularExpression *css = [[NSRegularExpression alloc]initWithPattern:@"<link[^>]*text\\/css[^>]*>" options:0 error:nil];
+        NSRegularExpression *images = [[NSRegularExpression alloc]initWithPattern:@"<img[^>]*src[^>]*>" options:0 error:nil];
+        
+        NSRange range = NSMakeRange(0, source.length);
+        
+        [css enumerateMatchesInString:source options:0 range:range usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL *stop) {
+            [source deleteCharactersInRange:result.range];
+        }];
+        
+        range = NSMakeRange(0, source.length);
+        
+        [images enumerateMatchesInString:source options:0 range:range usingBlock:^(NSTextCheckingResult *result, __unused NSMatchingFlags flags, __unused BOOL *stop) {
+            [source deleteCharactersInRange:result.range];
+        }];
+    }
     [self.output loadHTMLString:source baseURL:self.url];
 }
 

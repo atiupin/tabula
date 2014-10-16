@@ -64,6 +64,7 @@
         CGFloat manyImagesHeight = 0;
         
         if ([post.mediaBox count] == 1) {
+            //одна картинка
             Media *media = post.mediaBox[0];
             CGFloat tnHeight = media.tnHeight;
             CGFloat tnWidth = media.tnWidth;
@@ -86,6 +87,7 @@
             }
             oneImageHeight = tnHeight/2;
         } else if ([post.mediaBox count] > 1 && [post.mediaBox count] <= 4) {
+            //2-4 картинки
             for (Media *media in post.mediaBox) {
                 CGFloat tnHeight = media.tnHeight;
                 CGFloat tnWidth = media.tnWidth;
@@ -109,6 +111,7 @@
             UIBezierPath *imagePath = [UIBezierPath bezierPathWithRect:CGRectMake(0, 0, CELL_TEXT_VIEW_WIDTH, manyImagesHeight+CELL_IMAGE_V_INSET)];
             textContainer.exclusionPaths = @[imagePath];
         } else {
+            //нет картинок
             textContainer.exclusionPaths = nil;
         }
         

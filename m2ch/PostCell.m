@@ -8,16 +8,6 @@
 
 #import "PostCell.h"
 
-@interface PostCell ()
-
-@property (nonatomic, strong) UIColor *darkGrey;
-@property (nonatomic, strong) UIColor *lightGrey;
-@property (nonatomic, strong) UIColor *separatorGrey;
-@property (nonatomic, strong) UIColor *celestiaGreen;
-@property (nonatomic, strong) UIColor *celestiaOrange;
-
-@end
-
 @implementation PostCell
 
 - (NSMutableArray *)mediaBox {
@@ -38,27 +28,21 @@
 
 - (void)awakeFromNib
 {
-    self.celestiaGreen = [UIColor colorWithRed:(17/255.0) green:(139/255.0) blue:(116/255.0) alpha:1.0];
-    self.celestiaOrange = [UIColor colorWithRed:(255/255.0) green:(139/255.0) blue:(16/255.0) alpha:1.0];
-    self.darkGrey = [UIColor colorWithRed:(155/255.0) green:(155/255.0) blue:(155/255.0) alpha:1.0];
-    self.lightGrey = [UIColor colorWithRed:(216/255.0) green:(216/255.0) blue:(216/255.0) alpha:1.0];
-    self.separatorGrey = [UIColor colorWithRed:0.8 green:0.8 blue:0.8 alpha:1];
-    
     self.comment.textContainerInset = UIEdgeInsetsMake(CELL_TEXT_VIEW_V_INSET, 0, CELL_TEXT_VIEW_V_INSET, 0);
-    self.comment.linkTextAttributes = @{NSForegroundColorAttributeName: self.celestiaOrange};
+    self.comment.linkTextAttributes = @{NSForegroundColorAttributeName:[Constants celestiaOrange]};
     self.imagePosition = self.postImage.frame.origin;
     self.textFrame = self.comment.frame;
     
     self.separator = [[UIView alloc]init];
-    self.separator.backgroundColor = self.separatorGrey;
+    self.separator.backgroundColor = [Constants celestiaSeparatorGrey];
     [self addSubview:self.separator];
     
-    self.moreButton.tintColor = self.darkGrey;
-    self.repliesButton.tintColor = self.darkGrey;
-    self.replyButton.tintColor = self.darkGrey;
+    self.moreButton.tintColor = [Constants celestiaDarkGrey];
+    self.repliesButton.tintColor = [Constants celestiaDarkGrey];
+    self.replyButton.tintColor = [Constants celestiaDarkGrey];
     
-    self.status.textColor = self.darkGrey;
-    self.subtitle.textColor = self.darkGrey;
+    self.status.textColor = [Constants celestiaDarkGrey];
+    self.subtitle.textColor = [Constants celestiaDarkGrey];
 }
 
 - (id) setPost:(Post *)post {
@@ -66,9 +50,9 @@
     NSMutableAttributedString *title = [[NSMutableAttributedString alloc]init];
     if (![post.name isEqualToString:@""]) {
         title = [[NSMutableAttributedString alloc]initWithString:[NSString stringWithFormat:@"%@ %@", post.name, post.tripcode]];
-        [title addAttribute:NSForegroundColorAttributeName value:self.celestiaGreen range:NSMakeRange(post.name.length, post.tripcode.length+1)];
+        [title addAttribute:NSForegroundColorAttributeName value:[Constants celestiaGreen] range:NSMakeRange(post.name.length+1, post.tripcode.length)];
     } else {
-        title = [[NSMutableAttributedString alloc]initWithString:post.tripcode attributes:@{NSForegroundColorAttributeName: self.celestiaGreen}];
+        title = [[NSMutableAttributedString alloc]initWithString:post.tripcode attributes:@{NSForegroundColorAttributeName:[Constants celestiaGreen]}];
     }
     self.title.attributedText = title;
     

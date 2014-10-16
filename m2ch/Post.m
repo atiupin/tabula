@@ -121,15 +121,32 @@
     name = [name stringByReplacingOccurrencesOfString:@"&nbsp;" withString:@" "];
     name = [name stringByReplacingOccurrencesOfString:@"&nbsp" withString:@" "]; //иногда отдается так
     name = [name stringByReplacingOccurrencesOfString:@"  " withString:@" "];
-    return name;
+    
+    NSMutableArray *tagArray = [NSMutableArray array];
+    NSRegularExpression *tag = [[NSRegularExpression alloc]initWithPattern:@"<[^>]*>" options:0 error:nil];
+    [tag enumerateMatchesInString:name options:0 range:NSMakeRange(0, name.length) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+        NSValue *value = [NSValue valueWithRange:result.range];
+        [tagArray addObject:value];
+    }];
+    
+    NSMutableString *mName = [name mutableCopy];
+    
+    int shift = 0;
+    for (NSValue *rangeValue in tagArray) {
+        NSRange cutRange = [rangeValue rangeValue];
+        cutRange.location -= shift;
+        [mName deleteCharactersInRange:cutRange];
+        shift += cutRange.length;
+    }
+    
+    return mName;
 }
 
 - (NSAttributedString *) makeBody:(NSString *)comment {
     
     //чистка исходника и посильная замена хтмл-литералов
     comment = [comment stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-    comment = [comment stringByReplacingOccurrencesOfString:@"<p>" withString:@""];
-    comment = [comment stringByReplacingOccurrencesOfString:@"</p>" withString:@""];
+    //comment = [comment stringByReplacingOccurrencesOfString:@"\r\n" withString:@"\n"];
     comment = [comment stringByReplacingOccurrencesOfString:@"<br />" withString:@"\n"];
     comment = [comment stringByReplacingOccurrencesOfString:@"<br/>" withString:@"\n"];
     comment = [comment stringByReplacingOccurrencesOfString:@"<br>" withString:@"\n"];
@@ -196,7 +213,6 @@
     }];
     
     //quote
-    //UIColor *quoteColor = [UIColor colorWithRed:(120/255.0) green:(153/255.0) blue:(2/255.0) alpha:1.0];
     UIColor *quoteColor = [UIColor colorWithRed:(17/255.0) green:(139/255.0) blue:(116/255.0) alpha:1.0];
     NSRegularExpression *quote = [[NSRegularExpression alloc]initWithPattern:@"<span class=\"unkfunc\">(.*?)</span>" options:0 error:nil];
     [quote enumerateMatchesInString:comment options:0 range:range usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
@@ -224,6 +240,7 @@
         
         if (urlRange.length != 0) {
             NSString *urlString = [fullLink substringWithRange:urlRange];
+            urlString = [urlString stringByReplacingOccurrencesOfString:@"&amp;" withString:@"&"];
             NSURL *url = [[NSURL alloc]initWithString:urlString];
             if (url) {
                 UrlNinja *un = [UrlNinja unWithUrl:url];
@@ -254,6 +271,48 @@
         cutRange.location -= shift;
         [maComment deleteCharactersInRange:cutRange];
         shift += cutRange.length;
+    }
+    
+    //чистим переводы строк в начале и конце
+    NSRegularExpression *whitespaceStart = [[NSRegularExpression alloc]initWithPattern:@"^\\s\\s*" options:0 error:nil];
+    NSTextCheckingResult *wsResult = [whitespaceStart firstMatchInString:[maComment string] options:0 range:NSMakeRange(0, [maComment length])];
+    [maComment deleteCharactersInRange:wsResult.range];
+    
+    NSRegularExpression *whitespaceEnd = [[NSRegularExpression alloc]initWithPattern:@"\\s\\s*$" options:0 error:nil];
+    NSTextCheckingResult *weResult = [whitespaceEnd firstMatchInString:[maComment string] options:0 range:NSMakeRange(0, [maComment length])];
+    [maComment deleteCharactersInRange:weResult.range];
+    
+    //и пробелы в начале каждой строки
+    NSMutableArray *whitespaceLineStartArray = [NSMutableArray array];
+    NSRegularExpression *whitespaceLineStart = [[NSRegularExpression alloc]initWithPattern:@"^[\\t\\f\\p{Z}]+" options:NSRegularExpressionAnchorsMatchLines error:nil];
+    [whitespaceLineStart enumerateMatchesInString:[maComment string] options:0 range:NSMakeRange(0, [maComment length]) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+        NSValue *value = [NSValue valueWithRange:result.range];
+        [whitespaceLineStartArray addObject:value];
+    }];
+    
+    int whitespaceLineStartShift = 0;
+    for (NSValue *rangeValue in whitespaceLineStartArray) {
+        NSRange cutRange = [rangeValue rangeValue];
+        cutRange.location -= whitespaceLineStartShift;
+        [maComment deleteCharactersInRange:cutRange];
+        whitespaceLineStartShift += cutRange.length;
+    }
+    
+    //и двойные переводы
+    NSMutableArray *whitespaceDoubleArray = [NSMutableArray array];
+    NSRegularExpression *whitespaceDouble = [[NSRegularExpression alloc]initWithPattern:@"[\\n\\r]{3,}" options:0 error:nil];
+    [whitespaceDouble enumerateMatchesInString:[maComment string] options:0 range:NSMakeRange(0, [maComment length]) usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+        NSValue *value = [NSValue valueWithRange:result.range];
+        [whitespaceDoubleArray addObject:value];
+    }];
+    
+    int whitespaceDoubleShift = 0;
+    for (NSValue *rangeValue in whitespaceDoubleArray) {
+        NSRange cutRange = [rangeValue rangeValue];
+        cutRange.location -= whitespaceDoubleShift;
+        [maComment deleteCharactersInRange:cutRange];
+        [maComment insertAttributedString:[[NSAttributedString alloc]initWithString:@"\n\n" attributes:nil] atIndex:cutRange.location];
+        whitespaceDoubleShift += cutRange.length - 2;
     }
     
     //добавляем заголовок поста, если он есть

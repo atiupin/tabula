@@ -1,26 +1,21 @@
 PODS:
-  - JTSImageViewController (1.1.1)
-  - MagicalRecord (2.2):
-    - MagicalRecord/Core
-  - MagicalRecord/Core (2.2)
-  - PureLayout (1.0.1)
-  - SDWebImage (3.6):
+  - JTSImageViewController (1.3)
+  - PureLayout (2.0.0)
+  - SDWebImage (3.7.1):
     - SDWebImage/Core
-  - SDWebImage/Core (3.6)
+  - SDWebImage/Core (3.7.1)
   - TTTAttributedLabel (1.10.1)
 
 DEPENDENCIES:
   - JTSImageViewController
-  - MagicalRecord
   - PureLayout
   - SDWebImage
   - TTTAttributedLabel
 
 SPEC CHECKSUMS:
-  JTSImageViewController: e8167cffe5ffdb9203a8931d41ba5a4dd5ac5f5a
-  MagicalRecord: 2b471584fc9e3137f3d0a56967917baa4979e224
-  PureLayout: 972964b21dbcbc5cc36785aed16aba03176f057d
-  SDWebImage: c6989652c1cdf27cbdf3f56957e2030f825af5bc
+  JTSImageViewController: 3951f79d2643c79b57f3961dd030bd328771a27d
+  PureLayout: 4d7d1324157670cfadd94f216909c0d067b28448
+  SDWebImage: 116e88633b5b416ea0ca4b334a4ac59cf72dd38d
   TTTAttributedLabel: 94bb04f1e005616002dd2cee0262a0082e533627
 
-COCOAPODS: 0.33.1
+COCOAPODS: 0.34.2

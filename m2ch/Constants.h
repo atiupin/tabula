@@ -19,8 +19,17 @@ static CGFloat const CELL_MEDIA_BOX_SIZE_PX = 130.0;
 static CGFloat const CELL_IMAGE_V_INSET = 5.0;
 static CGFloat const CELL_IMAGE_H_INSET = 10.0;
 
+static CGFloat const COMMENT_FONT_SIZE = 14.0;
+static CGFloat const COMMENT_LINE_SPACING = 2.0;
+
 @interface Constants : NSObject
 
 + (NSArray *)makabaBoards;
+
++ (UIColor *)celestiaGreen;
++ (UIColor *)celestiaOrange;
++ (UIColor *)celestiaDarkGrey;
++ (UIColor *)celestiaLightGrey;
++ (UIColor *)celestiaSeparatorGrey;
 
 @end

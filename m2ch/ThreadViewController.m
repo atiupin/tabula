@@ -92,7 +92,13 @@
         dispatch_async(dispatch_get_main_queue(), ^(void){
             if (self.thread.posts.count != 0) {
                 [self performSelectorOnMainThread:@selector(creationEnded) withObject:nil waitUntilDone:YES];
-                if ([self.thread.startingRow indexAtPosition:1] != 0) {
+                if ([self.thread.startingRow indexAtPosition:1] == [self.thread.posts count]-1) {
+                    if (self.tableView.contentSize.height > self.tableView.frame.size.height)
+                    {
+                        CGPoint offset = CGPointMake(0, self.tableView.contentSize.height - self.tableView.frame.size.height);
+                        [self.self.tableView setContentOffset:offset animated:NO];
+                    }
+                } else if ([self.thread.startingRow indexAtPosition:1] != 0) {
                     [self.tableView scrollToRowAtIndexPath:self.thread.startingRow atScrollPosition:UITableViewScrollPositionTop animated:NO];
                 }
             } else {

@@ -1,0 +1,5 @@
+#include "Pods-JTSImageViewController.xcconfig"
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
+HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Build" "${PODS_ROOT}/Headers/Build/JTSImageViewController" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/JTSImageViewController" "${PODS_ROOT}/Headers/Public/PureLayout" "${PODS_ROOT}/Headers/Public/SDWebImage" "${PODS_ROOT}/Headers/Public/TTTAttributedLabel"
+OTHER_LDFLAGS = ${PODS_JTSIMAGEVIEWCONTROLLER_OTHER_LDFLAGS} -ObjC
+PODS_ROOT = ${SRCROOT}
