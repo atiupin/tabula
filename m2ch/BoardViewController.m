@@ -25,12 +25,7 @@
     [self.tableView registerClass:[ThreadTableViewCell class] forCellReuseIdentifier:@"reuseIndenifier"];
     self.tableView.estimatedRowHeight = UITableViewAutomaticDimension;
     
-    NSString *stringUrl = @"";
-    if ([[Constants makabaBoards] containsObject:self.boardId]) {
-        stringUrl = [NSString stringWithFormat:@"%@/%@/index.json", ROOT_URL, self.boardId];
-    } else {
-        stringUrl = [NSString stringWithFormat:@"%@/%@/wakaba.json", ROOT_URL, self.boardId];
-    }
+    NSString *stringUrl = [NSString stringWithFormat:@"%@/%@/index.json", ROOT_URL, self.boardId];
     
     self.mainUrl = [NSURL URLWithString:stringUrl];
     [self loadDataForUrl:self.mainUrl isMainUrl:YES handleError:YES];
@@ -56,7 +51,7 @@
     NSError *dataError = nil;
     NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&dataError];
     
-    BOOL makabaEnabled = NO;
+    BOOL makabaEnabled = YES;
     
     if ([[dataDictionary objectForKey:@"enable_makaba"]intValue] == 1) {
         makabaEnabled = YES;

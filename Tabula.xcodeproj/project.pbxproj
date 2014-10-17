@@ -53,7 +53,6 @@
 		97A26CCA1946741600D632C5 /* TapImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 97A26CC91946741600D632C5 /* TapImageView.m */; };
 		97A26CD319476CDC00D632C5 /* CaptchaFixController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97A26CD219476CDB00D632C5 /* CaptchaFixController.m */; };
 		97A26CD51947803D00D632C5 /* CaptchaFixController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 97A26CD41947803D00D632C5 /* CaptchaFixController.xib */; };
-		97B89182197DCADC0024EADB /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97B89181197DCADC0024EADB /* Crashlytics.framework */; };
 		97BDB7D21992442A00500491 /* Media.m in Sources */ = {isa = PBXBuildFile; fileRef = 97BDB7D11992442A00500491 /* Media.m */; };
 		97C3D4F1191BC82A008921B5 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C3D4F0191BC82A008921B5 /* Foundation.framework */; };
 		97C3D4F3191BC82A008921B5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97C3D4F2191BC82A008921B5 /* CoreGraphics.framework */; };
@@ -75,6 +74,7 @@
 		97C3D535191BDEF1008921B5 /* Thread.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C3D534191BDEF1008921B5 /* Thread.m */; };
 		97C3D53A191E7FB6008921B5 /* ThreadTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C3D539191E7FB6008921B5 /* ThreadTableViewCell.m */; };
 		97CA835219641F65009DA88A /* PostViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 97CA835119641F65009DA88A /* PostViewController.m */; };
+		97CF3F1B19F182060019A938 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97CF3F1A19F182060019A938 /* Crashlytics.framework */; };
 		97E757001951378A00E76A97 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 97E756FF1951378A00E76A97 /* .gitignore */; };
 		AEB2414BBF56415F917E74E6 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9805745336464EA7A343A4A2 /* libPods.a */; };
 /* End PBXBuildFile section */
@@ -185,7 +185,6 @@
 		97A26CD41947803D00D632C5 /* CaptchaFixController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CaptchaFixController.xib; sourceTree = "<group>"; };
 		97AE76D419226CF7007139A6 /* Podfile */ = {isa = PBXFileReference; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		97B8917E197D5AC60024EADB /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
-		97B89181197DCADC0024EADB /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		97BDB7D01992442A00500491 /* Media.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Media.h; sourceTree = "<group>"; };
 		97BDB7D11992442A00500491 /* Media.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Media.m; sourceTree = "<group>"; };
 		97C3D4ED191BC82A008921B5 /* Tabula.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tabula.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -219,6 +218,7 @@
 		97C3D539191E7FB6008921B5 /* ThreadTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThreadTableViewCell.m; sourceTree = "<group>"; };
 		97CA835019641F65009DA88A /* PostViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PostViewController.h; sourceTree = "<group>"; };
 		97CA835119641F65009DA88A /* PostViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PostViewController.m; sourceTree = "<group>"; };
+		97CF3F1A19F182060019A938 /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		97E756FF1951378A00E76A97 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		9805745336464EA7A343A4A2 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -233,8 +233,8 @@
 				97C3D4F3191BC82A008921B5 /* CoreGraphics.framework in Frameworks */,
 				97C3D4F5191BC82A008921B5 /* UIKit.framework in Frameworks */,
 				97C3D4F1191BC82A008921B5 /* Foundation.framework in Frameworks */,
-				97B89182197DCADC0024EADB /* Crashlytics.framework in Frameworks */,
 				AEB2414BBF56415F917E74E6 /* libPods.a in Frameworks */,
+				97CF3F1B19F182060019A938 /* Crashlytics.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -473,7 +473,7 @@
 		97C3D4EF191BC82A008921B5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				97B89181197DCADC0024EADB /* Crashlytics.framework */,
+				97CF3F1A19F182060019A938 /* Crashlytics.framework */,
 				979347B4197499A400BD9DDF /* ImageIO.framework */,
 				978A605019394DA5001B3F18 /* CoreText.framework */,
 				97C3D4F0191BC82A008921B5 /* Foundation.framework */,
@@ -662,6 +662,7 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = "./Crashlytics.framework/run 123dacd4faccb8a97ec46d77de14fb5edca929ca b7735d30ae3c49b61c4ca9a2be132c6d1918e30b98631e71570e23311bee0e6c";
 			shellScript = "";
+			showEnvVarsInLog = 0;
 		};
 		C11C00B0D54A4EE7B62F90A0 /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;

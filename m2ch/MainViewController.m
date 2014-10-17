@@ -57,7 +57,7 @@
                 NSArray *boardsList =
                 [NSArray arrayWithObjects:@"de", @"c", @"b", @"mlp", @"mobi", @"media", @"wrk", @"t", nil];
                 for (NSString *board in boardsList) {
-                    BoardData *next = [BoardData MR_createInContext:localContext];
+                    BoardData *next = [BoardData MR_createEntityInContext:localContext];
                     next.name = board;
                 }
 
@@ -109,7 +109,7 @@
             [self.sectionNames addObject:key];
         }
         
-        NSArray *sortingArray = @[@"Тематика", @"Творчество", @"Техника и софт", @"Игры", @"Японская культура", @"Разное", @"Взрослым", @"Пробное"];
+        NSArray *sortingArray = @[@"Тематика", @"Творчество", @"Техника и софт", @"Игры", @"Японская культура", @"Разное", @"Взрослым", @"Пробное", @"Пользовательские"];
         
         for (NSString *iStr in sortingArray) {
             NSInteger i = [self.sectionNames indexOfObject:iStr];
@@ -236,7 +236,7 @@
 - (IBAction)showTabulaThread:(id)sender {
     UrlNinja *urlNinja = [[UrlNinja alloc]init];
     urlNinja.boardId = @"mobi";
-    urlNinja.threadId = @"300665";
+    urlNinja.threadId = @"377355";
     
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
     ThreadViewController *destination = [storyboard instantiateViewControllerWithIdentifier:@"ThreadTag"];

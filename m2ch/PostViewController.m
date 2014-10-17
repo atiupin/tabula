@@ -181,6 +181,9 @@
         tgrCell.delegate = self;
         [cell addGestureRecognizer:tgrCell];
         
+        //пока не починен постинг на Макабе
+        cell.replyButton.enabled = NO;
+        
         return cell;
     }
 }

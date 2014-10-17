@@ -75,7 +75,8 @@
         [self.postImage shiftOnTextInset];
         
         self.postImage.bigImageUrl = media.url;
-        [self.postImage setImageWithURL:media.thumbnailUrl completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+        
+        [self.postImage sd_setImageWithURL:media.thumbnailUrl completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
         }];
         
         UIBezierPath *imagePath = [UIBezierPath bezierPathWithRect:CGRectMake(0, 0, self.postImage.bounds.size.width+CELL_IMAGE_H_INSET, self.postImage.bounds.size.height+CELL_IMAGE_V_INSET)];
@@ -102,7 +103,7 @@
             }
             
             image.bigImageUrl = media.url;
-            [image setImageWithURL:media.thumbnailUrl completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+            [image sd_setImageWithURL:media.thumbnailUrl completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
             }];
             
             [self.mediaBoxView addSubview:image];

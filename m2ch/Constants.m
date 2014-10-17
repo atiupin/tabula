@@ -10,18 +10,6 @@
 
 @implementation Constants
 
-+ (NSArray *)makabaBoards {
-    static NSArray *_makabaBoards;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        _makabaBoards = @[@"b",
-                          @"po",
-                          @"vg",
-                          @"test"];
-    });
-    return _makabaBoards;
-}
-
 + (UIColor *)celestiaGreen {
     static UIColor *_celestiaGreen;
     static dispatch_once_t onceToken;

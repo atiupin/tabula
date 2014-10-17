@@ -139,7 +139,7 @@
         self.postImage.tnHeight = media.tnHeight;
         self.postImage.tnWidth = media.tnWidth;
         self.postImage.bigImageUrl = media.url;
-        [self.postImage setImageWithURL:media.thumbnailUrl];
+        [self.postImage sd_setImageWithURL:media.thumbnailUrl];
     }
     
     return self;

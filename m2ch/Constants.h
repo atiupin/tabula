@@ -24,8 +24,6 @@ static CGFloat const COMMENT_LINE_SPACING = 2.0;
 
 @interface Constants : NSObject
 
-+ (NSArray *)makabaBoards;
-
 + (UIColor *)celestiaGreen;
 + (UIColor *)celestiaOrange;
 + (UIColor *)celestiaDarkGrey;

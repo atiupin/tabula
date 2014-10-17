@@ -143,9 +143,9 @@
     [self updateLastPost];
     self.refreshButton.enabled = YES;
     self.refreshButton.hidden = NO;
-    if (![[Constants makabaBoards] containsObject:self.boardId]) {
-        self.navigationItem.rightBarButtonItem.enabled = YES;
-    }
+    
+    //лочим постинг, пока не починили его для макабы
+    self.navigationItem.rightBarButtonItem.enabled = NO;
 }
 
 - (void)updateStarted {
@@ -173,7 +173,7 @@
     }
     
     [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
-        ThreadData *localThreadData = [ThreadData MR_createInContext:localContext];
+        ThreadData *localThreadData = [ThreadData MR_createEntityInContext:localContext];
         localThreadData.name = comboId;
         localThreadData.position = position;
         localThreadData.count = count;
@@ -225,6 +225,10 @@
     UITapGestureRecognizer *tgrCell = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(clearTextViewSelections)];
     tgrCell.delegate = self;
     [cell addGestureRecognizer:tgrCell];
+    
+    //пока не починен постинг на Макабе
+    cell.replyButton.enabled = NO;
+    cell.replyButton.hidden = YES;
     
     return cell;
 }
