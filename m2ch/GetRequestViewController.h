@@ -24,6 +24,7 @@
 @property (nonatomic, strong)NSString *threadId;
 @property (nonatomic, strong)NSURL *url;
 @property (nonatomic, strong)NSString *draft;
+@property (nonatomic, strong)NSTimer *loadStatusCheckTimer;
 
 @property (weak, nonatomic) IBOutlet UIWebView *output;
 @property (strong, nonatomic) UIView *loader;

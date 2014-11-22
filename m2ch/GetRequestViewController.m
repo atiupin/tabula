@@ -126,8 +126,7 @@ NSString *const CAPTCHA_EMPTY = @"";
             self.captchaStatus.text = CAPTCHA_EMPTY;
         }
         [self.output stringByEvaluatingJavaScriptFromString:@"document.getElementById('TopNormalReplyLabel').click();"];
-        //Криво, но зато работает - ждем 3 секунды чтобы капча загрузилась
-        [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(loadAndShowCaptcha) userInfo:nil repeats:NO];
+        self.loadStatusCheckTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(checkLoadStatus) userInfo:nil repeats:YES];
     } else if ([html rangeOfString:@"<p data-translate=\"process_is_automatic\">"].location != NSNotFound){
         self.captchaStatus.text = CAPTCHA_CF_WAIT;
         //обнаружен CF и будет редирект через 5 секунд
@@ -137,18 +136,25 @@ NSString *const CAPTCHA_EMPTY = @"";
     }
 }
 
-- (void) loadAndShowCaptcha {
-    NSString *captchaString = [self.output stringByEvaluatingJavaScriptFromString:@"document.getElementsByClassName('captcha-image captcha-reload-button')[0].getElementsByTagName('img')[0].src;"];
-    NSLog(@"%@",captchaString);
-    if (captchaString == nil) {
-        [self captchaBroken];
-    } else {
-        NSURL *url = [[NSURL alloc] initWithString:captchaString];
-        NSData *captchaData = [[NSData alloc] initWithContentsOfURL:url];
-        self.captchaImage.image = [[UIImage alloc] initWithData:captchaData];
-        [self.loader removeFromSuperview];
-        self.postButton.enabled = YES;
-        self.refreshButton.enabled = YES;
+-(void) checkLoadStatus
+{
+    NSString *evalString = [self.output stringByEvaluatingJavaScriptFromString:@"document.readyState"];
+    if([evalString isEqualToString:@"complete"])
+    {
+        //Страница загрузилась - останавливаем таймер
+        [self.loadStatusCheckTimer invalidate];
+        self.loadStatusCheckTimer = nil;
+        NSString *captchaString = [self.output stringByEvaluatingJavaScriptFromString: @"document.getElementsByClassName('captcha-image captcha-reload-button')[0].getElementsByTagName('img')[0].src;"];
+        if (captchaString == nil) {
+            [self captchaBroken];
+        } else {
+            NSURL *url = [[NSURL alloc] initWithString:captchaString];
+            NSData *captchaData = [[NSData alloc] initWithContentsOfURL:url];
+            self.captchaImage.image = [[UIImage alloc] initWithData:captchaData];
+            [self.loader removeFromSuperview];
+            self.postButton.enabled = YES;
+            self.refreshButton.enabled = YES;
+        }
     }
 }
 
@@ -158,7 +164,7 @@ NSString *const CAPTCHA_EMPTY = @"";
     self.captchaImage.image = nil;
     self.captchaView.text = @"";
     [self.output stringByEvaluatingJavaScriptFromString:@"document.getElementsByClassName('captcha-image captcha-reload-button')[0].click();"];
-    [NSTimer scheduledTimerWithTimeInterval:3.0 target:self selector:@selector(loadAndShowCaptcha) userInfo:nil repeats:NO];
+    self.loadStatusCheckTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(checkLoadStatus) userInfo:nil repeats:YES];
 }
 
 - (void)captchaBroken {
