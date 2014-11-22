@@ -12,6 +12,7 @@ NSString *const CAPTCHA_CF_WAIT = @"Обнаружена защита от DDoS,
 NSString *const CAPTCHA_DDOS_BROKEN = @"Похоже, что капча сломана защитой от DDoS";
 NSString *const CAPTCHA_PLEASE_WAIT = @"Ждите...";
 NSString *const CAPTCHA_EMPTY = @"";
+NSString *const CAPTCHA_NOT_LOADING = @"Капча не загрузилась, попробуйте ещё раз...";
 
 @interface GetRequestViewController ()
 
@@ -145,12 +146,16 @@ NSString *const CAPTCHA_EMPTY = @"";
         [self.loadStatusCheckTimer invalidate];
         self.loadStatusCheckTimer = nil;
         NSString *captchaString = [self.output stringByEvaluatingJavaScriptFromString: @"document.getElementsByClassName('captcha-image captcha-reload-button')[0].getElementsByTagName('img')[0].src;"];
-        if (captchaString == nil) {
-            [self captchaBroken];
+        if ([captchaString isEqualToString:@""]) {
+            self.captchaStatus.text = CAPTCHA_NOT_LOADING;
+            self.refreshButton.enabled = YES;
+            [self.loader removeFromSuperview];
         } else {
             NSURL *url = [[NSURL alloc] initWithString:captchaString];
             NSData *captchaData = [[NSData alloc] initWithContentsOfURL:url];
             self.captchaImage.image = [[UIImage alloc] initWithData:captchaData];
+            self.captchaImage.hidden = NO;
+            self.captchaStatus.text = @"";
             [self.loader removeFromSuperview];
             self.postButton.enabled = YES;
             self.refreshButton.enabled = YES;
@@ -161,7 +166,8 @@ NSString *const CAPTCHA_EMPTY = @"";
 - (void)refreshCaptcha {
     self.refreshButton.enabled = NO;
     self.postButton.enabled = NO;
-    self.captchaImage.image = nil;
+    self.captchaImage.hidden = YES;
+    [self.view addSubview:self.loader];
     self.captchaView.text = @"";
     [self.output stringByEvaluatingJavaScriptFromString:@"document.getElementsByClassName('captcha-image captcha-reload-button')[0].click();"];
     self.loadStatusCheckTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(checkLoadStatus) userInfo:nil repeats:YES];
