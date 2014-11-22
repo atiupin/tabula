@@ -143,9 +143,7 @@
     [self updateLastPost];
     self.refreshButton.enabled = YES;
     self.refreshButton.hidden = NO;
-    
-    //лочим постинг, пока не починили его для макабы
-    self.navigationItem.rightBarButtonItem.enabled = NO;
+    self.navigationItem.rightBarButtonItem.enabled = YES;
 }
 
 - (void)updateStarted {
@@ -227,8 +225,8 @@
     [cell addGestureRecognizer:tgrCell];
     
     //пока не починен постинг на Макабе
-    cell.replyButton.enabled = NO;
-    cell.replyButton.hidden = YES;
+    cell.replyButton.enabled = YES;
+    cell.replyButton.hidden = NO;
     
     return cell;
 }

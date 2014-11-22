@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="14A388b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="UQU-08-8jJ">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="UQU-08-8jJ">
     <dependencies>
-        <deployment defaultVersion="1808" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <scenes>
         <!--Доски-->
@@ -74,26 +74,22 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="rL3-3J-z9q">
-                                <rect key="frame" x="93" y="303" width="135" height="40"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            </imageView>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Капча" minimumFontSize="17" id="mBk-zV-NIS">
-                                <rect key="frame" x="20" y="303" width="73" height="40"/>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Капча" minimumFontSize="17" id="mBk-zV-NIS">
+                                <rect key="frame" x="4" y="269" width="94" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
                             </textField>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Абустатус капчи" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="bWN-G3-6bo">
-                                <rect key="frame" x="20" y="266" width="280" height="34"/>
+                                <rect key="frame" x="20" y="232" width="280" height="34"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="ZnD-r6-Jwz">
-                                <rect key="frame" x="250" y="308" width="50" height="30"/>
+                                <rect key="frame" x="254" y="269" width="50" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <state key="normal" title="Sage">
@@ -104,11 +100,14 @@
                                 </connections>
                             </button>
                             <webView contentMode="scaleToFill" id="hAn-4b-sEX">
-                                <rect key="frame" x="0.0" y="558" width="320" height="10"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                             </webView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" id="rL3-3J-z9q">
+                                <rect key="frame" x="106" y="264" width="135" height="40"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="gEW-fw-RNo">
-                                <rect key="frame" x="93" y="306" width="135" height="33"/>
+                                <rect key="frame" x="106" y="267" width="135" height="33"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <state key="normal" title="Починить">
@@ -116,6 +115,16 @@
                                 </state>
                                 <connections>
                                     <action selector="fixCaptcha:" destination="tus-0C-Kzq" eventType="touchUpInside" id="Dji-5x-8fL"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="TnI-0g-RRa">
+                                <rect key="frame" x="106" y="264" width="135" height="40"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="refreshButtonPressed:" destination="tus-0C-Kzq" eventType="touchUpInside" id="TlH-V6-Vsf"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -141,6 +150,7 @@
                         <outlet property="output" destination="hAn-4b-sEX" id="cLH-yW-KeL"/>
                         <outlet property="postButton" destination="3bC-gD-dlZ" id="8v6-HM-VdF"/>
                         <outlet property="postView" destination="qyJ-lC-X0d" id="f9H-7f-9dh"/>
+                        <outlet property="refreshButton" destination="TnI-0g-RRa" id="gCK-Jr-h6Y"/>
                         <outlet property="sageStatusButton" destination="ZnD-r6-Jwz" id="Fma-QM-wLN"/>
                     </connections>
                 </viewController>
@@ -265,8 +275,8 @@
                                                 <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                             </state>
                                         </button>
-                                        <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="dMC-kb-LmT">
-                                            <rect key="frame" x="120" y="81" width="80" height="24"/>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="dMC-kb-LmT">
+                                            <rect key="frame" x="130" y="81" width="80" height="24"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
                                             <state key="normal" title="Ответить">
@@ -298,7 +308,7 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" title="Тред" id="zqH-S0-bUU">
-                        <barButtonItem key="rightBarButtonItem" enabled="NO" image="Clear" id="ky6-Hj-2cC">
+                        <barButtonItem key="rightBarButtonItem" systemItem="compose" id="ky6-Hj-2cC">
                             <connections>
                                 <segue destination="4l2-4i-x1E" kind="modal" identifier="newPost" id="Vks-vo-9YQ"/>
                             </connections>
@@ -330,7 +340,7 @@
                                     </userGuides>
                                     <subviews>
                                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="Тело поста. Все настройки шрифта — в исходном тексте" id="Oeb-BS-OwM" customClass="CTTextView">
-                                            <rect key="frame" x="10" y="39" width="300" height="51.5"/>
+                                            <rect key="frame" x="10" y="39" width="300" height="53.5"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="14"/>
                                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -374,7 +384,7 @@
                                             <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                         </imageView>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" id="iwY-H0-Vpe">
-                                            <rect key="frame" x="15" y="82.5" width="70" height="24"/>
+                                            <rect key="frame" x="15" y="84.5" width="70" height="24"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
                                             <state key="normal" title="Ответы"/>
@@ -384,7 +394,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="right" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="qGD-i2-VzY">
-                                            <rect key="frame" x="255" y="82.5" width="50" height="24"/>
+                                            <rect key="frame" x="255" y="84.5" width="50" height="24"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
                                             <state key="normal" title="●●●">
@@ -454,9 +464,6 @@
             <point key="canvasLocation" x="2101" y="-678"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="Clear" width="5" height="5"/>
-    </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

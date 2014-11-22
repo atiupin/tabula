@@ -30,6 +30,7 @@
 @property (strong, nonatomic) NSTimer *timer;
 @property (strong, nonatomic) NSString *lastPostId;
 @property (nonatomic) BOOL sageStatus;
+@property (strong, nonatomic) IBOutlet UIButton *refreshButton;
 
 @property (weak, nonatomic) IBOutlet UITextView *postView;
 @property (weak, nonatomic) IBOutlet UIImageView *captchaImage;
@@ -43,5 +44,6 @@
 - (IBAction)switchSageStatus:(id)sender;
 - (IBAction)sendPost:(id)sender;
 - (IBAction)dismiss:(id)sender;
+- (IBAction)refreshButtonPressed:(id)sender;
 
 @end
