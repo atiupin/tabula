@@ -182,7 +182,7 @@
         [cell addGestureRecognizer:tgrCell];
         
         //пока не починен постинг на Макабе
-        cell.replyButton.enabled = NO;
+        cell.replyButton.enabled = YES;
         
         return cell;
     }

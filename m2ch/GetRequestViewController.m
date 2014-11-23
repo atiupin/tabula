@@ -12,6 +12,7 @@ NSString *const CAPTCHA_CF_WAIT = @"Обнаружена защита от DDoS,
 NSString *const CAPTCHA_DDOS_BROKEN = @"Похоже, что капча сломана защитой от DDoS";
 NSString *const CAPTCHA_PLEASE_WAIT = @"Ждите...";
 NSString *const CAPTCHA_EMPTY = @"";
+NSString *const CAPTCHA_NOT_LOADING = @"Капча не загрузилась, попробуйте ещё раз...";
 
 @interface GetRequestViewController ()
 
@@ -40,6 +41,7 @@ NSString *const CAPTCHA_EMPTY = @"";
     self.postButton.enabled = NO;
     self.sageStatus = NO;
     self.sageStatusButton.selected = NO;
+    self.refreshButton.enabled = NO;
     self.postView.text = self.draft;
     
     [self.postView becomeFirstResponder];
@@ -119,22 +121,13 @@ NSString *const CAPTCHA_EMPTY = @"";
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
     
     NSString *html = [webView stringByEvaluatingJavaScriptFromString: @"document.body.innerHTML"];
-    
-    if ([html rangeOfString:@"ToggleNormalReply('TopNormalReply')"].location != NSNotFound) {
-        
+    self.refreshButton.enabled = NO;
+    if ([html rangeOfString:@"TopNormalReply"].location != NSNotFound) {
         if ([self.captchaStatus.text isEqualToString:CAPTCHA_CF_WAIT] || [self.captchaStatus.text isEqualToString:CAPTCHA_DDOS_BROKEN]) {
             self.captchaStatus.text = CAPTCHA_EMPTY;
         }
-        
-        [self.output stringByEvaluatingJavaScriptFromString:@"ToggleNormalReply('TopNormalReply');"];
-        NSString *captchaString = [self.output stringByEvaluatingJavaScriptFromString:@"document.getElementById('captcha_captcha_div').getAttribute('value');"];
-        NSURL *url = [[NSURL alloc] initWithString:[@"http://i.captcha.yandex.net/image?key=" stringByAppendingString:captchaString]];
-        
-        NSData *captchaData = [[NSData alloc] initWithContentsOfURL:url];
-        self.captchaImage.image = [[UIImage alloc] initWithData:captchaData];
-        
-        [self.loader removeFromSuperview];
-        self.postButton.enabled = YES;
+        [self.output stringByEvaluatingJavaScriptFromString:@"document.getElementById('TopNormalReplyLabel').click();"];
+        self.loadStatusCheckTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(checkLoadStatus) userInfo:nil repeats:YES];
     } else if ([html rangeOfString:@"<p data-translate=\"process_is_automatic\">"].location != NSNotFound){
         self.captchaStatus.text = CAPTCHA_CF_WAIT;
         //обнаружен CF и будет редирект через 5 секунд
@@ -142,6 +135,42 @@ NSString *const CAPTCHA_EMPTY = @"";
         [self captchaBroken];
         //капча сломана намертво
     }
+}
+
+-(void) checkLoadStatus
+{
+    NSString *evalString = [self.output stringByEvaluatingJavaScriptFromString:@"document.readyState"];
+    if([evalString isEqualToString:@"complete"])
+    {
+        //Страница загрузилась - останавливаем таймер
+        [self.loadStatusCheckTimer invalidate];
+        self.loadStatusCheckTimer = nil;
+        NSString *captchaString = [self.output stringByEvaluatingJavaScriptFromString: @"document.getElementsByClassName('captcha-image captcha-reload-button')[0].getElementsByTagName('img')[0].src;"];
+        if ([captchaString isEqualToString:@""]) {
+            self.captchaStatus.text = CAPTCHA_NOT_LOADING;
+            self.refreshButton.enabled = YES;
+            [self.loader removeFromSuperview];
+        } else {
+            NSURL *url = [[NSURL alloc] initWithString:captchaString];
+            NSData *captchaData = [[NSData alloc] initWithContentsOfURL:url];
+            self.captchaImage.image = [[UIImage alloc] initWithData:captchaData];
+            self.captchaImage.hidden = NO;
+            self.captchaStatus.text = @"";
+            [self.loader removeFromSuperview];
+            self.postButton.enabled = YES;
+            self.refreshButton.enabled = YES;
+        }
+    }
+}
+
+- (void)refreshCaptcha {
+    self.refreshButton.enabled = NO;
+    self.postButton.enabled = NO;
+    self.captchaImage.hidden = YES;
+    [self.view addSubview:self.loader];
+    self.captchaView.text = @"";
+    [self.output stringByEvaluatingJavaScriptFromString:@"document.getElementsByClassName('captcha-image captcha-reload-button')[0].click();"];
+    self.loadStatusCheckTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(checkLoadStatus) userInfo:nil repeats:YES];
 }
 
 - (void)captchaBroken {
@@ -257,6 +286,10 @@ NSString *const CAPTCHA_EMPTY = @"";
 
 - (IBAction)dismiss:(id)sender {
     [self postCanceled:self.postView.text];
+}
+
+- (IBAction)refreshButtonPressed:(id)sender {
+    [self refreshCaptcha];
 }
 
 - (void)keyboardWasShown:(NSNotification *)notification

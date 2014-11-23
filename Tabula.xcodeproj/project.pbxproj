@@ -855,6 +855,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 1D632ABF8532C7258AFD9EE8 /* Pods.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -870,6 +871,7 @@
 					"\"${PODS_ROOT}/Headers/AsyncImageView\"",
 					"\"${PODS_ROOT}/Headers/TTTAttributedLabel\"",
 					"\"${PODS_ROOT}/Headers/UIView+AutoLayout\"",
+					"\"$(BUILT_PRODUCTS_DIR)\"/**",
 				);
 				INFOPLIST_FILE = "m2ch/Tabula-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
@@ -877,6 +879,7 @@
 				PRODUCT_NAME = Tabula;
 				PROVISIONING_PROFILE = "DDE5A0E4-86E7-4969-83EA-4FFE0CF87DB7";
 				TARGETED_DEVICE_FAMILY = 1;
+				USER_HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"/**";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -885,6 +888,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 762DC3CD87334EB0CC4BB22C /* Pods.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Aleksandr Tyupin (6PVMJV8LPQ)";
@@ -900,6 +904,7 @@
 					"\"${PODS_ROOT}/Headers/AsyncImageView\"",
 					"\"${PODS_ROOT}/Headers/TTTAttributedLabel\"",
 					"\"${PODS_ROOT}/Headers/UIView+AutoLayout\"",
+					"\"$(BUILT_PRODUCTS_DIR)\"/**",
 				);
 				INFOPLIST_FILE = "m2ch/Tabula-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
@@ -907,21 +912,23 @@
 				PRODUCT_NAME = Tabula;
 				PROVISIONING_PROFILE = "DDE5A0E4-86E7-4969-83EA-4FFE0CF87DB7";
 				TARGETED_DEVICE_FAMILY = 1;
+				USER_HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"/**";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
 		};
 		97C3D51D191BC82A008921B5 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1D632ABF8532C7258AFD9EE8 /* Pods.debug.xcconfig */;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/m2ch.app/m2ch";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Tabula.app/Tabula";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "m2ch/m2ch-Prefix.pch";
+				GCC_PREFIX_HEADER = "m2ch/tabula-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -935,15 +942,16 @@
 		};
 		97C3D51E191BC82A008921B5 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 762DC3CD87334EB0CC4BB22C /* Pods.release.xcconfig */;
 			buildSettings = {
-				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/m2ch.app/m2ch";
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/Tabula.app/Tabula";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "m2ch/m2ch-Prefix.pch";
+				GCC_PREFIX_HEADER = "m2ch/tabula-Prefix.pch";
 				INFOPLIST_FILE = "m2chTests/TabulaTests-Info.plist";
 				PRODUCT_NAME = TabulaTests;
 				TEST_HOST = "$(BUNDLE_LOADER)";
