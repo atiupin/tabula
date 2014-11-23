@@ -233,8 +233,8 @@
 				97C3D4F3191BC82A008921B5 /* CoreGraphics.framework in Frameworks */,
 				97C3D4F5191BC82A008921B5 /* UIKit.framework in Frameworks */,
 				97C3D4F1191BC82A008921B5 /* Foundation.framework in Frameworks */,
-				AEB2414BBF56415F917E74E6 /* libPods.a in Frameworks */,
 				97CF3F1B19F182060019A938 /* Crashlytics.framework in Frameworks */,
+				AEB2414BBF56415F917E74E6 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
