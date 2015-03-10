@@ -40,7 +40,6 @@ NSString *const CAPTCHA_NOT_LOADING = @"Капча не загрузилась, 
     //предварительная настройка лейблов
     self.sageStatus = NO;
     self.sageStatusButton.selected = NO;
-    self.refreshButton.enabled = NO;
     self.postView.text = self.draft;
     
     [self.postView becomeFirstResponder];
@@ -84,7 +83,6 @@ NSString *const CAPTCHA_NOT_LOADING = @"Капча не загрузилась, 
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
     
     NSString *html = [webView stringByEvaluatingJavaScriptFromString: @"document.body.innerHTML"];
-    self.refreshButton.enabled = NO;
     if ([html rangeOfString:@"TopNormalReply"].location != NSNotFound) {
         if ([self.captchaStatus.text isEqualToString:CAPTCHA_CF_WAIT] || [self.captchaStatus.text isEqualToString:CAPTCHA_DDOS_BROKEN]) {
             self.captchaStatus.text = CAPTCHA_EMPTY;
@@ -111,12 +109,10 @@ NSString *const CAPTCHA_NOT_LOADING = @"Капча не загрузилась, 
         NSString *captchaString = [self.output stringByEvaluatingJavaScriptFromString: @"document.getElementsByClassName('captcha-image captcha-reload-button')[0].getElementsByTagName('img')[0].src;"];
         if ([captchaString isEqualToString:@""]) {
             self.captchaStatus.text = CAPTCHA_NOT_LOADING;
-            self.refreshButton.enabled = YES;
             [self.loader removeFromSuperview];
         } else {
             self.captchaStatus.text = @"";
             [self.loader removeFromSuperview];
-            self.refreshButton.enabled = YES;
         }
     }
 }
@@ -154,6 +150,7 @@ NSString *const CAPTCHA_NOT_LOADING = @"Капча не загрузилась, 
              *  Present yandex captcha image to VC
              */
             [_captchaImage sd_setImageWithURL:[NSURL URLWithString:urlOfYandexCaptchaImage]];
+            _captchaView.text = @"";
             
         }
     } failure:^(NSURLSessionDataTask *task, NSError *error) {
@@ -352,17 +349,21 @@ NSString *const CAPTCHA_NOT_LOADING = @"Капча не загрузилась, 
             [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
         }
         
-        // if post wasn't successful
+        /**
+         *  If post wasn't successful.
+         */
         else
         {
-            
-            // present alert with error code to user
+            /**
+             *  Present alert with error code to user.
+             */
             NSString *alertAboutPostTitle = NSLocalizedString(@"Ошибка", @"Alert Title of the createPostVC when post was NOT successful");
             
             UIAlertView *alertAboutPost = [[UIAlertView alloc] initWithTitle:alertAboutPostTitle message:reason delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
             [alertAboutPost setTag:0];
             [alertAboutPost show];
             self.navigationItem.rightBarButtonItem.enabled = TRUE;
+            [self refreshCaptcha];
         }
         
     }
@@ -371,7 +372,7 @@ NSString *const CAPTCHA_NOT_LOADING = @"Капча не загрузилась, 
         
         NSString *cancelTitle = NSLocalizedString(@"Ошибка", @"Title of the createPostVC when post was NOT successful");
         _captchaStatus.text = cancelTitle;
-        
+        [self refreshCaptcha];
         NSLog(@"Error: %@", error);
     }];
 }
