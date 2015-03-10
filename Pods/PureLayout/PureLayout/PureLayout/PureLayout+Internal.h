@@ -1,9 +1,9 @@
 //
 //  PureLayout+Internal.h
-//  v2.0.0
+//  v2.0.5
 //  https://github.com/smileyborg/PureLayout
 //
-//  Copyright (c) 2014 Tyler Fox
+//  Copyright (c) 2014-2015 Tyler Fox
 //
 //  This code is distributed under the terms and conditions of the MIT license.
 //
@@ -28,6 +28,10 @@
 
 #import "PureLayoutDefines.h"
 
+/** A constant that represents the smallest valid positive value for the multiplier of a constraint,
+    since a value of 0 will cause the second item to be lost in the internal auto layout engine. */
+static const CGFloat kMULTIPLIER_MIN_VALUE = 0.00001; // very small floating point numbers (e.g. CGFLOAT_MIN) can cause problems
+
 
 /**
  A category that exposes the internal (private) helper methods of the ALView+PureLayout category.
@@ -35,6 +39,10 @@
 @interface ALView (PureLayoutInternal)
 
 + (BOOL)al_preventAutomaticConstraintInstallation;
++ (NSMutableArray *)al_currentArrayOfCreatedConstraints;
++ (BOOL)al_isExecutingPriorityConstraintsBlock;
++ (ALLayoutPriority)al_currentGlobalConstraintPriority;
++ (NSString *)al_currentGlobalConstraintIdentifier;
 + (void)al_applyGlobalStateToConstraint:(NSLayoutConstraint *)constraint;
 - (void)al_addConstraint:(NSLayoutConstraint *)constraint;
 - (ALView *)al_commonSuperviewWithView:(ALView *)otherView;
@@ -62,9 +70,9 @@
 
 + (NSLayoutAttribute)al_layoutAttributeForAttribute:(ALAttribute)attribute;
 + (ALLayoutConstraintAxis)al_constraintAxisForAxis:(ALAxis)axis;
-#if __PureLayout_MinBaseSDK_iOS8
+#if __PureLayout_MinBaseSDK_iOS_8_0
 + (ALMargin)al_marginForEdge:(ALEdge)edge;
 + (ALMarginAxis)al_marginAxisForAxis:(ALAxis)axis;
-#endif /* __PureLayout_MinBaseSDK_iOS8 */
+#endif /* __PureLayout_MinBaseSDK_iOS_8_0 */
 
 @end

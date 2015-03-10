@@ -7,6 +7,8 @@
 //
 
 #import "GetRequestViewController.h"
+#import <AFNetworking/AFNetworking.h>
+#import <SDWebImage/UIImageView+WebCache.h>
 
 NSString *const CAPTCHA_CF_WAIT = @"Обнаружена защита от DDoS, ждите...";
 NSString *const CAPTCHA_DDOS_BROKEN = @"Похоже, что капча сломана защитой от DDoS";
@@ -16,6 +18,8 @@ NSString *const CAPTCHA_NOT_LOADING = @"Капча не загрузилась, 
 
 @interface GetRequestViewController ()
 
+@property (nonatomic, strong) NSString *captchaKey;
+
 @end
 
 @implementation GetRequestViewController
@@ -24,10 +28,6 @@ NSString *const CAPTCHA_NOT_LOADING = @"Капча не загрузилась, 
 
 - (void)viewDidLoad
 {
-    self.loader = [[UIView alloc]initWithFrame:self.captchaImage.frame];
-    self.loader.backgroundColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:1];
-    [self.view addSubview:self.loader];
-    
     self.postView.textContainerInset = UIEdgeInsetsMake(10, 5, 5, 5);
     
     UIActivityIndicatorView *spinner = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -38,7 +38,6 @@ NSString *const CAPTCHA_NOT_LOADING = @"Капча не загрузилась, 
     //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWasShown:) name:UIKeyboardDidShowNotification object:nil];
     
     //предварительная настройка лейблов
-    self.postButton.enabled = NO;
     self.sageStatus = NO;
     self.sageStatusButton.selected = NO;
     self.refreshButton.enabled = NO;
@@ -47,6 +46,7 @@ NSString *const CAPTCHA_NOT_LOADING = @"Капча не загрузилась, 
     [self.postView becomeFirstResponder];
 
     [self viewPreparations];
+    [self refreshCaptcha];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -54,49 +54,12 @@ NSString *const CAPTCHA_NOT_LOADING = @"Капча не загрузилась, 
 }
 
 - (void)viewPreparations {
-    self.captchaImage.hidden = NO;
     self.captchaView.hidden = NO;
     self.fixCaptcha.hidden = YES;
     self.captchaStatus.text = CAPTCHA_EMPTY;
-
-    [self performSelectorInBackground:@selector(captchaRequest) withObject:nil];
 }
 
 #pragma mark - Captcha handling
-
-- (void)captchaRequest {
-    NSString *urlString = [NSString stringWithFormat:@"%@/%@/res/%@.html", ROOT_URL, self.boardId, self.threadId];
-    NSURL *url = [[NSURL alloc] initWithString:urlString];
-    
-    self.url = url;
-    self.output.delegate = self;
-    
-    NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
-    
-    //очистка куки, бывает нужно для тестов
-//    NSHTTPCookie *cookie;
-//    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-//    for (cookie in [storage cookies]) {
-//        [storage deleteCookie:cookie];
-//    }
-//    [[NSUserDefaults standardUserDefaults] synchronize];
-
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:config];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-    
-    NSURLSessionDownloadTask *task = [session downloadTaskWithRequest:request completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
-        NSDictionary *headers = [(NSHTTPURLResponse *)response allHeaderFields];
-        NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
-        if (statusCode == 503 && [[headers objectForKey:@"Server"] isEqualToString:@"cloudflare-nginx"]) {
-            self.output.delegate = self;
-            [self.output loadRequest:request];
-        } else {
-            NSMutableString *source = [[NSMutableString alloc] initWithContentsOfURL:location encoding:NSUTF8StringEncoding error:nil];
-            [self clearSource:source];
-        }
-    }];
-    [task resume];
-}
 
 - (void)clearSource:(NSMutableString *)source {
     if (source) {
@@ -151,30 +114,54 @@ NSString *const CAPTCHA_NOT_LOADING = @"Капча не загрузилась, 
             self.refreshButton.enabled = YES;
             [self.loader removeFromSuperview];
         } else {
-            NSURL *url = [[NSURL alloc] initWithString:captchaString];
-            NSData *captchaData = [[NSData alloc] initWithContentsOfURL:url];
-            self.captchaImage.image = [[UIImage alloc] initWithData:captchaData];
-            self.captchaImage.hidden = NO;
             self.captchaStatus.text = @"";
             [self.loader removeFromSuperview];
-            self.postButton.enabled = YES;
             self.refreshButton.enabled = YES;
         }
     }
 }
 
+/**
+ *  Actually - it's just getting captcha
+ *  We can reload captcha by calling this method many times
+ */
 - (void)refreshCaptcha {
-    self.refreshButton.enabled = NO;
-    self.postButton.enabled = NO;
-    self.captchaImage.hidden = YES;
-    [self.view addSubview:self.loader];
-    self.captchaView.text = @"";
-    [self.output stringByEvaluatingJavaScriptFromString:@"document.getElementsByClassName('captcha-image captcha-reload-button')[0].click();"];
-    self.loadStatusCheckTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(checkLoadStatus) userInfo:nil repeats:YES];
+    
+    AFHTTPSessionManager *captchaManager = [AFHTTPSessionManager manager];
+    captchaManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    [captchaManager.responseSerializer setAcceptableContentTypes:[NSSet setWithObject:@"text/plain"]];
+    
+    NSString *captchaUrl = @"https://2ch.hk/makaba/captcha.fcgi";
+    
+    [captchaManager GET:captchaUrl parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+        
+        NSString *captchaKeyAnswer = [[NSString alloc]initWithData:responseObject encoding:NSUTF8StringEncoding];
+        if ([captchaKeyAnswer hasPrefix:@"CHECK"]) {
+            NSArray *arrayOfCaptchaKeyAnswers = [captchaKeyAnswer componentsSeparatedByString: @"\n"];
+            
+            NSString *captchaKey = [arrayOfCaptchaKeyAnswers lastObject];
+            
+            /**
+             *  Set var for requesting Yandex key image now and posting later.
+             */
+            _captchaKey = captchaKey;
+            
+            NSString *getcaptchaImageUrl = @"http://captcha.yandex.net/image?key=%@";
+            
+            NSString *urlOfYandexCaptchaImage = [[NSString alloc] initWithFormat:getcaptchaImageUrl,captchaKey];
+            
+            /**
+             *  Present yandex captcha image to VC
+             */
+            [_captchaImage sd_setImageWithURL:[NSURL URLWithString:urlOfYandexCaptchaImage]];
+            
+        }
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        NSLog(@"Error: %@", error);
+    }];
 }
 
 - (void)captchaBroken {
-    self.captchaImage.hidden = YES;
     self.captchaView.hidden = YES;
     self.fixCaptcha.hidden = NO;
     self.captchaStatus.text = CAPTCHA_DDOS_BROKEN;
@@ -197,39 +184,20 @@ NSString *const CAPTCHA_NOT_LOADING = @"Капча не загрузилась, 
 #pragma mark - Post sending
 
 - (IBAction)sendPost:(id)sender {
-    //получение id последнего поста
-    self.lastPostId = [self.output stringByEvaluatingJavaScriptFromString:@"document.getElementsByClassName('post')[document.getElementsByClassName('post').length-1].id"];
+
+    NSString *comment = _postView.text;
+    NSString *captchaValue = _captchaView.text;
     
-    //вставка поста в форму
-    NSString *postText = [self.postView.text stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
-    postText = [postText stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
-    postText = [postText stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
-    NSString *postJs = [[@"document.getElementById('shampoo').value = '" stringByAppendingString:postText] stringByAppendingString:@"'"];
-    [self.output stringByEvaluatingJavaScriptFromString:postJs];
-    
-    //вставка капчи в форму
-    NSString *captchaJs = [[@"document.getElementsByName('captcha_value_id_06')[0].value = '" stringByAppendingString:self.captchaView.text] stringByAppendingString:@"'"];
-    [self.output stringByEvaluatingJavaScriptFromString:captchaJs];
-    
-    //вставка сажи (железобетонный вариант, на случай куков на чекбоксе)
-    if (self.sageStatus == YES) {
-        [self.output stringByEvaluatingJavaScriptFromString:@"document.getElementById('e-mail').value = 'sage'"];
-        [self.output stringByEvaluatingJavaScriptFromString:@"document.getElementById('sagecheckbox').checked = true"];
-    }
-    else {
-        [self.output stringByEvaluatingJavaScriptFromString:@"document.getElementById('e-mail').value = ''"];
-        [self.output stringByEvaluatingJavaScriptFromString:@"document.getElementById('sagecheckbox').checked = false"];
-    }
-    
-    //установка таймера для проверки окна абустатуса
-    [self.timer invalidate];
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(abuStatusChecker) userInfo:nil repeats:YES];
-    [self.timer fire];
-    
-    //клик по кнопке отправить (submit() не работает)
-    [self.output stringByEvaluatingJavaScriptFromString:@"document.getElementById('submit').click();"];
-    
-    //document.getElementsByClassName('post')[document.getElementsByClassName('post').length-1].id
+    [self postMessageWithTask:@"post"
+                     andBoard:_boardId
+                 andThreadnum:_threadId
+                      andName:@""
+                     andEmail:@""
+                   andSubject:@""
+                   andComment:comment
+                   andCaptcha:_captchaKey
+              andcaptchaValue:captchaValue
+     ];
 }
 
 - (void)abuStatusChecker {
@@ -300,4 +268,112 @@ NSString *const CAPTCHA_NOT_LOADING = @"Капча не загрузилась, 
 //    CGRect postRect = CGRectMake(self.postView.frame.origin.x, self.postView.frame.origin.y, self.postView.frame.size.width, textHeight);
 //    self.postView.frame = postRect;
 }
+
+/**
+ *  Make post to thread
+ *
+ *  @param task         always POST
+ *  @param board        board shortCode
+ *  @param threadNum    we can use it for creating new posts or even new threads
+ *  @param name         name of poster
+ *  @param email        e-mail of poster and sage
+ *  @param subject      sibject of the post
+ *  @param comment      comment
+ *  @param captchaKey   captcha key from Yandex
+ *  @param captchaValue captcha value from our image (entered by user)
+ */
+- (void)postMessageWithTask:(NSString *)task
+                   andBoard:(NSString *)board
+               andThreadnum:(NSString *)threadNum
+                    andName:(NSString *)name
+                   andEmail:(NSString *)email
+                 andSubject:(NSString *)subject
+                 andComment:(NSString *)comment
+                 andCaptcha:(NSString *)captchaKey
+            andcaptchaValue:(NSString *)captchaValue
+{
+    
+    self.navigationItem.rightBarButtonItem.enabled = FALSE;
+    
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    
+    NSString *json = @"1";
+    
+    NSString *dvachBaseUrl = @"https://2ch.hk/";
+    
+    NSString *address = [[NSString alloc] initWithFormat:@"%@%@", dvachBaseUrl, @"makaba/posting.fcgi"];
+    
+    NSDictionary *params = @{
+                             @"task":task,
+                             @"json":json,
+                             @"board":board,
+                             @"thread":threadNum,
+                             @"captcha":captchaKey,
+                             @"captcha_value":captchaValue
+                             };
+    
+    [manager.responseSerializer setAcceptableContentTypes:[NSSet setWithObjects: @"application/json",nil]];
+    
+    [manager POST:address parameters:params constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        
+        // added comment field this way because makaba don't handle it wright if we pass it "normal" way
+        // and name
+        // and subject
+        [formData appendPartWithFormData:[comment dataUsingEncoding:NSUTF8StringEncoding] name:@"comment"];
+        [formData appendPartWithFormData:[name dataUsingEncoding:NSUTF8StringEncoding] name:@"name"];
+        [formData appendPartWithFormData:[subject dataUsingEncoding:NSUTF8StringEncoding] name:@"subject"];
+        
+    } success:^(NSURLSessionDataTask *task, id responseObject) {
+        
+        // NSLog(@"Success: %@", responseObject);
+        
+        NSString *responseString = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+        NSLog(@"Success: %@", responseString);
+        
+        NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];
+        NSDictionary *responseDictionary = [NSJSONSerialization JSONObjectWithData:responseData options:0 error:nil];
+        
+        // status field from response
+        NSString *status = [responseDictionary objectForKey:@"Status"];
+        
+        //reason field from response
+        NSString *reason = [responseDictionary objectForKey:@"Reason"];
+        
+        // if post was successful
+        if (([status isEqualToString:@"OK"])||([status isEqualToString:@"Redirect"]))
+        {
+            NSString *successTitle = NSLocalizedString(@"Успешно", @"Title of the createPostVC when post was successfull");
+            _captchaStatus.text = successTitle;
+            
+            /**
+             *  We need to dismiss Controller here, go back to thread (and update it)
+             */
+            [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+        }
+        
+        // if post wasn't successful
+        else
+        {
+            
+            // present alert with error code to user
+            NSString *alertAboutPostTitle = NSLocalizedString(@"Ошибка", @"Alert Title of the createPostVC when post was NOT successful");
+            
+            UIAlertView *alertAboutPost = [[UIAlertView alloc] initWithTitle:alertAboutPostTitle message:reason delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [alertAboutPost setTag:0];
+            [alertAboutPost show];
+            self.navigationItem.rightBarButtonItem.enabled = TRUE;
+        }
+        
+    }
+          failure:^(NSURLSessionDataTask *task, NSError *error)
+    {
+        
+        NSString *cancelTitle = NSLocalizedString(@"Ошибка", @"Title of the createPostVC when post was NOT successful");
+        _captchaStatus.text = cancelTitle;
+        
+        NSLog(@"Error: %@", error);
+    }];
+}
+
 @end
