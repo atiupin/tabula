@@ -1,9 +1,9 @@
 //
 //  PureLayoutDefines.h
-//  v2.0.0
+//  v2.0.5
 //  https://github.com/smileyborg/PureLayout
 //
-//  Copyright (c) 2014 Tyler Fox
+//  Copyright (c) 2014-2015 Tyler Fox
 //
 //  This code is distributed under the terms and conditions of the MIT license.
 //
@@ -31,52 +31,51 @@
 
 #import <Foundation/Foundation.h>
 
-#define __PureLayout_MinBaseSDK_iOS8                    TARGET_OS_IPHONE && __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1
-#define __PureLayout_MinSysVer_iOS7                     floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1
-#define __PureLayout_MinSysVer_iOS8                     floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_7_1
+#define __PureLayout_MinBaseSDK_iOS_8_0                   TARGET_OS_IPHONE && __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1
+#define __PureLayout_MinSysVer_iOS_7_0                    TARGET_OS_IPHONE && floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_6_1
+#define __PureLayout_MinSysVer_iOS_8_0                    TARGET_OS_IPHONE && floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_7_1
+
+#define __PureLayout_MinBaseSDK_OSX_10_10                 !TARGET_OS_IPHONE && __MAC_OS_X_VERSION_MAX_ALLOWED > __MAC_10_9
+#define __PureLayout_MinSysVer_OSX_10_9                   !TARGET_OS_IPHONE && floor(NSFoundationVersionNumber) > NSFoundationVersionNumber10_8_4
 
 #if TARGET_OS_IPHONE
+#   import <UIKit/UIKit.h>
 
-    #import <UIKit/UIKit.h>
-
-    #define ALView                                      UIView
-    #define ALEdgeInsets                                UIEdgeInsets
-    #define ALEdgeInsetsZero                            UIEdgeInsetsZero
-    #define ALEdgeInsetsMake                            UIEdgeInsetsMake
-    #define ALLayoutConstraintAxis                      UILayoutConstraintAxis
-    #define ALLayoutConstraintOrientation               ALLayoutConstraintAxis
-    #define ALLayoutConstraintAxisHorizontal            UILayoutConstraintAxisHorizontal
-    #define ALLayoutConstraintAxisVertical              UILayoutConstraintAxisVertical
-    #define ALLayoutConstraintOrientationHorizontal     ALLayoutConstraintAxisHorizontal
-    #define ALLayoutConstraintOrientationVertical       ALLayoutConstraintAxisVertical
-    #define ALLayoutPriority                            UILayoutPriority
-    #define ALLayoutPriorityRequired                    UILayoutPriorityRequired
-    #define ALLayoutPriorityDefaultHigh                 UILayoutPriorityDefaultHigh
-    #define ALLayoutPriorityDefaultLow                  UILayoutPriorityDefaultLow
-    #define ALLayoutPriorityFittingSizeLevel            UILayoutPriorityFittingSizeLevel
-    #define ALLayoutPriorityFittingSizeCompression      ALLayoutPriorityFittingSizeLevel
-
+#   define ALView                                      UIView
+#   define ALEdgeInsets                                UIEdgeInsets
+#   define ALEdgeInsetsZero                            UIEdgeInsetsZero
+#   define ALEdgeInsetsMake                            UIEdgeInsetsMake
+#   define ALLayoutConstraintAxis                      UILayoutConstraintAxis
+#   define ALLayoutConstraintOrientation               ALLayoutConstraintAxis
+#   define ALLayoutConstraintAxisHorizontal            UILayoutConstraintAxisHorizontal
+#   define ALLayoutConstraintAxisVertical              UILayoutConstraintAxisVertical
+#   define ALLayoutConstraintOrientationHorizontal     ALLayoutConstraintAxisHorizontal
+#   define ALLayoutConstraintOrientationVertical       ALLayoutConstraintAxisVertical
+#   define ALLayoutPriority                            UILayoutPriority
+#   define ALLayoutPriorityRequired                    UILayoutPriorityRequired
+#   define ALLayoutPriorityDefaultHigh                 UILayoutPriorityDefaultHigh
+#   define ALLayoutPriorityDefaultLow                  UILayoutPriorityDefaultLow
+#   define ALLayoutPriorityFittingSizeLevel            UILayoutPriorityFittingSizeLevel
+#   define ALLayoutPriorityFittingSizeCompression      ALLayoutPriorityFittingSizeLevel
 #else
+#   import <Cocoa/Cocoa.h>
 
-    #import <Cocoa/Cocoa.h>
-
-    #define ALView                                      NSView
-    #define ALEdgeInsets                                NSEdgeInsets
-    #define ALEdgeInsetsZero                            NSEdgeInsetsMake(0, 0, 0, 0)
-    #define ALEdgeInsetsMake                            NSEdgeInsetsMake
-    #define ALLayoutConstraintOrientation               NSLayoutConstraintOrientation
-    #define ALLayoutConstraintAxis                      ALLayoutConstraintOrientation
-    #define ALLayoutConstraintOrientationHorizontal     NSLayoutConstraintOrientationHorizontal
-    #define ALLayoutConstraintOrientationVertical       NSLayoutConstraintOrientationVertical
-    #define ALLayoutConstraintAxisHorizontal            ALLayoutConstraintOrientationHorizontal
-    #define ALLayoutConstraintAxisVertical              ALLayoutConstraintOrientationVertical
-    #define ALLayoutPriority                            NSLayoutPriority
-    #define ALLayoutPriorityRequired                    NSLayoutPriorityRequired
-    #define ALLayoutPriorityDefaultHigh                 NSLayoutPriorityDefaultHigh
-    #define ALLayoutPriorityDefaultLow                  NSLayoutPriorityDefaultLow
-    #define ALLayoutPriorityFittingSizeCompression      NSLayoutPriorityFittingSizeCompression
-    #define ALLayoutPriorityFittingSizeLevel            ALLayoutPriorityFittingSizeCompression
-
+#   define ALView                                      NSView
+#   define ALEdgeInsets                                NSEdgeInsets
+#   define ALEdgeInsetsZero                            NSEdgeInsetsMake(0, 0, 0, 0)
+#   define ALEdgeInsetsMake                            NSEdgeInsetsMake
+#   define ALLayoutConstraintOrientation               NSLayoutConstraintOrientation
+#   define ALLayoutConstraintAxis                      ALLayoutConstraintOrientation
+#   define ALLayoutConstraintOrientationHorizontal     NSLayoutConstraintOrientationHorizontal
+#   define ALLayoutConstraintOrientationVertical       NSLayoutConstraintOrientationVertical
+#   define ALLayoutConstraintAxisHorizontal            ALLayoutConstraintOrientationHorizontal
+#   define ALLayoutConstraintAxisVertical              ALLayoutConstraintOrientationVertical
+#   define ALLayoutPriority                            NSLayoutPriority
+#   define ALLayoutPriorityRequired                    NSLayoutPriorityRequired
+#   define ALLayoutPriorityDefaultHigh                 NSLayoutPriorityDefaultHigh
+#   define ALLayoutPriorityDefaultLow                  NSLayoutPriorityDefaultLow
+#   define ALLayoutPriorityFittingSizeCompression      NSLayoutPriorityFittingSizeCompression
+#   define ALLayoutPriorityFittingSizeLevel            ALLayoutPriorityFittingSizeCompression
 #endif /* TARGET_OS_IPHONE */
 
 
@@ -117,13 +116,13 @@ typedef NS_ENUM(NSInteger, ALAxis) {
     ALAxisBaseline = NSLayoutAttributeBaseline,
     /** A horizontal line at the baseline of the last line of text in the view. (For views that do not draw text, will be equivalent to ALEdgeBottom.) */
     ALAxisLastBaseline = ALAxisBaseline,
-    #if __PureLayout_MinBaseSDK_iOS8
+    #if __PureLayout_MinBaseSDK_iOS_8_0
     /** A horizontal line at the baseline of the first line of text in a view. (For views that do not draw text, will be equivalent to ALEdgeTop.) Available in iOS 8.0 and later. */
     ALAxisFirstBaseline = NSLayoutAttributeFirstBaseline
-    #endif /* __PureLayout_MinBaseSDK_iOS8 */
+    #endif /* __PureLayout_MinBaseSDK_iOS_8_0 */
 };
 
-#if __PureLayout_MinBaseSDK_iOS8
+#if __PureLayout_MinBaseSDK_iOS_8_0
 
 /** Constants that represent layout margins of a view. Available in iOS 8.0 and later. */
 typedef NS_ENUM(NSInteger, ALMargin) {
@@ -149,7 +148,7 @@ typedef NS_ENUM(NSInteger, ALMarginAxis) {
     ALMarginAxisHorizontal = NSLayoutAttributeCenterYWithinMargins
 };
 
-#endif /* __PureLayout_MinBaseSDK_iOS8 */
+#endif /* __PureLayout_MinBaseSDK_iOS_8_0 */
 
 /** An attribute of a view that can be used in auto layout constraints. These constants are identical to the more specific enum types: 
     ALEdge, ALAxis, ALDimension, ALMargin, ALMarginAxis. It is safe to cast a more specific enum type to the ALAttribute type. */
@@ -178,7 +177,7 @@ typedef NS_ENUM(NSInteger, ALAttribute) {
     ALAttributeBaseline = ALAxisBaseline,
     /** A horizontal line at the baseline of the last line of text in the view. (For views that do not draw text, will be equivalent to ALEdgeBottom.) */
     ALAttributeLastBaseline = ALAxisLastBaseline,
-#if __PureLayout_MinBaseSDK_iOS8
+#if __PureLayout_MinBaseSDK_iOS_8_0
     /** A horizontal line at the baseline of the first line of text in a view. (For views that do not draw text, will be equivalent to ALEdgeTop.) Available in iOS 8.0 and later. */
     ALAttributeFirstBaseline = ALAxisFirstBaseline,
     /** The left margin of the view, based on the view's layoutMargins left inset. */
@@ -197,7 +196,7 @@ typedef NS_ENUM(NSInteger, ALAttribute) {
     ALAttributeMarginAxisVertical = ALMarginAxisVertical,
     /** A horizontal line through the middle of the view's top and bottom margins. */
     ALAttributeMarginAxisHorizontal = ALMarginAxisHorizontal
-#endif /* __PureLayout_MinBaseSDK_iOS8 */
+#endif /* __PureLayout_MinBaseSDK_iOS_8_0 */
 };
 
 /** A block containing method calls to the PureLayout API. Takes no arguments and has no return value. */

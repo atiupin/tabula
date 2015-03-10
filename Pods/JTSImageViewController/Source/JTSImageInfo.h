@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Nice Boy LLC. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
 
 @interface JTSImageInfo : NSObject
 
@@ -18,6 +18,8 @@
 @property (copy, nonatomic) NSString *title;
 @property (assign, nonatomic) CGRect referenceRect;
 @property (strong, nonatomic) UIView *referenceView;
+@property (assign, nonatomic) UIViewContentMode referenceContentMode;
+@property (assign, nonatomic) CGFloat referenceCornerRadius;
 @property (copy, nonatomic) NSMutableDictionary *userInfo;
 
 - (NSString *)displayableTitleAltTextSummary;

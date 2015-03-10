@@ -21,11 +21,11 @@ CGFloat const JTSImageViewController_DefaultAlphaForBackgroundDimmingOverlay = 0
 CGFloat const JTSImageViewController_DefaultBackgroundBlurRadius = 2.0f;
 
 // Private Constants
-CGFloat const JTSImageViewController_MinimumBackgroundScaling = 0.94f;
-CGFloat const JTSImageViewController_TargetZoomForDoubleTap = 3.0f;
-CGFloat const JTSImageViewController_MaxScalingForExpandingOffscreenStyleTransition = 1.25f;
-CGFloat const JTSImageViewController_TransitionAnimationDuration = 0.3f;
-CGFloat const JTSImageViewController_MinimumFlickDismissalVelocity = 800.0f;
+static CGFloat const JTSImageViewController_MinimumBackgroundScaling = 0.94f;
+static CGFloat const JTSImageViewController_TargetZoomForDoubleTap = 3.0f;
+static CGFloat const JTSImageViewController_MaxScalingForExpandingOffscreenStyleTransition = 1.25f;
+static CGFloat const JTSImageViewController_TransitionAnimationDuration = 0.3f;
+static CGFloat const JTSImageViewController_MinimumFlickDismissalVelocity = 800.0f;
 
 typedef struct {
     BOOL statusBarHiddenPriorToPresentation;
@@ -61,10 +61,10 @@ typedef struct {
 
 @interface JTSImageViewController ()
 <
-UIScrollViewDelegate,
-UITextViewDelegate,
-UIViewControllerTransitioningDelegate,
-UIGestureRecognizerDelegate
+    UIScrollViewDelegate,
+    UITextViewDelegate,
+    UIViewControllerTransitioningDelegate,
+    UIGestureRecognizerDelegate
 >
 
 // General Info
@@ -72,7 +72,7 @@ UIGestureRecognizerDelegate
 @property (strong, nonatomic, readwrite) UIImage *image;
 @property (assign, nonatomic, readwrite) JTSImageViewControllerTransition transition;
 @property (assign, nonatomic, readwrite) JTSImageViewControllerMode mode;
-@property (assign, nonatomic, readwrite) JTSImageViewControllerBackgroundStyle backgroundStyle;
+@property (assign, nonatomic, readwrite) JTSImageViewControllerBackgroundOptions backgroundOptions;
 @property (assign, nonatomic) JTSImageViewControllerStartingInfo startingInfo;
 @property (assign, nonatomic) JTSImageViewControllerFlags flags;
 
@@ -122,14 +122,15 @@ UIGestureRecognizerDelegate
 
 - (instancetype)initWithImageInfo:(JTSImageInfo *)imageInfo
                              mode:(JTSImageViewControllerMode)mode
-                  backgroundStyle:(JTSImageViewControllerBackgroundStyle)backgroundStyle {
+                  backgroundStyle:(JTSImageViewControllerBackgroundOptions)backgroundOptions {
     
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceOrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
         _imageInfo = imageInfo;
         _currentSnapshotRotationTransform = CGAffineTransformIdentity;
         _mode = mode;
-        _backgroundStyle = backgroundStyle;
+        _backgroundOptions = backgroundOptions;
         if (_mode == JTSImageViewControllerMode_Image) {
             [self setupImageAndDownloadIfNecessary:imageInfo];
         }
@@ -140,7 +141,7 @@ UIGestureRecognizerDelegate
 - (void)showFromViewController:(UIViewController *)viewController
                     transition:(JTSImageViewControllerTransition)transition {
     
-    [self setTransition:transition];
+    self.transition = transition;
     
     _startingInfo.statusBarHiddenPriorToPresentation = [UIApplication sharedApplication].statusBarHidden;
     _startingInfo.statusBarStylePriorToPresentation = [UIApplication sharedApplication].statusBarStyle;
@@ -158,6 +159,7 @@ UIGestureRecognizerDelegate
 
 - (void)dismiss:(BOOL)animated {
     
+    // Early Return!
     if (_flags.isPresented == NO) {
         return;
     }
@@ -192,6 +194,7 @@ UIGestureRecognizerDelegate
 #pragma mark - NSObject
 
 - (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
     [_imageDownloadDataTask cancel];
     [self cancelProgressTimer];
 }
@@ -298,7 +301,7 @@ UIGestureRecognizerDelegate
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    [self setLastUsedOrientation:toInterfaceOrientation];
+    self.lastUsedOrientation = toInterfaceOrientation;
     _flags.rotationTransformIsDirty = YES;
     _flags.isRotating = YES;
 }
@@ -312,38 +315,99 @@ UIGestureRecognizerDelegate
     });
 }
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    _flags.rotationTransformIsDirty = YES;
+    _flags.isRotating = YES;
+    typeof(self) __weak weakSelf = self;
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        typeof(self) strongSelf = weakSelf;
+        [strongSelf cancelCurrentImageDrag:NO];
+        [strongSelf updateLayoutsForCurrentOrientation];
+        [strongSelf updateDimmingViewForCurrentZoomScale:NO];
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        typeof(self) strongSelf = weakSelf;
+        strongSelf.lastUsedOrientation = [UIApplication sharedApplication].statusBarOrientation;
+        JTSImageViewControllerFlags flags = strongSelf.flags;
+        flags.isRotating = NO;
+        strongSelf.flags = flags;
+    }];
+}
+#endif
+
+- (void)deviceOrientationDidChange:(NSNotification *)notification {
+    
+    NSString *systemVersion = [UIDevice currentDevice].systemVersion;
+    if (systemVersion.floatValue < 8.0) {
+        // Early Return
+        return;
+    }
+    /*
+     viewWillTransitionToSize:withTransitionCoordinator: is not called when rotating from
+     one landscape orientation to the other (or from one portrait orientation to another). 
+     This makes it difficult to preserve the desired behavior of JTSImageViewController. 
+     We want the background snapshot to maintain the illusion that it never rotates. The 
+     only other way to ensure that the background snapshot stays in the correct orientation 
+     is to listen for this notification and respond when we've detected a landscape-to-landscape rotation.
+    */
+    UIDeviceOrientation deviceOrientation = [UIDevice currentDevice].orientation;
+    BOOL landscapeToLandscape = UIDeviceOrientationIsLandscape(deviceOrientation) && UIInterfaceOrientationIsLandscape(self.lastUsedOrientation);
+    BOOL portraitToPortrait = UIDeviceOrientationIsPortrait(deviceOrientation) && UIInterfaceOrientationIsPortrait(self.lastUsedOrientation);
+    if (landscapeToLandscape || portraitToPortrait) {
+        UIInterfaceOrientation newInterfaceOrientation = (UIInterfaceOrientation)deviceOrientation;
+        if (newInterfaceOrientation != self.lastUsedOrientation) {
+            self.lastUsedOrientation = newInterfaceOrientation;
+            _flags.rotationTransformIsDirty = YES;
+            _flags.isRotating = YES;
+            typeof(self) __weak weakSelf = self;
+            [UIView animateWithDuration:0.6 animations:^{
+                typeof(self) strongSelf = weakSelf;
+                [strongSelf cancelCurrentImageDrag:NO];
+                [strongSelf updateLayoutsForCurrentOrientation];
+                [strongSelf updateDimmingViewForCurrentZoomScale:NO];
+            } completion:^(BOOL finished) {
+                typeof(self) strongSelf = weakSelf;
+                JTSImageViewControllerFlags flags = strongSelf.flags;
+                flags.isRotating = NO;
+                strongSelf.flags = flags;
+            }];
+        }
+    }
+}
+
 #pragma mark - Setup
 
 - (void)setupImageAndDownloadIfNecessary:(JTSImageInfo *)imageInfo {
     if (imageInfo.image) {
-        [self setImage:imageInfo.image];
+        self.image = imageInfo.image;
     }
     else {
         
-        [self setImage:imageInfo.placeholderImage];
+        self.image = imageInfo.placeholderImage;
         
         BOOL fromDisk = [imageInfo.imageURL.absoluteString hasPrefix:@"file://"];
         _flags.imageIsBeingReadFromDisk = fromDisk;
         
-        __weak JTSImageViewController *weakSelf = self;
+        typeof(self) __weak weakSelf = self;
         NSURLSessionDataTask *task = [JTSSimpleImageDownloader downloadImageForURL:imageInfo.imageURL canonicalURL:imageInfo.canonicalImageURL completion:^(UIImage *image) {
-            [weakSelf cancelProgressTimer];
+            typeof(self) strongSelf = weakSelf;
+            [strongSelf cancelProgressTimer];
             if (image) {
-                if (weakSelf.isViewLoaded) {
-                    [weakSelf updateInterfaceWithImage:image];
+                if (strongSelf.isViewLoaded) {
+                    [strongSelf updateInterfaceWithImage:image];
                 } else {
-                    [weakSelf setImage:image];
+                    strongSelf.image = image;
                 }
-            } else if (weakSelf.image == nil) {
+            } else if (strongSelf.image == nil) {
                 _flags.imageDownloadFailed = YES;
                 if (_flags.isPresented && _flags.isAnimatingAPresentationOrDismissal == NO) {
-                    [weakSelf dismiss:YES];
+                    [strongSelf dismiss:YES];
                 }
                 // If we're still presenting, at the end of presentation we'll auto dismiss.
             }
         }];
         
-        [self setImageDownloadDataTask:task];
+        self.imageDownloadDataTask = task;
         
         [self startProgressTimer];
     }
@@ -351,12 +415,12 @@ UIGestureRecognizerDelegate
 
 - (void)viewDidLoadForImageMode {
     
-    [self.view setBackgroundColor:[UIColor blackColor]];
-    [self.view setAutoresizingMask:UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth];
+    self.view.backgroundColor = [UIColor blackColor];
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     
     self.blackBackdrop = [[UIView alloc] initWithFrame:CGRectInset(self.view.bounds, -512, -512)];
-    [self.blackBackdrop setBackgroundColor:[UIColor blackColor]];
-    [self.blackBackdrop setAlpha:0];
+    self.blackBackdrop.backgroundColor = [UIColor blackColor];
+    self.blackBackdrop.alpha = 0;
     [self.view addSubview:self.blackBackdrop];
     
     self.scrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
@@ -373,9 +437,17 @@ UIGestureRecognizerDelegate
     CGRect referenceFrameInMyView = [self.view convertRect:referenceFrameInWindow fromView:nil];
     
     self.imageView = [[UIImageView alloc] initWithFrame:referenceFrameInMyView];
+    self.imageView.layer.cornerRadius = self.imageInfo.referenceCornerRadius;
     self.imageView.contentMode = UIViewContentModeScaleAspectFill;
+    self.imageView.userInteractionEnabled = YES;
     self.imageView.isAccessibilityElement = NO;
     self.imageView.clipsToBounds = YES;
+    self.imageView.layer.allowsEdgeAntialiasing = YES;
+    if ([self.optionsDelegate respondsToSelector:@selector(imageViewerShouldFadeThumbnailsDuringPresentationAndDismissal:)]) {
+        if ([self.optionsDelegate imageViewerShouldFadeThumbnailsDuringPresentationAndDismissal:self]) {
+            self.imageView.alpha = 0;
+        }
+    }
     
     // We'll add the image view to either the scroll view
     // or the parent view, based on the transition style
@@ -401,7 +473,7 @@ UIGestureRecognizerDelegate
     self.spinner.center = CGPointMake(64.0f, 64.0f);
     [self.spinner startAnimating];
     [self.progressContainer addSubview:self.spinner];
-    [self.progressContainer setAlpha:0];
+    self.progressContainer.alpha = 0;
     
     self.animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.scrollView];
     
@@ -412,12 +484,12 @@ UIGestureRecognizerDelegate
 
 - (void)viewDidLoadForAltTextMode {
     
-    [self.view setBackgroundColor:[UIColor blackColor]];
-    [self.view setAutoresizingMask:UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth];
+    self.view.backgroundColor = [UIColor blackColor];
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     
     self.blackBackdrop = [[UIView alloc] initWithFrame:CGRectInset(self.view.bounds, -512, -512)];
-    [self.blackBackdrop setBackgroundColor:[UIColor blackColor]];
-    [self.blackBackdrop setAlpha:0];
+    self.blackBackdrop.backgroundColor = [UIColor blackColor];
+    self.blackBackdrop.alpha = 0;
     [self.view addSubview:self.blackBackdrop];
     
     CGFloat outerMargin = ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) ? 80.0 : 40.0;
@@ -457,43 +529,33 @@ UIGestureRecognizerDelegate
 
 - (void)setupImageModeGestureRecognizers {
     
-    UITapGestureRecognizer *doubleTapper = nil;
-    doubleTapper = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(imageDoubleTapped:)];
-    doubleTapper.numberOfTapsRequired = 2;
-    doubleTapper.delegate = self;
-    self.doubleTapperPhoto = doubleTapper;
+    self.doubleTapperPhoto = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(imageDoubleTapped:)];
+    self.doubleTapperPhoto.numberOfTapsRequired = 2;
+    self.doubleTapperPhoto.delegate = self;
     
-    UILongPressGestureRecognizer *longPresser = [[UILongPressGestureRecognizer alloc] init];
-    [longPresser addTarget:self action:@selector(imageLongPressed:)];
-    longPresser.delegate = self;
-    self.longPresserPhoto = longPresser;
+    self.longPresserPhoto = [[UILongPressGestureRecognizer alloc] init];
+    [self.longPresserPhoto addTarget:self action:@selector(imageLongPressed:)];
+    self.longPresserPhoto.delegate = self;
     
-    UITapGestureRecognizer *singleTapper = nil;
-    singleTapper = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(imageSingleTapped:)];
-    [singleTapper requireGestureRecognizerToFail:doubleTapper];
-    [singleTapper requireGestureRecognizerToFail:longPresser];
-    singleTapper.delegate = self;
-    self.singleTapperPhoto = singleTapper;
+    self.singleTapperPhoto = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(imageSingleTapped:)];
+    [self.singleTapperPhoto requireGestureRecognizerToFail:self.doubleTapperPhoto];
+    [self.singleTapperPhoto requireGestureRecognizerToFail:self.longPresserPhoto];
+    self.singleTapperPhoto.delegate = self;
     
-    UIPanGestureRecognizer *panner = [[UIPanGestureRecognizer alloc] init];
-    [panner addTarget:self action:@selector(dismissingPanGestureRecognizerPanned:)];
-    [panner setDelegate:self];
-    [self.scrollView addGestureRecognizer:panner];
-    [self setPanRecognizer:panner];
+    [self.view addGestureRecognizer:self.singleTapperPhoto];
+    [self.view addGestureRecognizer:self.doubleTapperPhoto];
+    [self.view addGestureRecognizer:self.longPresserPhoto];
     
-    [self.view addGestureRecognizer:singleTapper];
-    [self.view addGestureRecognizer:doubleTapper];
-    [self.view addGestureRecognizer:longPresser];
+    self.panRecognizer = [[UIPanGestureRecognizer alloc] init];
+    [self.panRecognizer addTarget:self action:@selector(dismissingPanGestureRecognizerPanned:)];
+    self.panRecognizer.delegate = self;
+    [self.scrollView addGestureRecognizer:self.panRecognizer];
 }
 
 - (void)setupTextViewTapGestureRecognizer {
-    
-    UITapGestureRecognizer *singleTapper = nil;
-    singleTapper = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(textViewSingleTapped:)];
-    [singleTapper setDelegate:self];
-    self.singleTapperText = singleTapper;
-    
-    [self.textView addGestureRecognizer:singleTapper];
+    self.singleTapperText = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(textViewSingleTapped:)];
+    self.singleTapperText.delegate = self;
+    [self.textView addGestureRecognizer:self.singleTapperText];
 }
 
 #pragma mark - Presentation
@@ -501,14 +563,14 @@ UIGestureRecognizerDelegate
 - (void)showImageViewerByExpandingFromOriginalPositionFromViewController:(UIViewController *)viewController {
     
     _flags.isAnimatingAPresentationOrDismissal = YES;
-    [self.view setUserInteractionEnabled:NO];
+    self.view.userInteractionEnabled = NO;
     
     self.snapshotView = [self snapshotFromParentmostViewController:viewController];
     
-    if (self.backgroundStyle == JTSImageViewControllerBackgroundStyle_ScaledDimmedBlurred) {
+    if (self.backgroundOptions & JTSImageViewControllerBackgroundOption_Blurred) {
         self.blurredSnapshotView = [self blurredSnapshotFromParentmostViewController:viewController];
         [self.snapshotView addSubview:self.blurredSnapshotView];
-        [self.blurredSnapshotView setAlpha:0];
+        self.blurredSnapshotView.alpha = 0;
     }
     
     [self.view insertSubview:self.snapshotView atIndex:0];
@@ -520,6 +582,10 @@ UIGestureRecognizerDelegate
     
     _startingInfo.startingReferenceFrameForThumbnailInPresentingViewControllersOriginalOrientation = [self.view convertRect:referenceFrameInWindow fromView:nil];
     
+    if (self.imageInfo.referenceContentMode) {
+        self.imageView.contentMode = self.imageInfo.referenceContentMode;
+    }
+    
     // This will be moved into the scroll view after
     // the transition finishes.
     [self.view addSubview:self.imageView];
@@ -530,30 +596,31 @@ UIGestureRecognizerDelegate
             _startingInfo.presentingViewControllerPresentedFromItsUnsupportedOrientation = YES;
         }
         
-        
         CGRect referenceFrameInMyView = [self.view convertRect:referenceFrameInWindow fromView:nil];
         _startingInfo.startingReferenceFrameForThumbnail = referenceFrameInMyView;
-        [self.imageView setFrame:referenceFrameInMyView];
+        self.imageView.frame = referenceFrameInMyView;
+        self.imageView.layer.cornerRadius = self.imageInfo.referenceCornerRadius;
         [self updateScrollViewAndImageViewForCurrentMetrics];
         
         BOOL mustRotateDuringTransition = ([UIApplication sharedApplication].statusBarOrientation != _startingInfo.startingInterfaceOrientation);
         if (mustRotateDuringTransition) {
             CGRect newStartingRect = [self.snapshotView convertRect:_startingInfo.startingReferenceFrameForThumbnail toView:self.view];
-            [self.imageView setFrame:newStartingRect];
+            self.imageView.frame = newStartingRect;
             [self updateScrollViewAndImageViewForCurrentMetrics];
             self.imageView.transform = self.snapshotView.transform;
             CGPoint centerInRect = CGPointMake(_startingInfo.startingReferenceFrameForThumbnail.origin.x
                                                +_startingInfo.startingReferenceFrameForThumbnail.size.width/2.0f,
                                                _startingInfo.startingReferenceFrameForThumbnail.origin.y
                                                +_startingInfo.startingReferenceFrameForThumbnail.size.height/2.0f);
-            [self.imageView setCenter:centerInRect];
+            self.imageView.center = centerInRect;
         }
         
         if ([self.optionsDelegate respondsToSelector:@selector(imageViewerShouldFadeThumbnailsDuringPresentationAndDismissal:)]) {
             if ([self.optionsDelegate imageViewerShouldFadeThumbnailsDuringPresentationAndDismissal:self]) {
-                [self.imageView setAlpha:0];
+                self.imageView.alpha = 0;
+                typeof(self) __weak weakSelf = self;
                 [UIView animateWithDuration:0.15f animations:^{
-                    [self.imageView setAlpha:1];
+                    weakSelf.imageView.alpha = 1;
                 }];
             }
         }
@@ -564,6 +631,10 @@ UIGestureRecognizerDelegate
         }
         
         __weak JTSImageViewController *weakSelf = self;
+        
+        if ([weakSelf.animationDelegate respondsToSelector:@selector(imageViewerWillBeginPresentation:withContainerView:)]) {
+            [weakSelf.animationDelegate imageViewerWillBeginPresentation:weakSelf withContainerView:weakSelf.view];
+        }
         
         // Have to dispatch ahead two runloops,
         // or else the image view changes above won't be
@@ -580,11 +651,23 @@ UIGestureRecognizerDelegate
         dispatch_async(dispatch_get_main_queue(), ^{
             dispatch_async(dispatch_get_main_queue(), ^{
                 
+                CABasicAnimation *cornerRadiusAnimation = [CABasicAnimation animationWithKeyPath:@"cornerRadius"];
+                cornerRadiusAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+                cornerRadiusAnimation.fromValue = @(weakSelf.imageView.layer.cornerRadius);
+                cornerRadiusAnimation.toValue = @(0.0);
+                cornerRadiusAnimation.duration = duration;
+                [weakSelf.imageView.layer addAnimation:cornerRadiusAnimation forKey:@"cornerRadius"];
+                weakSelf.imageView.layer.cornerRadius = 0.0;
+                
                 [UIView
                  animateWithDuration:duration
                  delay:0
                  options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut
                  animations:^{
+                     
+                     if ([weakSelf.animationDelegate respondsToSelector:@selector(imageViewerWillAnimatePresentation:withContainerView:duration:)]) {
+                         [weakSelf.animationDelegate imageViewerWillAnimatePresentation:weakSelf withContainerView:weakSelf.view duration:duration];
+                     }
                      
                      _flags.isTransitioningFromInitialModalToInteractiveState = YES;
                      
@@ -594,18 +677,25 @@ UIGestureRecognizerDelegate
                          [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
                      }
                      
-                     CGFloat scaling = JTSImageViewController_MinimumBackgroundScaling;
+                     CGFloat scaling;
+                     if (!(weakSelf.backgroundOptions & JTSImageViewControllerBackgroundOption_Scaled)) {
+                         scaling = 1.0;
+                     } else {
+                         scaling = JTSImageViewController_MinimumBackgroundScaling;
+                     }
                      weakSelf.snapshotView.transform = CGAffineTransformConcat(weakSelf.snapshotView.transform, CGAffineTransformMakeScale(scaling, scaling));
                      
-                     if (weakSelf.backgroundStyle == JTSImageViewControllerBackgroundStyle_ScaledDimmedBlurred) {
-                         [weakSelf.blurredSnapshotView setAlpha:1];
+                     if (weakSelf.backgroundOptions & JTSImageViewControllerBackgroundOption_Blurred) {
+                         weakSelf.blurredSnapshotView.alpha = 1;
                      }
                      
-                     [weakSelf addMotionEffectsToSnapshotView];
-                     [weakSelf.blackBackdrop setAlpha:self.alphaForBackgroundDimmingOverlay];
+                     if (weakSelf.backgroundOptions & JTSImageViewControllerBackgroundOption_Scaled) {
+                         [weakSelf addMotionEffectsToSnapshotView];
+                     }
+                     weakSelf.blackBackdrop.alpha = self.alphaForBackgroundDimmingOverlay;
                      
                      if (mustRotateDuringTransition) {
-                         [weakSelf.imageView setTransform:CGAffineTransformIdentity];
+                         weakSelf.imageView.transform = CGAffineTransformIdentity;
                      }
                      
                      CGRect endFrameForImageView;
@@ -614,19 +704,19 @@ UIGestureRecognizerDelegate
                      } else {
                          endFrameForImageView = [weakSelf resizedFrameForAutorotatingImageView:weakSelf.imageInfo.referenceRect.size];
                      }
-                     [weakSelf.imageView setFrame:endFrameForImageView];
+                     weakSelf.imageView.frame = endFrameForImageView;
                      
                      CGPoint endCenterForImageView = CGPointMake(weakSelf.view.bounds.size.width/2.0f, weakSelf.view.bounds.size.height/2.0f);
-                     [weakSelf.imageView setCenter:endCenterForImageView];
+                     weakSelf.imageView.center = endCenterForImageView;
                      
                      if (weakSelf.image == nil) {
-                         [weakSelf.progressContainer setAlpha:1.0f];
+                         weakSelf.progressContainer.alpha = 1.0f;
                      }
                      
                  } completion:^(BOOL finished) {
                      
                      _flags.isManuallyResizingTheScrollViewFrame = YES;
-                     [weakSelf.scrollView setFrame:weakSelf.view.bounds];
+                     weakSelf.scrollView.frame = weakSelf.view.bounds;
                      _flags.isManuallyResizingTheScrollViewFrame = NO;
                      [weakSelf.scrollView addSubview:weakSelf.imageView];
                      
@@ -639,7 +729,7 @@ UIGestureRecognizerDelegate
                      if (_flags.imageDownloadFailed) {
                          [weakSelf dismiss:YES];
                      } else {
-                         [weakSelf.view setUserInteractionEnabled:YES];
+                         weakSelf.view.userInteractionEnabled = YES;
                      }
                  }];
             });
@@ -650,19 +740,19 @@ UIGestureRecognizerDelegate
 - (void)showImageViewerByScalingDownFromOffscreenPositionWithViewController:(UIViewController *)viewController {
     
     _flags.isAnimatingAPresentationOrDismissal = YES;
-    [self.view setUserInteractionEnabled:NO];
+    self.view.userInteractionEnabled = NO;
     
     self.snapshotView = [self snapshotFromParentmostViewController:viewController];
     
-    if (self.backgroundStyle == JTSImageViewControllerBackgroundStyle_ScaledDimmedBlurred) {
+    if (self.backgroundOptions & JTSImageViewControllerBackgroundOption_Blurred) {
         self.blurredSnapshotView = [self blurredSnapshotFromParentmostViewController:viewController];
         [self.snapshotView addSubview:self.blurredSnapshotView];
-        [self.blurredSnapshotView setAlpha:0];
+        self.blurredSnapshotView.alpha = 0;
     }
     
     [self.view insertSubview:self.snapshotView atIndex:0];
     _startingInfo.startingInterfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
-    [self setLastUsedOrientation:[UIApplication sharedApplication].statusBarOrientation];
+    self.lastUsedOrientation = [UIApplication sharedApplication].statusBarOrientation;
     CGRect referenceFrameInWindow = [self.imageInfo.referenceView convertRect:self.imageInfo.referenceRect toView:nil];
     _startingInfo.startingReferenceFrameForThumbnailInPresentingViewControllersOriginalOrientation = [self.view convertRect:referenceFrameInWindow fromView:nil];
     
@@ -674,11 +764,11 @@ UIGestureRecognizerDelegate
             _startingInfo.presentingViewControllerPresentedFromItsUnsupportedOrientation = YES;
         }
         
-        [self.scrollView setAlpha:0];
-        [self.scrollView setFrame:self.view.bounds];
+        self.scrollView.alpha = 0;
+        self.scrollView.frame = self.view.bounds;
         [self updateScrollViewAndImageViewForCurrentMetrics];
         CGFloat scaling = JTSImageViewController_MaxScalingForExpandingOffscreenStyleTransition;
-        [self.scrollView setTransform:CGAffineTransformMakeScale(scaling, scaling)];
+        self.scrollView.transform = CGAffineTransformMakeScale(scaling, scaling);
         
         CGFloat duration = JTSImageViewController_TransitionAnimationDuration;
         if (USE_DEBUG_SLOW_ANIMATIONS == 1) {
@@ -686,6 +776,10 @@ UIGestureRecognizerDelegate
         }
         
         __weak JTSImageViewController *weakSelf = self;
+        
+        if ([weakSelf.animationDelegate respondsToSelector:@selector(imageViewerWillBeginPresentation:withContainerView:)]) {
+            [weakSelf.animationDelegate imageViewerWillBeginPresentation:weakSelf withContainerView:weakSelf.view];
+        }
         
         // Have to dispatch to the next runloop,
         // or else the image view changes above won't be
@@ -698,6 +792,10 @@ UIGestureRecognizerDelegate
              options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut
              animations:^{
                  
+                 if ([weakSelf.animationDelegate respondsToSelector:@selector(imageViewerWillAnimatePresentation:withContainerView:duration:)]) {
+                     [weakSelf.animationDelegate imageViewerWillAnimatePresentation:weakSelf withContainerView:weakSelf.view duration:duration];
+                 }
+                 
                  _flags.isTransitioningFromInitialModalToInteractiveState = YES;
                  
                  if ([UIApplication sharedApplication].jts_usesViewControllerBasedStatusBarAppearance) {
@@ -706,27 +804,34 @@ UIGestureRecognizerDelegate
                      [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
                  }
                  
-                 CGFloat scaling = JTSImageViewController_MinimumBackgroundScaling;
-                 weakSelf.snapshotView.transform = CGAffineTransformConcat(weakSelf.snapshotView.transform, CGAffineTransformMakeScale(scaling, scaling));
+                 CGFloat targetScaling;
+                 if (!(weakSelf.backgroundOptions & JTSImageViewControllerBackgroundOption_Scaled)) {
+                     targetScaling = 1.0;
+                 } else {
+                     targetScaling = JTSImageViewController_MinimumBackgroundScaling;
+                 }
+                 weakSelf.snapshotView.transform = CGAffineTransformConcat(weakSelf.snapshotView.transform, CGAffineTransformMakeScale(targetScaling, targetScaling));
                  
-                 if (weakSelf.backgroundStyle == JTSImageViewControllerBackgroundStyle_ScaledDimmedBlurred) {
-                     [weakSelf.blurredSnapshotView setAlpha:1];
+                 if (weakSelf.backgroundOptions & JTSImageViewControllerBackgroundOption_Blurred) {
+                     weakSelf.blurredSnapshotView.alpha = 1;
                  }
                  
-                 [weakSelf addMotionEffectsToSnapshotView];
-                 [weakSelf.blackBackdrop setAlpha:self.alphaForBackgroundDimmingOverlay];
+                 if (weakSelf.backgroundOptions & JTSImageViewControllerBackgroundOption_Scaled) {
+                     [weakSelf addMotionEffectsToSnapshotView];
+                 }
+                 weakSelf.blackBackdrop.alpha = self.alphaForBackgroundDimmingOverlay;
                  
-                 [weakSelf.scrollView setAlpha:1.0f];
-                 [weakSelf.scrollView setTransform:CGAffineTransformIdentity];
+                 weakSelf.scrollView.alpha = 1.0f;
+                 weakSelf.scrollView.transform = CGAffineTransformIdentity;
                  
                  if (weakSelf.image == nil) {
-                     [weakSelf.progressContainer setAlpha:1.0f];
+                     weakSelf.progressContainer.alpha = 1.0f;
                  }
                  
              } completion:^(BOOL finished) {
                  _flags.isTransitioningFromInitialModalToInteractiveState = NO;
                  _flags.isAnimatingAPresentationOrDismissal = NO;
-                 [weakSelf.view setUserInteractionEnabled:YES];
+                 weakSelf.view.userInteractionEnabled = YES;
                  _flags.isPresented = YES;
                  if (_flags.imageDownloadFailed) {
                      [weakSelf dismiss:YES];
@@ -739,14 +844,14 @@ UIGestureRecognizerDelegate
 - (void)showAltTextFromViewController:(UIViewController *)viewController {
     
     _flags.isAnimatingAPresentationOrDismissal = YES;
-    [self.view setUserInteractionEnabled:NO];
+    self.view.userInteractionEnabled = NO;
     
     self.snapshotView = [self snapshotFromParentmostViewController:viewController];
     
-    if (self.backgroundStyle == JTSImageViewControllerBackgroundStyle_ScaledDimmedBlurred) {
+    if (self.backgroundOptions & JTSImageViewControllerBackgroundOption_Blurred) {
         self.blurredSnapshotView = [self blurredSnapshotFromParentmostViewController:viewController];
         [self.snapshotView addSubview:self.blurredSnapshotView];
-        [self.blurredSnapshotView setAlpha:0];
+        self.blurredSnapshotView.alpha = 0;
     }
     
     [self.view insertSubview:self.snapshotView atIndex:0];
@@ -767,17 +872,21 @@ UIGestureRecognizerDelegate
         // to prevent the text from reflowing during the dismissal animation.
         [weakSelf verticallyCenterTextInTextView];
         UIView *textViewSnapshot = [weakSelf.textView snapshotViewAfterScreenUpdates:YES];
-        [textViewSnapshot setFrame:weakSelf.textView.frame];
+        textViewSnapshot.frame = weakSelf.textView.frame;
         [weakSelf.textView.superview insertSubview:textViewSnapshot aboveSubview:self.textView];
-        [weakSelf.textView setHidden:YES];
+        weakSelf.textView.hidden = YES;
         
-        [textViewSnapshot setAlpha:0];
+        textViewSnapshot.alpha = 0;
         CGFloat scaling = JTSImageViewController_MaxScalingForExpandingOffscreenStyleTransition;
-        [textViewSnapshot setTransform:CGAffineTransformMakeScale(scaling, scaling)];
+        textViewSnapshot.transform = CGAffineTransformMakeScale(scaling, scaling);
         
         CGFloat duration = JTSImageViewController_TransitionAnimationDuration;
         if (USE_DEBUG_SLOW_ANIMATIONS == 1) {
             duration *= 4;
+        }
+        
+        if ([weakSelf.animationDelegate respondsToSelector:@selector(imageViewerWillBeginPresentation:withContainerView:)]) {
+            [weakSelf.animationDelegate imageViewerWillBeginPresentation:weakSelf withContainerView:weakSelf.view];
         }
         
         // Have to dispatch to the next runloop,
@@ -791,6 +900,10 @@ UIGestureRecognizerDelegate
              options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut
              animations:^{
                  
+                 if ([weakSelf.animationDelegate respondsToSelector:@selector(imageViewerWillAnimatePresentation:withContainerView:duration:)]) {
+                     [weakSelf.animationDelegate imageViewerWillAnimatePresentation:weakSelf withContainerView:weakSelf.view duration:duration];
+                 }
+                 
                  _flags.isTransitioningFromInitialModalToInteractiveState = YES;
                  
                  if ([UIApplication sharedApplication].jts_usesViewControllerBasedStatusBarAppearance) {
@@ -799,27 +912,34 @@ UIGestureRecognizerDelegate
                      [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
                  }
                  
-                 CGFloat scaling = JTSImageViewController_MinimumBackgroundScaling;
-                 weakSelf.snapshotView.transform = CGAffineTransformConcat(weakSelf.snapshotView.transform, CGAffineTransformMakeScale(scaling, scaling));
+                 CGFloat targetScaling;
+                 if (!(weakSelf.backgroundOptions & JTSImageViewControllerBackgroundOption_Scaled)) {
+                     targetScaling = 1.0;
+                 } else {
+                     targetScaling = JTSImageViewController_MinimumBackgroundScaling;
+                 }
+                 weakSelf.snapshotView.transform = CGAffineTransformConcat(weakSelf.snapshotView.transform, CGAffineTransformMakeScale(targetScaling, targetScaling));
                  
-                 if (weakSelf.backgroundStyle == JTSImageViewControllerBackgroundStyle_ScaledDimmedBlurred) {
-                     [weakSelf.blurredSnapshotView setAlpha:1];
+                 if (weakSelf.backgroundOptions & JTSImageViewControllerBackgroundOption_Blurred) {
+                     weakSelf.blurredSnapshotView.alpha = 1;
                  }
                  
-                 [weakSelf addMotionEffectsToSnapshotView];
-                 [weakSelf.blackBackdrop setAlpha:self.alphaForBackgroundDimmingOverlay];
+                 if (weakSelf.backgroundOptions & JTSImageViewControllerBackgroundOption_Scaled) {
+                     [weakSelf addMotionEffectsToSnapshotView];
+                 }
+                 weakSelf.blackBackdrop.alpha = self.alphaForBackgroundDimmingOverlay;
                  
-                 [textViewSnapshot setAlpha:1.0];
-                 [textViewSnapshot setTransform:CGAffineTransformIdentity];
+                 textViewSnapshot.alpha = 1.0;
+                 textViewSnapshot.transform = CGAffineTransformIdentity;
                  
              } completion:^(BOOL finished) {
                  
                  [textViewSnapshot removeFromSuperview];
-                 [weakSelf.textView setHidden:NO];
+                 weakSelf.textView.hidden = NO;
                  
                  _flags.isTransitioningFromInitialModalToInteractiveState = NO;
                  _flags.isAnimatingAPresentationOrDismissal = NO;
-                 [weakSelf.view setUserInteractionEnabled:YES];
+                 weakSelf.view.userInteractionEnabled = YES;
                  _flags.isPresented = YES;
              }];
         });
@@ -871,29 +991,33 @@ UIGestureRecognizerDelegate
 
 - (void)dismissByCollapsingImageBackToOriginalPosition {
     
-    [self.view setUserInteractionEnabled:NO];
+    self.view.userInteractionEnabled = NO;
     _flags.isAnimatingAPresentationOrDismissal = YES;
     _flags.isDismissing = YES;
     
     if ([self.optionsDelegate respondsToSelector:@selector(imageViewerShouldFadeThumbnailsDuringPresentationAndDismissal:)]) {
         if ([self.optionsDelegate imageViewerShouldFadeThumbnailsDuringPresentationAndDismissal:self]) {
             [UIView animateWithDuration:0.15 delay:0.18 options:0 animations:^{
-                [self.imageView setAlpha:0];
+                self.imageView.alpha = 0;
             } completion:nil];
         }
     }
     
     CGRect imageFrame = [self.view convertRect:self.imageView.frame fromView:self.scrollView];
     self.imageView.autoresizingMask = UIViewAutoresizingNone;
-    [self.imageView setTransform:CGAffineTransformIdentity];
-    [self.imageView.layer setTransform:CATransform3DIdentity];
+    self.imageView.transform = CGAffineTransformIdentity;
+    self.imageView.layer.transform = CATransform3DIdentity;
     [self.imageView removeFromSuperview];
-    [self.imageView setFrame:imageFrame];
+    self.imageView.frame = imageFrame;
     [self.view addSubview:self.imageView];
     [self.scrollView removeFromSuperview];
-    [self setScrollView:nil];
+    self.scrollView = nil;
     
     __weak JTSImageViewController *weakSelf = self;
+    
+    if ([weakSelf.animationDelegate respondsToSelector:@selector(imageViewerWillBeginDismissal:withContainerView:)]) {
+        [weakSelf.animationDelegate imageViewerWillBeginDismissal:weakSelf withContainerView:weakSelf.view];
+    }
     
     // Have to dispatch after or else the image view changes above won't be
     // committed prior to the animations below. A single dispatch_async(dispatch_get_main_queue()
@@ -907,14 +1031,26 @@ UIGestureRecognizerDelegate
                 duration *= 4;
             }
             
+            CABasicAnimation *cornerRadiusAnimation = [CABasicAnimation animationWithKeyPath:@"cornerRadius"];
+            cornerRadiusAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+            cornerRadiusAnimation.fromValue = @(0.0);
+            cornerRadiusAnimation.toValue = @(weakSelf.imageInfo.referenceCornerRadius);
+            cornerRadiusAnimation.duration = duration;
+            [weakSelf.imageView.layer addAnimation:cornerRadiusAnimation forKey:@"cornerRadius"];
+            weakSelf.imageView.layer.cornerRadius = weakSelf.imageInfo.referenceCornerRadius;
+            
             [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
+                
+                if ([weakSelf.animationDelegate respondsToSelector:@selector(imageViewerWillAnimateDismissal:withContainerView:duration:)]) {
+                    [weakSelf.animationDelegate imageViewerWillAnimateDismissal:weakSelf withContainerView:weakSelf.view duration:duration];
+                }
                 
                 weakSelf.snapshotView.transform = weakSelf.currentSnapshotRotationTransform;
                 [weakSelf removeMotionEffectsFromSnapshotView];
-                [weakSelf.blackBackdrop setAlpha:0];
+                weakSelf.blackBackdrop.alpha = 0;
                 
-                if (weakSelf.backgroundStyle == JTSImageViewControllerBackgroundStyle_ScaledDimmedBlurred) {
-                    [weakSelf.blurredSnapshotView setAlpha:0];
+                if (weakSelf.backgroundOptions & JTSImageViewControllerBackgroundOption_Blurred) {
+                    weakSelf.blurredSnapshotView.alpha = 0;
                 }
                 
                 BOOL mustRotateDuringTransition = ([UIApplication sharedApplication].statusBarOrientation != _startingInfo.startingInterfaceOrientation);
@@ -933,14 +1069,14 @@ UIGestureRecognizerDelegate
                         centerInRect = CGPointMake(rectForCentering.origin.x+rectForCentering.size.width/2.0f,
                                                    rectForCentering.origin.y+rectForCentering.size.height/2.0f);
                     }
-                    [weakSelf.imageView setFrame:newEndingRect];
+                    weakSelf.imageView.frame = newEndingRect;
                     weakSelf.imageView.transform = weakSelf.currentSnapshotRotationTransform;
-                    [weakSelf.imageView setCenter:centerInRect];
+                    weakSelf.imageView.center = centerInRect;
                 } else {
                     if (_startingInfo.presentingViewControllerPresentedFromItsUnsupportedOrientation) {
-                        [weakSelf.imageView setFrame:_startingInfo.startingReferenceFrameForThumbnailInPresentingViewControllersOriginalOrientation];
+                        weakSelf.imageView.frame = _startingInfo.startingReferenceFrameForThumbnailInPresentingViewControllersOriginalOrientation;
                     } else {
-                        [weakSelf.imageView setFrame:_startingInfo.startingReferenceFrameForThumbnail];
+                        weakSelf.imageView.frame = _startingInfo.startingReferenceFrameForThumbnail;
                     }
                     
                     // Rotation not needed, so fade the status bar back in. Looks nicer.
@@ -969,7 +1105,7 @@ UIGestureRecognizerDelegate
 
 - (void)dismissByCleaningUpAfterImageWasFlickedOffscreen {
     
-    [self.view setUserInteractionEnabled:NO];
+    self.view.userInteractionEnabled = NO;
     _flags.isAnimatingAPresentationOrDismissal = YES ;
     _flags.isDismissing = YES;
     
@@ -980,14 +1116,23 @@ UIGestureRecognizerDelegate
         duration *= 4;
     }
     
+    if ([weakSelf.animationDelegate respondsToSelector:@selector(imageViewerWillBeginDismissal:withContainerView:)]) {
+        [weakSelf.animationDelegate imageViewerWillBeginDismissal:weakSelf withContainerView:weakSelf.view];
+    }
+    
     [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
+        
+        if ([weakSelf.animationDelegate respondsToSelector:@selector(imageViewerWillAnimateDismissal:withContainerView:duration:)]) {
+            [weakSelf.animationDelegate imageViewerWillAnimateDismissal:weakSelf withContainerView:weakSelf.view duration:duration];
+        }
+        
         weakSelf.snapshotView.transform = weakSelf.currentSnapshotRotationTransform;
         [weakSelf removeMotionEffectsFromSnapshotView];
-        [weakSelf.blackBackdrop setAlpha:0];
-        if (weakSelf.backgroundStyle == JTSImageViewControllerBackgroundStyle_ScaledDimmedBlurred) {
-            [weakSelf.blurredSnapshotView setAlpha:0];
+        weakSelf.blackBackdrop.alpha = 0;
+        if (weakSelf.backgroundOptions & JTSImageViewControllerBackgroundOption_Blurred) {
+            weakSelf.blurredSnapshotView.alpha = 0;
         }
-        [weakSelf.scrollView setAlpha:0];
+        weakSelf.scrollView.alpha = 0;
         if ([UIApplication sharedApplication].jts_usesViewControllerBasedStatusBarAppearance) {
             [weakSelf setNeedsStatusBarAppearanceUpdate];
         } else {
@@ -995,7 +1140,6 @@ UIGestureRecognizerDelegate
                                                     withAnimation:UIStatusBarAnimationFade];
         }
     } completion:^(BOOL finished) {
-        NSLog(@"DISMISS - DISMISS - DISMISS - DISMISS - DISMISS - DISMISS - DISMISS");
         [weakSelf.presentingViewController dismissViewControllerAnimated:NO completion:^{
             [weakSelf.dismissalDelegate imageViewerDidDismiss:weakSelf];
         }];
@@ -1004,7 +1148,7 @@ UIGestureRecognizerDelegate
 
 - (void)dismissByExpandingImageToOffscreenPosition {
     
-    [self.view setUserInteractionEnabled:NO];
+    self.view.userInteractionEnabled = NO;
     _flags.isAnimatingAPresentationOrDismissal = YES;
     _flags.isDismissing = YES;
     
@@ -1015,16 +1159,25 @@ UIGestureRecognizerDelegate
         duration *= 4;
     }
     
+    if ([weakSelf.animationDelegate respondsToSelector:@selector(imageViewerWillBeginDismissal:withContainerView:)]) {
+        [weakSelf.animationDelegate imageViewerWillBeginDismissal:weakSelf withContainerView:weakSelf.view];
+    }
+    
     [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
+        
+        if ([weakSelf.animationDelegate respondsToSelector:@selector(imageViewerWillAnimateDismissal:withContainerView:duration:)]) {
+            [weakSelf.animationDelegate imageViewerWillAnimateDismissal:weakSelf withContainerView:weakSelf.view duration:duration];
+        }
+        
         weakSelf.snapshotView.transform = weakSelf.currentSnapshotRotationTransform;
         [weakSelf removeMotionEffectsFromSnapshotView];
-        [weakSelf.blackBackdrop setAlpha:0];
-        if (weakSelf.backgroundStyle == JTSImageViewControllerBackgroundStyle_ScaledDimmedBlurred) {
-            [weakSelf.blurredSnapshotView setAlpha:0];
+        weakSelf.blackBackdrop.alpha = 0;
+        if (weakSelf.backgroundOptions & JTSImageViewControllerBackgroundOption_Blurred) {
+            weakSelf.blurredSnapshotView.alpha = 0;
         }
-        [weakSelf.scrollView setAlpha:0];
+        weakSelf.scrollView.alpha = 0;
         CGFloat scaling = JTSImageViewController_MaxScalingForExpandingOffscreenStyleTransition;
-        [weakSelf.scrollView setTransform:CGAffineTransformMakeScale(scaling, scaling)];
+        weakSelf.scrollView.transform = CGAffineTransformMakeScale(scaling, scaling);
         if ([UIApplication sharedApplication].jts_usesViewControllerBasedStatusBarAppearance) {
             [weakSelf setNeedsStatusBarAppearanceUpdate];
         } else {
@@ -1040,7 +1193,7 @@ UIGestureRecognizerDelegate
 
 - (void)dismissByExpandingAltTextToOffscreenPosition {
     
-    [self.view setUserInteractionEnabled:NO];
+    self.view.userInteractionEnabled = NO;
     _flags.isAnimatingAPresentationOrDismissal = YES;
     _flags.isDismissing = YES;
     
@@ -1054,22 +1207,31 @@ UIGestureRecognizerDelegate
     // Replace the text view with a snapshot of itself,
     // to prevent the text from reflowing during the dismissal animation.
     UIView *textViewSnapshot = [self.textView snapshotViewAfterScreenUpdates:YES];
-    [textViewSnapshot setFrame:self.textView.frame];
+    textViewSnapshot.frame = self.textView.frame;
     [self.textView.superview insertSubview:textViewSnapshot aboveSubview:self.textView];
     [self.textView removeFromSuperview];
-    [self.textView setDelegate:nil];
-    [self setTextView:nil];
+    self.textView.delegate = nil;
+    self.textView = nil;
+    
+    if ([weakSelf.animationDelegate respondsToSelector:@selector(imageViewerWillBeginDismissal:withContainerView:)]) {
+        [weakSelf.animationDelegate imageViewerWillBeginDismissal:weakSelf withContainerView:weakSelf.view];
+    }
     
     [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseInOut animations:^{
+        
+        if ([weakSelf.animationDelegate respondsToSelector:@selector(imageViewerWillAnimateDismissal:withContainerView:duration:)]) {
+            [weakSelf.animationDelegate imageViewerWillAnimateDismissal:weakSelf withContainerView:weakSelf.view duration:duration];
+        }
+        
         weakSelf.snapshotView.transform = weakSelf.currentSnapshotRotationTransform;
         [weakSelf removeMotionEffectsFromSnapshotView];
-        [weakSelf.blackBackdrop setAlpha:0];
-        [textViewSnapshot setAlpha:0];
-        if (weakSelf.backgroundStyle == JTSImageViewControllerBackgroundStyle_ScaledDimmedBlurred) {
-            [weakSelf.blurredSnapshotView setAlpha:0];
+        weakSelf.blackBackdrop.alpha = 0;
+        textViewSnapshot.alpha = 0;
+        if (weakSelf.backgroundOptions & JTSImageViewControllerBackgroundOption_Blurred) {
+            weakSelf.blurredSnapshotView.alpha = 0;
         }
         CGFloat targetScale = JTSImageViewController_MaxScalingForExpandingOffscreenStyleTransition;
-        [textViewSnapshot setTransform:CGAffineTransformMakeScale(targetScale, targetScale)];
+        textViewSnapshot.transform = CGAffineTransformMakeScale(targetScale, targetScale);
         if ([UIApplication sharedApplication].jts_usesViewControllerBasedStatusBarAppearance) {
             [weakSelf setNeedsStatusBarAppearanceUpdate];
         } else {
@@ -1090,7 +1252,7 @@ UIGestureRecognizerDelegate
     UIViewController *presentingViewController = viewController.view.window.rootViewController;
     while (presentingViewController.presentedViewController) presentingViewController = presentingViewController.presentedViewController;
     UIView *snapshot = [presentingViewController.view snapshotViewAfterScreenUpdates:YES];
-    [snapshot setClipsToBounds:NO];
+    snapshot.clipsToBounds = NO;
     return snapshot;
 }
 
@@ -1125,9 +1287,9 @@ UIGestureRecognizerDelegate
     CGFloat blurRadius = self.backgroundBlurRadius * performanceDownScalingFactor;
     UIImage *blurredImage = [image JTS_applyBlurWithRadius:blurRadius tintColor:nil saturationDeltaFactor:1.0f maskImage:nil];
     UIImageView *imageView = [[UIImageView alloc] initWithFrame:contextBounds];
-    [imageView setImage:blurredImage];
-    [imageView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
-    [imageView setBackgroundColor:[UIColor blackColor]];
+    imageView.image = blurredImage;
+    imageView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    imageView.backgroundColor = [UIColor blackColor];
     
     return imageView;
 }
@@ -1146,7 +1308,7 @@ UIGestureRecognizerDelegate
     horizontalEffect.maximumRelativeValue = @(-12);
     
     UIMotionEffectGroup *effectGroup = [[UIMotionEffectGroup alloc] init];
-    [effectGroup setMotionEffects:@[horizontalEffect, verticalEffect]];
+    effectGroup.motionEffects = @[horizontalEffect, verticalEffect];
     [self.snapshotView addMotionEffect:effectGroup];
 }
 
@@ -1161,9 +1323,9 @@ UIGestureRecognizerDelegate
 - (void)updateInterfaceWithImage:(UIImage *)image {
     
     if (image) {
-        [self setImage:image];
-        [self.imageView setImage:image];
-        [self.progressContainer setAlpha:0];
+        self.image = image;
+        self.imageView.image = image;
+        self.progressContainer.alpha = 0;
         
         self.imageView.backgroundColor = [self backgroundColorForImageView];
         
@@ -1270,8 +1432,13 @@ UIGestureRecognizerDelegate
             if (self.mode == JTSImageViewControllerMode_Image) {
                 self.scrollView.frame = self.view.bounds;
             }
-            CGFloat scaling = JTSImageViewController_MinimumBackgroundScaling;
-            self.snapshotView.transform = CGAffineTransformConcat(transform, CGAffineTransformMakeScale(scaling, scaling));
+            CGFloat targetScaling;
+            if (!(self.backgroundOptions & JTSImageViewControllerBackgroundOption_Scaled)) {
+                targetScaling = 1.0;
+            } else {
+                targetScaling = JTSImageViewController_MinimumBackgroundScaling;
+            }
+            self.snapshotView.transform = CGAffineTransformConcat(transform, CGAffineTransformMakeScale(targetScaling, targetScaling));
         } else {
             self.snapshotView.transform = transform;
         }
@@ -1292,9 +1459,9 @@ UIGestureRecognizerDelegate
     
     if (suppressAdjustments == NO) {
         if (self.image) {
-            [self.imageView setFrame:[self resizedFrameForAutorotatingImageView:self.image.size]];
+            self.imageView.frame = [self resizedFrameForAutorotatingImageView:self.image.size];
         } else {
-            [self.imageView setFrame:[self resizedFrameForAutorotatingImageView:self.imageInfo.referenceRect.size]];
+            self.imageView.frame = [self resizedFrameForAutorotatingImageView:self.imageInfo.referenceRect.size];
         }
         self.scrollView.contentSize = self.imageView.frame.size;
         self.scrollView.contentInset = [self contentInsetForScrollView:self.scrollView.zoomScale];
@@ -1309,8 +1476,8 @@ UIGestureRecognizerDelegate
     } else {
         insets.top = 0;
     }
-    [self.textView setContentInset:insets];
-    [self.textView setContentOffset:CGPointMake(0, 0 - insets.top)];
+    self.textView.contentInset = insets;
+    self.textView.contentOffset = CGPointMake(0, 0 - insets.top);
 }
 
 - (UIEdgeInsets)contentInsetForScrollView:(CGFloat)targetZoomScale {
@@ -1399,7 +1566,7 @@ UIGestureRecognizerDelegate
         return;
     }
     
-    [scrollView setContentInset:[self contentInsetForScrollView:scrollView.zoomScale]];
+    scrollView.contentInset = [self contentInsetForScrollView:scrollView.zoomScale];
     
     if (self.scrollView.scrollEnabled == NO) {
         self.scrollView.scrollEnabled = YES;
@@ -1435,10 +1602,14 @@ UIGestureRecognizerDelegate
 #pragma mark - Update Dimming View for Zoom Scale
 
 - (void)updateDimmingViewForCurrentZoomScale:(BOOL)animated {
-    CGFloat targetAlpha = (self.scrollView.zoomScale > 1) ? 1.0f : self.alphaForBackgroundDimmingOverlay;
+    CGFloat zoomScale = self.scrollView.zoomScale;
+    CGFloat targetAlpha = (zoomScale > 1) ? 1.0f : self.alphaForBackgroundDimmingOverlay;
     CGFloat duration = (animated) ? 0.35 : 0;
     [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionCurveLinear | UIViewAnimationOptionBeginFromCurrentState animations:^{
-        [self.blackBackdrop setAlpha:targetAlpha];
+        if ([self.animationDelegate respondsToSelector:@selector(imageViewer:willAdjustInterfaceForZoomScale:withContainerView:duration:)]) {
+            [self.animationDelegate imageViewer:self willAdjustInterfaceForZoomScale:zoomScale withContainerView:self.view duration:duration];
+        }
+        self.blackBackdrop.alpha = targetAlpha;
     } completion:nil];
 }
 
@@ -1467,15 +1638,17 @@ UIGestureRecognizerDelegate
         targetZoomRect = CGRectMake(point.x - (zoomWidth/2.0f), point.y - (zoomHeight/2.0f), zoomWidth, zoomHeight);
         targetInsets = [self contentInsetForScrollView:1.0f];
     }
-    [self.view setUserInteractionEnabled:NO];
-    _flags.scrollViewIsAnimatingAZoom = YES;
-    [self.scrollView setContentInset:targetInsets];
-    [self.scrollView zoomToRect:targetZoomRect animated:YES];
+    self.view.userInteractionEnabled = NO;
+    
+    [CATransaction begin];
     __weak JTSImageViewController *weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.35 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [weakSelf.view setUserInteractionEnabled:YES];
+    [CATransaction setCompletionBlock:^{
+        weakSelf.scrollView.contentInset = targetInsets;
+        weakSelf.view.userInteractionEnabled = YES;
         _flags.scrollViewIsAnimatingAZoom = NO;
-    });
+    }];
+    [self.scrollView zoomToRect:targetZoomRect animated:YES];
+    [CATransaction commit];
 }
 
 - (void)imageSingleTapped:(id)sender {
@@ -1492,8 +1665,23 @@ UIGestureRecognizerDelegate
     }
     
     if (self.image && sender.state == UIGestureRecognizerStateBegan) {
-        if ([self.interactionsDelegate respondsToSelector:@selector(imageViewerDidLongPress:)]) {
-            [self.interactionsDelegate imageViewerDidLongPress:self];
+        if ([self.interactionsDelegate respondsToSelector:@selector(imageViewerDidLongPress:atRect:)]) {
+            CGPoint location = [sender locationInView:self.view];
+            [self.interactionsDelegate imageViewerDidLongPress:self atRect:CGRectMake(location.x, location.y, 0.0f, 0.0f)];
+        }
+        
+        BOOL allowCopy = NO;
+        
+        if ([self.interactionsDelegate respondsToSelector:@selector(imageViewerAllowCopyToPasteboard:)]) {
+            allowCopy = [self.interactionsDelegate imageViewerAllowCopyToPasteboard:self];
+        }
+        
+        if (allowCopy) {
+            CGPoint location = [sender locationInView:self.imageView];
+            UIMenuController *menuController = [UIMenuController sharedMenuController];
+            
+            [menuController setTargetRect:CGRectMake(location.x, location.y, 0.0f, 0.0f) inView:self.imageView];
+            [menuController setMenuVisible:YES animated:YES];
         }
     }
 }
@@ -1520,7 +1708,7 @@ UIGestureRecognizerDelegate
             CGPoint newAnchor = self.imageDragStartingPoint;
             newAnchor.x += translation.x + self.imageDragOffsetFromActualTranslation.horizontal;
             newAnchor.y += translation.y + self.imageDragOffsetFromActualTranslation.vertical;
-            [self.attachmentBehavior setAnchorPoint:newAnchor];
+            self.attachmentBehavior.anchorPoint = newAnchor;
         } else {
             _flags.isDraggingImage = CGRectContainsPoint(self.imageView.frame, locationInView);
             if (_flags.isDraggingImage) {
@@ -1559,14 +1747,14 @@ UIGestureRecognizerDelegate
     self.attachmentBehavior = [[UIAttachmentBehavior alloc] initWithItem:self.imageView offsetFromCenter:offset attachedToAnchor:anchor];
     [self.animator addBehavior:self.attachmentBehavior];
     UIDynamicItemBehavior *modifier = [[UIDynamicItemBehavior alloc] initWithItems:@[self.imageView]];
-    [modifier setAngularResistance:[self appropriateAngularResistanceForView:self.imageView]];
-    [modifier setDensity:[self appropriateDensityForView:self.imageView]];
+    modifier.angularResistance = [self appropriateAngularResistanceForView:self.imageView];
+    modifier.density = [self appropriateDensityForView:self.imageView];
     [self.animator addBehavior:modifier];
 }
 
 - (void)cancelCurrentImageDrag:(BOOL)animated {
     [self.animator removeAllBehaviors];
-    [self setAttachmentBehavior:nil];
+    self.attachmentBehavior = nil;
     _flags.isDraggingImage = NO;
     if (animated == NO) {
         self.imageView.transform = CGAffineTransformIdentity;
@@ -1595,16 +1783,16 @@ UIGestureRecognizerDelegate
     _flags.imageIsFlickingAwayForDismissal = YES;
     __weak JTSImageViewController *weakSelf = self;
     UIPushBehavior *push = [[UIPushBehavior alloc] initWithItems:@[self.imageView] mode:UIPushBehaviorModeInstantaneous];
-    [push setPushDirection:CGVectorMake(velocity.x*0.1, velocity.y*0.1)];
+    push.pushDirection = CGVectorMake(velocity.x*0.1, velocity.y*0.1);
     [push setTargetOffsetFromCenter:self.imageDragOffsetFromImageCenter forItem:self.imageView];
-    [push setAction:^{
+    push.action = ^{
         if ([weakSelf imageViewIsOffscreen]) {
             [weakSelf.animator removeAllBehaviors];
-            [weakSelf setAttachmentBehavior:nil];
+            weakSelf.attachmentBehavior = nil;
             [weakSelf.imageView removeFromSuperview];
             [weakSelf dismiss:YES];
         }
-    }];
+    };
     [self.animator removeBehavior:self.attachmentBehavior];
     [self.animator addBehavior:push];
 }
@@ -1668,14 +1856,18 @@ UIGestureRecognizerDelegate
 #pragma mark - Progress Bar
 
 - (void)startProgressTimer {
-    NSTimer *timer = [[NSTimer alloc] initWithFireDate:[NSDate date] interval:0.05 target:self selector:@selector(progressTimerFired:) userInfo:nil repeats:YES];
-    [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
-    [self setDownloadProgressTimer:timer];
+    self.downloadProgressTimer = [[NSTimer alloc] initWithFireDate:[NSDate date]
+                                                          interval:0.05
+                                                            target:self
+                                                          selector:@selector(progressTimerFired:)
+                                                          userInfo:nil
+                                                           repeats:YES];
+    [[NSRunLoop mainRunLoop] addTimer:self.downloadProgressTimer forMode:NSRunLoopCommonModes];
 }
 
 - (void)cancelProgressTimer {
     [self.downloadProgressTimer invalidate];
-    [self setDownloadProgressTimer:nil];
+    self.downloadProgressTimer = nil;
 }
 
 - (void)progressTimerFired:(NSTimer *)timer {
@@ -1688,7 +1880,29 @@ UIGestureRecognizerDelegate
         } completion:nil];
         progress = self.imageDownloadDataTask.countOfBytesReceived / bytesExpected;
     }
-    [self.progressView setProgress:progress];
+    self.progressView.progress = progress;
+}
+
+#pragma mark - UIResponder
+
+- (BOOL)canBecomeFirstResponder {
+    
+    if (self.image) {
+        return YES;
+    }
+    return NO;
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender {
+    
+    if (self.image && action == @selector(copy:)) {
+        return YES;
+    }
+    return NO;
+}
+
+- (void)copy:(id)sender {
+    [[UIPasteboard generalPasteboard] setImage:self.image];
 }
 
 #pragma mark - Accessibility

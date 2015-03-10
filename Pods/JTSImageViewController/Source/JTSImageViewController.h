@@ -18,6 +18,7 @@
 @protocol JTSImageViewControllerOptionsDelegate;
 @protocol JTSImageViewControllerInteractionsDelegate;
 @protocol JTSImageViewControllerAccessibilityDelegate;
+@protocol JTSImageViewControllerAnimationDelegate;
 
 typedef NS_ENUM(NSInteger, JTSImageViewControllerMode) {
     JTSImageViewControllerMode_Image,
@@ -29,9 +30,10 @@ typedef NS_ENUM(NSInteger, JTSImageViewControllerTransition) {
     JTSImageViewControllerTransition_FromOffscreen,
 };
 
-typedef NS_ENUM(NSInteger, JTSImageViewControllerBackgroundStyle) {
-    JTSImageViewControllerBackgroundStyle_ScaledDimmed,
-    JTSImageViewControllerBackgroundStyle_ScaledDimmedBlurred,
+typedef NS_OPTIONS(NSInteger, JTSImageViewControllerBackgroundOptions) {
+    JTSImageViewControllerBackgroundOption_None = 0,
+    JTSImageViewControllerBackgroundOption_Scaled = 1 << 0,
+    JTSImageViewControllerBackgroundOption_Blurred = 1 << 1,
 };
 
 extern CGFloat const JTSImageViewController_DefaultAlphaForBackgroundDimmingOverlay;
@@ -49,7 +51,7 @@ extern CGFloat const JTSImageViewController_DefaultBackgroundBlurRadius;
 
 @property (assign, nonatomic, readonly) JTSImageViewControllerMode mode;
 
-@property (assign, nonatomic, readonly) JTSImageViewControllerBackgroundStyle backgroundStyle;
+@property (assign, nonatomic, readonly) JTSImageViewControllerBackgroundOptions backgroundOptions;
 
 @property (weak, nonatomic, readwrite) id <JTSImageViewControllerDismissalDelegate> dismissalDelegate;
 
@@ -58,6 +60,8 @@ extern CGFloat const JTSImageViewController_DefaultBackgroundBlurRadius;
 @property (weak, nonatomic, readwrite) id <JTSImageViewControllerInteractionsDelegate> interactionsDelegate;
 
 @property (weak, nonatomic, readwrite) id <JTSImageViewControllerAccessibilityDelegate> accessibilityDelegate;
+
+@property (weak, nonatomic, readwrite) id <JTSImageViewControllerAnimationDelegate> animationDelegate;
 
 /**
  Designated initializer.
@@ -71,7 +75,7 @@ extern CGFloat const JTSImageViewController_DefaultBackgroundBlurRadius;
  */
 - (instancetype)initWithImageInfo:(JTSImageInfo *)imageInfo
                              mode:(JTSImageViewControllerMode)mode
-                  backgroundStyle:(JTSImageViewControllerBackgroundStyle)backgroundStyle;
+                  backgroundStyle:(JTSImageViewControllerBackgroundOptions)backgroundOptions;
 
 /**
  JTSImageViewController is presented from viewController as a UIKit modal view controller.
@@ -173,7 +177,7 @@ extern CGFloat const JTSImageViewController_DefaultBackgroundBlurRadius;
 /**
  Called when the image viewer detects a long press.
  */
-- (void)imageViewerDidLongPress:(JTSImageViewController *)imageViewer;
+- (void)imageViewerDidLongPress:(JTSImageViewController *)imageViewer atRect:(CGRect)rect;
 
 /**
  Called when the image viewer is deciding whether to respond to user interactions.
@@ -182,6 +186,11 @@ extern CGFloat const JTSImageViewController_DefaultBackgroundBlurRadius;
  This method is called more than once. Returning NO does not "lock" the image viewer.
  */
 - (BOOL)imageViewerShouldTemporarilyIgnoreTouches:(JTSImageViewController *)imageViewer;
+
+/**
+ Called when the image viewer is deciding whether to display the Menu Controller, to allow the user to copy the image to the general pasteboard.
+ */
+- (BOOL)imageViewerAllowCopyToPasteboard:(JTSImageViewController *)imageViewer;
 
 @end
 
@@ -198,6 +207,25 @@ extern CGFloat const JTSImageViewController_DefaultBackgroundBlurRadius;
 - (NSString *)accessibilityHintZoomedInForImageViewer:(JTSImageViewController *)imageViewer;
 
 - (NSString *)accessibilityHintZoomedOutForImageViewer:(JTSImageViewController *)imageViewer;
+
+@end
+
+///---------------------------------------------------------------------------------------------------
+/// Animation Delegate
+///---------------------------------------------------------------------------------------------------
+
+@protocol JTSImageViewControllerAnimationDelegate <NSObject>
+@optional
+
+- (void)imageViewerWillBeginPresentation:(JTSImageViewController *)imageViewer withContainerView:(UIView *)containerView;
+
+- (void)imageViewerWillAnimatePresentation:(JTSImageViewController *)imageViewer withContainerView:(UIView *)containerView duration:(CGFloat)duration;
+
+- (void)imageViewer:(JTSImageViewController *)imageViewer willAdjustInterfaceForZoomScale:(CGFloat)zoomScale withContainerView:(UIView *)containerView duration:(CGFloat)duration;
+
+- (void)imageViewerWillBeginDismissal:(JTSImageViewController *)imageViewer withContainerView:(UIView *)containerView;
+
+- (void)imageViewerWillAnimateDismissal:(JTSImageViewController *)imageViewer withContainerView:(UIView *)containerView duration:(CGFloat)duration;
 
 @end
 

@@ -585,7 +585,7 @@
 				ORGANIZATIONNAME = "Alexander Tewpin";
 				TargetAttributes = {
 					97C3D4EC191BC82A008921B5 = {
-						DevelopmentTeam = 6PVMJV8LPQ;
+						DevelopmentTeam = Q9324QX3V7;
 					};
 					97C3D507191BC82A008921B5 = {
 						TestTargetID = 97C3D4EC191BC82A008921B5;
@@ -866,20 +866,14 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "m2ch/Tabula-Prefix.pch";
-				HEADER_SEARCH_PATHS = (
-					"\"${PODS_ROOT}/Headers\"",
-					"\"${PODS_ROOT}/Headers/AsyncImageView\"",
-					"\"${PODS_ROOT}/Headers/TTTAttributedLabel\"",
-					"\"${PODS_ROOT}/Headers/UIView+AutoLayout\"",
-					"\"$(BUILT_PRODUCTS_DIR)\"/**",
-				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = "m2ch/Tabula-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = Tabula;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
-				USER_HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"/**";
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -899,20 +893,15 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "m2ch/Tabula-Prefix.pch";
-				HEADER_SEARCH_PATHS = (
-					"\"${PODS_ROOT}/Headers\"",
-					"\"${PODS_ROOT}/Headers/AsyncImageView\"",
-					"\"${PODS_ROOT}/Headers/TTTAttributedLabel\"",
-					"\"${PODS_ROOT}/Headers/UIView+AutoLayout\"",
-					"\"$(BUILT_PRODUCTS_DIR)\"/**",
-				);
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				"HEADER_SEARCH_PATHS[arch=*]" = "";
 				INFOPLIST_FILE = "m2ch/Tabula-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_NAME = Tabula;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = 1;
-				USER_HEADER_SEARCH_PATHS = "\"$(BUILT_PRODUCTS_DIR)\"/**";
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
