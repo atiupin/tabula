@@ -584,9 +584,6 @@
 				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = "Alexander Tewpin";
 				TargetAttributes = {
-					97C3D4EC191BC82A008921B5 = {
-						DevelopmentTeam = Q9324QX3V7;
-					};
 					97C3D507191BC82A008921B5 = {
 						TestTargetID = 97C3D4EC191BC82A008921B5;
 					};

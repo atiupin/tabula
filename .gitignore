@@ -17,3 +17,7 @@ DerivedData
 *.ipa
 *.xcuserstate
 .DS_Store
+
+m2ch/.DS_Store
+
+m2chTests/.DS_Store
